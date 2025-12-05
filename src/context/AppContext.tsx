@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { Team, Game, AppSettings, Theme, StatsConfig, PlayerGameStats } from '../types';
 import { defaultStatsConfig } from '../types';

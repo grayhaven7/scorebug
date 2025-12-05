@@ -6,7 +6,6 @@ import { presetThemes } from '../themes/presets';
 export function ThemesPage() {
   const {
     currentTheme,
-    allThemes,
     setCurrentTheme,
     addCustomTheme,
     updateCustomTheme,
@@ -68,8 +67,8 @@ export function ThemesPage() {
       style={{
         backgroundColor: theme.secondaryBackground,
         borderRadius: theme.borderRadius,
-        ringColor: theme.accentColor,
-      }}
+        '--tw-ring-color': theme.accentColor,
+      } as React.CSSProperties}
       onClick={() => setCurrentTheme(theme.id)}
     >
       {/* Mini Scoreboard Preview */}

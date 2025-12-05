@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { Team, Player, Game, PlayerGameStats, TeamGameStats } from '../types';
+import type { Team, Player, Game, PlayerGameStats } from '../types';
 
 export function generateTestData() {
   // 1. Create Teams

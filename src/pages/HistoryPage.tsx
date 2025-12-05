@@ -1,6 +1,6 @@
 import { useApp } from '../context/AppContext';
 import { statLabels } from '../types';
-import type { StatType } from '../types';
+import type { StatType, PlayerGameStats } from '../types';
 
 export function HistoryPage() {
   const { games, currentTheme, settings } = useApp();
@@ -8,8 +8,8 @@ export function HistoryPage() {
   // Sort by most recent first
   const sortedGames = [...games].sort((a, b) => b.createdAt - a.createdAt);
 
-  const calculateTotal = (players: { [key: string]: number }[], stat: string) =>
-    players.reduce((sum, p) => sum + ((p as Record<string, number>)[stat] || 0), 0);
+  const calculateTotal = (players: PlayerGameStats[], stat: StatType) =>
+    players.reduce((sum, p) => sum + (p[stat] || 0), 0);
 
   const enabledStats = Object.entries(settings.statsConfig)
     .filter(([, enabled]) => enabled)
@@ -44,8 +44,8 @@ export function HistoryPage() {
       {sortedGames.length > 0 ? (
         <div className="space-y-6">
           {sortedGames.map(game => {
-            const homeScore = calculateTotal(game.homeTeam.players as Record<string, number>[], 'points');
-            const awayScore = calculateTotal(game.awayTeam.players as Record<string, number>[], 'points');
+            const homeScore = calculateTotal(game.homeTeam.players, 'points');
+            const awayScore = calculateTotal(game.awayTeam.players, 'points');
             const homeWon = homeScore > awayScore;
 
             return (
@@ -179,7 +179,7 @@ export function HistoryPage() {
                                 <td className="px-2 py-1">{player.playerName}</td>
                                 {enabledStats.map(stat => (
                                   <td key={stat} className="text-center px-2 py-1">
-                                    {(player as Record<string, number>)[stat] || 0}
+                                    {player[stat] || 0}
                                   </td>
                                 ))}
                               </tr>
@@ -226,7 +226,7 @@ export function HistoryPage() {
                                 <td className="px-2 py-1">{player.playerName}</td>
                                 {enabledStats.map(stat => (
                                   <td key={stat} className="text-center px-2 py-1">
-                                    {(player as Record<string, number>)[stat] || 0}
+                                    {player[stat] || 0}
                                   </td>
                                 ))}
                               </tr>
