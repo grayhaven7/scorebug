@@ -30,6 +30,7 @@ export function ThemesPage() {
       textSecondary: '#8888aa',
       headerFont: 'Oswald',
       bodyFont: 'Source Sans 3',
+      numberFont: 'Teko',
       borderRadius: '8px',
       scoreboardStyle: 'modern',
     });
@@ -77,7 +78,7 @@ export function ThemesPage() {
           <div className="flex items-center gap-2">
             <div
               className="w-8 h-8 rounded flex items-center justify-center text-sm font-bold"
-              style={{ backgroundColor: theme.accentColor }}
+              style={{ backgroundColor: theme.accentColor, fontFamily: theme.numberFont }}
             >
               24
             </div>
@@ -94,7 +95,7 @@ export function ThemesPage() {
             </span>
             <div
               className="w-8 h-8 rounded flex items-center justify-center text-sm font-bold"
-              style={{ backgroundColor: '#2563eb' }}
+              style={{ backgroundColor: '#2563eb', fontFamily: theme.numberFont }}
             >
               21
             </div>
@@ -166,6 +167,16 @@ export function ThemesPage() {
       </div>
     </div>
   );
+
+  const fontOptions = [
+    'Oswald',
+    'Source Sans 3',
+    'JetBrains Mono',
+    'Teko',
+    'Saira Condensed',
+    'Barlow Condensed',
+    'Fjalla One',
+  ];
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -408,7 +419,7 @@ export function ThemesPage() {
                       backgroundColor: currentTheme.backgroundColor,
                       borderColor: currentTheme.textSecondary + '40',
                       color: currentTheme.textColor,
-                    }}
+                      }}
                   >
                     <option value="0px">Sharp (0px)</option>
                     <option value="2px">Subtle (2px)</option>
@@ -421,7 +432,7 @@ export function ThemesPage() {
               </div>
 
               {/* Font Selection */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.textSecondary }}>
                     Header Font
@@ -436,9 +447,9 @@ export function ThemesPage() {
                       color: currentTheme.textColor,
                     }}
                   >
-                    <option value="Oswald">Oswald</option>
-                    <option value="Source Sans 3">Source Sans 3</option>
-                    <option value="JetBrains Mono">JetBrains Mono</option>
+                    {fontOptions.map(font => (
+                      <option key={font} value={font}>{font}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -455,9 +466,28 @@ export function ThemesPage() {
                       color: currentTheme.textColor,
                     }}
                   >
-                    <option value="Source Sans 3">Source Sans 3</option>
-                    <option value="Oswald">Oswald</option>
-                    <option value="JetBrains Mono">JetBrains Mono</option>
+                    {fontOptions.map(font => (
+                      <option key={font} value={font}>{font}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.textSecondary }}>
+                    Number Font
+                  </label>
+                  <select
+                    value={formData.numberFont || 'Teko'}
+                    onChange={e => setFormData({ ...formData, numberFont: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border focus:outline-none cursor-pointer"
+                    style={{
+                      backgroundColor: currentTheme.backgroundColor,
+                      borderColor: currentTheme.textSecondary + '40',
+                      color: currentTheme.textColor,
+                    }}
+                  >
+                    {fontOptions.map(font => (
+                      <option key={font} value={font}>{font}</option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -479,7 +509,7 @@ export function ThemesPage() {
                       <div className="flex items-center gap-2">
                         <div
                           className="w-10 h-10 rounded flex items-center justify-center font-bold"
-                          style={{ backgroundColor: formData.accentColor }}
+                          style={{ backgroundColor: formData.accentColor, fontFamily: formData.numberFont }}
                         >
                           42
                         </div>
@@ -494,7 +524,7 @@ export function ThemesPage() {
                         </span>
                         <div
                           className="w-10 h-10 rounded flex items-center justify-center font-bold"
-                          style={{ backgroundColor: '#2563eb' }}
+                          style={{ backgroundColor: '#2563eb', fontFamily: formData.numberFont }}
                         >
                           38
                         </div>
@@ -547,4 +577,3 @@ export function ThemesPage() {
     </div>
   );
 }
-

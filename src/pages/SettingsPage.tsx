@@ -4,7 +4,7 @@ import type { StatType } from '../types';
 import { statFullNames, statLabels } from '../types';
 
 export function SettingsPage() {
-  const { settings, updateStatsConfig, currentTheme, resetAllData } = useApp();
+  const { settings, updateStatsConfig, updateScoreboardConfig, currentTheme, resetAllData } = useApp();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const handleReset = () => {
@@ -43,6 +43,70 @@ export function SettingsPage() {
         <p style={{ color: currentTheme.textSecondary }}>
           Customize which stats to track during games
         </p>
+      </div>
+
+      {/* Scoreboard Display */}
+      <div
+        className="rounded-xl p-6 mb-6"
+        style={{ backgroundColor: currentTheme.secondaryBackground }}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2
+              className="text-xl font-bold"
+              style={{ fontFamily: currentTheme.headerFont }}
+            >
+              SCOREBOARD DISPLAY
+            </h2>
+            <p className="text-sm" style={{ color: currentTheme.textSecondary }}>
+              Customize game clock and quarter display
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[
+            { id: 'showTimer', label: 'Game Timer', desc: 'Show time remaining' },
+            { id: 'showQuarter', label: 'Quarter/Period', desc: 'Show current period' },
+          ].map(item => (
+            <button
+              key={item.id}
+              onClick={() => updateScoreboardConfig({ [item.id]: !settings.scoreboardConfig[item.id as keyof typeof settings.scoreboardConfig] })}
+              className="flex items-center justify-between p-4 rounded-lg border-2 transition-all hover:scale-[1.02]"
+              style={{
+                backgroundColor: settings.scoreboardConfig[item.id as keyof typeof settings.scoreboardConfig]
+                  ? currentTheme.accentColor + '10'
+                  : 'transparent',
+                borderColor: settings.scoreboardConfig[item.id as keyof typeof settings.scoreboardConfig]
+                  ? currentTheme.accentColor
+                  : currentTheme.textSecondary + '30',
+                borderRadius: currentTheme.borderRadius,
+              }}
+            >
+              <div className="text-left">
+                <p className="font-bold">{item.label}</p>
+                <p className="text-xs" style={{ color: currentTheme.textSecondary }}>
+                  {item.desc}
+                </p>
+              </div>
+              <div
+                className="w-12 h-7 rounded-full relative transition-all"
+                style={{
+                  backgroundColor: settings.scoreboardConfig[item.id as keyof typeof settings.scoreboardConfig]
+                    ? currentTheme.accentColor
+                    : currentTheme.textSecondary + '40',
+                }}
+              >
+                <div
+                  className="absolute top-1 w-5 h-5 rounded-full bg-white transition-all shadow"
+                  style={{
+                    left: settings.scoreboardConfig[item.id as keyof typeof settings.scoreboardConfig] ? 'calc(100% - 24px)' : '4px',
+                  }}
+                />
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Stats Configuration */}

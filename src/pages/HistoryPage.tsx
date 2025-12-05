@@ -69,7 +69,7 @@ export function HistoryPage() {
                         style={{
                           backgroundColor: game.homeTeam.primaryColor,
                           color: game.homeTeam.secondaryColor,
-                          fontFamily: currentTheme.headerFont,
+                          fontFamily: currentTheme.numberFont,
                         }}
                       >
                         {homeScore}
@@ -112,7 +112,7 @@ export function HistoryPage() {
                         style={{
                           backgroundColor: game.awayTeam.primaryColor,
                           color: game.awayTeam.secondaryColor,
-                          fontFamily: currentTheme.headerFont,
+                          fontFamily: currentTheme.numberFont,
                         }}
                       >
                         {awayScore}

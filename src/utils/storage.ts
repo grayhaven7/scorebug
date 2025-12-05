@@ -1,5 +1,5 @@
 import type { Team, Game, AppSettings } from '../types';
-import { defaultStatsConfig } from '../types';
+import { defaultStatsConfig, defaultScoreboardConfig } from '../types';
 
 const STORAGE_KEYS = {
   TEAMS: 'scorebug_teams',
@@ -58,6 +58,7 @@ export function saveSettings(settings: AppSettings): void {
 const defaultSettings: AppSettings = {
   currentTheme: 'default',
   statsConfig: defaultStatsConfig,
+  scoreboardConfig: defaultScoreboardConfig,
   customThemes: [],
 };
 

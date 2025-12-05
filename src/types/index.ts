@@ -82,14 +82,22 @@ export interface Theme {
   textSecondary: string;
   headerFont: string;
   bodyFont: string;
+  numberFont: string;
   borderRadius: string;
   scoreboardStyle: 'modern' | 'classic' | 'minimal';
+}
+
+// Scoreboard display configuration
+export interface ScoreboardConfig {
+  showTimer: boolean;
+  showQuarter: boolean;
 }
 
 // App settings
 export interface AppSettings {
   currentTheme: string;
   statsConfig: StatsConfig;
+  scoreboardConfig: ScoreboardConfig;
   customThemes: Theme[];
 }
 
@@ -103,6 +111,12 @@ export const defaultStatsConfig: StatsConfig = {
   fouls: true,
   turnovers: false,
   threePointers: false,
+};
+
+// Default scoreboard configuration
+export const defaultScoreboardConfig: ScoreboardConfig = {
+  showTimer: true,
+  showQuarter: true,
 };
 
 // Stat display names

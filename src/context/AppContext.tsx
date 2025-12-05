@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import type { Team, Game, AppSettings, Theme, StatsConfig, PlayerGameStats } from '../types';
-import { defaultStatsConfig } from '../types';
+import type { Team, Game, AppSettings, Theme, StatsConfig, PlayerGameStats, ScoreboardConfig } from '../types';
+import { defaultStatsConfig, defaultScoreboardConfig } from '../types';
 import { saveTeams, loadTeams, saveGames, loadGames, saveSettings, loadSettings, saveCurrentGame, loadCurrentGame } from '../utils/storage';
 import { getThemeById, presetThemes } from '../themes/presets';
 import { generateTestData } from '../data/testData';
@@ -26,6 +26,7 @@ interface AppContextType {
   // Settings
   settings: AppSettings;
   updateStatsConfig: (config: Partial<StatsConfig>) => void;
+  updateScoreboardConfig: (config: Partial<ScoreboardConfig>) => void;
   setCurrentTheme: (themeId: string) => void;
   addCustomTheme: (theme: Omit<Theme, 'id'>) => Theme;
   updateCustomTheme: (id: string, updates: Partial<Theme>) => void;
@@ -46,6 +47,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<AppSettings>({
     currentTheme: 'default',
     statsConfig: defaultStatsConfig,
+    scoreboardConfig: defaultScoreboardConfig,
     customThemes: [],
   });
 
@@ -66,7 +68,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setGames(loadGames());
       setCurrentGame(loadCurrentGame());
     }
-    setSettings(loadSettings());
+    
+    // Load settings and merge with defaults to handle new config fields
+    const loadedSettings = loadSettings();
+    
+    // Ensure custom themes have numberFont (migration for existing data)
+    const patchedCustomThemes = (loadedSettings.customThemes || []).map(theme => ({
+      ...theme,
+      numberFont: theme.numberFont || theme.headerFont || 'Teko',
+    }));
+
+    setSettings({
+      ...loadedSettings,
+      scoreboardConfig: {
+        ...defaultScoreboardConfig,
+        ...(loadedSettings.scoreboardConfig || {}),
+      },
+      customThemes: patchedCustomThemes,
+    });
   }, []);
 
   // Reset all data
@@ -80,6 +99,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSettings({
       currentTheme: 'default',
       statsConfig: defaultStatsConfig,
+      scoreboardConfig: defaultScoreboardConfig,
       customThemes: [],
     });
 
@@ -90,6 +110,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     saveSettings({
       currentTheme: 'default',
       statsConfig: defaultStatsConfig,
+      scoreboardConfig: defaultScoreboardConfig,
       customThemes: [],
     });
   };
@@ -233,6 +254,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     saveSettings(updated);
   };
 
+  const updateScoreboardConfig = (config: Partial<ScoreboardConfig>) => {
+    const updated = { ...settings, scoreboardConfig: { ...settings.scoreboardConfig, ...config } };
+    setSettings(updated);
+    saveSettings(updated);
+  };
+
   const setCurrentTheme = (themeId: string) => {
     const updated = { ...settings, currentTheme: themeId };
     setSettings(updated);
@@ -288,6 +315,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         clearCurrentGame,
         settings,
         updateStatsConfig,
+        updateScoreboardConfig,
         setCurrentTheme,
         addCustomTheme,
         updateCustomTheme,

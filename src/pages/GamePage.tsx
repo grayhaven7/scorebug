@@ -244,7 +244,7 @@ export function GamePage() {
                   className="text-2xl md:text-3xl font-black"
                   style={{
                     color: homeTeam.secondaryColor,
-                    fontFamily: currentTheme.headerFont,
+                    fontFamily: currentTheme.numberFont,
                   }}
                 >
                   {homeScore}
@@ -273,48 +273,54 @@ export function GamePage() {
             </div>
 
             {/* Center - Quarter & Time */}
-            <div className="text-center flex flex-col items-center">
-              <div className="flex items-center gap-1 md:gap-2 mb-1">
-                <button
-                  onClick={() => handleQuarterChange(-1)}
-                  className="w-6 h-6 md:w-8 md:h-8 rounded-full transition-all hover:scale-110 flex items-center justify-center"
-                  style={{
-                    backgroundColor: currentTheme.accentColor + '20',
-                    color: currentTheme.accentColor,
-                  }}
-                  disabled={quarter <= 1}
-                >
-                  <span className="text-xs md:text-sm">◀</span>
-                </button>
-                <span
-                  className="text-lg md:text-2xl font-black px-2 md:px-4"
-                  style={{ fontFamily: currentTheme.headerFont }}
-                >
-                  Q{quarter}
-                </span>
-                <button
-                  onClick={() => handleQuarterChange(1)}
-                  className="w-6 h-6 md:w-8 md:h-8 rounded-full transition-all hover:scale-110 flex items-center justify-center"
-                  style={{
-                    backgroundColor: currentTheme.accentColor + '20',
-                    color: currentTheme.accentColor,
-                  }}
-                  disabled={quarter >= 4}
-                >
-                  <span className="text-xs md:text-sm">▶</span>
-                </button>
+            {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) && (
+              <div className="text-center flex flex-col items-center">
+                {settings.scoreboardConfig.showQuarter && (
+                  <div className="flex items-center gap-1 md:gap-2 mb-1">
+                    <button
+                      onClick={() => handleQuarterChange(-1)}
+                      className="w-6 h-6 md:w-8 md:h-8 rounded-full transition-all hover:scale-110 flex items-center justify-center"
+                      style={{
+                        backgroundColor: currentTheme.accentColor + '20',
+                        color: currentTheme.accentColor,
+                      }}
+                      disabled={quarter <= 1}
+                    >
+                      <span className="text-xs md:text-sm">◀</span>
+                    </button>
+                    <span
+                      className="text-lg md:text-2xl font-black px-2 md:px-4"
+                      style={{ fontFamily: currentTheme.numberFont }}
+                    >
+                      Q{quarter}
+                    </span>
+                    <button
+                      onClick={() => handleQuarterChange(1)}
+                      className="w-6 h-6 md:w-8 md:h-8 rounded-full transition-all hover:scale-110 flex items-center justify-center"
+                      style={{
+                        backgroundColor: currentTheme.accentColor + '20',
+                        color: currentTheme.accentColor,
+                      }}
+                      disabled={quarter >= 4}
+                    >
+                      <span className="text-xs md:text-sm">▶</span>
+                    </button>
+                  </div>
+                )}
+                {settings.scoreboardConfig.showTimer && (
+                  <input
+                    type="text"
+                    value={timeRemaining}
+                    onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
+                    className="w-16 md:w-24 text-center bg-transparent border-b-2 text-sm md:text-lg font-mono focus:outline-none"
+                    style={{
+                      borderColor: currentTheme.accentColor,
+                      color: currentTheme.textColor,
+                    }}
+                  />
+                )}
               </div>
-              <input
-                type="text"
-                value={timeRemaining}
-                onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                className="w-16 md:w-24 text-center bg-transparent border-b-2 text-sm md:text-lg font-mono focus:outline-none"
-                style={{
-                  borderColor: currentTheme.accentColor,
-                  color: currentTheme.textColor,
-                }}
-              />
-            </div>
+            )}
 
             {/* Away Team Score */}
             <div className="flex items-center gap-2 md:gap-4">
@@ -346,7 +352,7 @@ export function GamePage() {
                   className="text-2xl md:text-3xl font-black"
                   style={{
                     color: awayTeam.secondaryColor,
-                    fontFamily: currentTheme.headerFont,
+                    fontFamily: currentTheme.numberFont,
                   }}
                 >
                   {awayScore}

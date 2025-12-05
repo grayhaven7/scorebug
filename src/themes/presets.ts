@@ -11,6 +11,7 @@ export const espnTheme: Theme = {
   textSecondary: '#888888',
   headerFont: 'Oswald',
   bodyFont: 'Source Sans 3',
+  numberFont: 'Saira Condensed',
   borderRadius: '4px',
   scoreboardStyle: 'modern',
 };
@@ -26,6 +27,7 @@ export const tntTheme: Theme = {
   textSecondary: '#6688aa',
   headerFont: 'Oswald',
   bodyFont: 'Source Sans 3',
+  numberFont: 'Barlow Condensed',
   borderRadius: '2px',
   scoreboardStyle: 'classic',
 };
@@ -41,6 +43,7 @@ export const defaultTheme: Theme = {
   textSecondary: '#8888aa',
   headerFont: 'Oswald',
   bodyFont: 'Source Sans 3',
+  numberFont: 'Teko',
   borderRadius: '8px',
   scoreboardStyle: 'modern',
 };
