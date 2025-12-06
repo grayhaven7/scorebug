@@ -107,6 +107,8 @@ export function generateTestData() {
       teamName: 'Lakers',
       primaryColor: '#552583',
       secondaryColor: '#FDB927',
+      record: '45-20',
+      standing: '1st in West',
       players: createStats(lakersPlayers, 30),
     },
     awayTeam: {
@@ -114,10 +116,13 @@ export function generateTestData() {
       teamName: 'Warriors',
       primaryColor: '#1D428A',
       secondaryColor: '#FFC72C',
+      record: '38-27',
+      standing: '6th in West',
       players: createStats(warriorsPlayers, 35), // Warriors win
     },
     quarter: 4,
     timeRemaining: '0:00',
+    targetScore: null,
     status: 'finished',
     createdAt: Date.now() - 86400000 * 2, // 2 days ago
     updatedAt: Date.now() - 86400000 * 2,
@@ -130,6 +135,8 @@ export function generateTestData() {
       teamName: 'Bulls (96)',
       primaryColor: '#CE1141',
       secondaryColor: '#000000',
+      record: '72-10',
+      standing: 'Champions',
       players: createStats(bullsPlayers, 40), // Bulls win big
     },
     awayTeam: {
@@ -137,10 +144,13 @@ export function generateTestData() {
       teamName: 'Celtics',
       primaryColor: '#007A33',
       secondaryColor: '#BA9653',
+      record: '64-18',
+      standing: 'Finals',
       players: createStats(celticsPlayers, 20),
     },
     quarter: 4,
     timeRemaining: '0:00',
+    targetScore: null,
     status: 'finished',
     createdAt: Date.now() - 86400000, // 1 day ago
     updatedAt: Date.now() - 86400000,
@@ -155,6 +165,8 @@ export function generateTestData() {
       teamName: 'Celtics',
       primaryColor: '#007A33',
       secondaryColor: '#BA9653',
+      record: '11-3',
+      standing: '1st in East',
       players: createStats(celticsPlayers, 25),
     },
     awayTeam: {
@@ -162,10 +174,13 @@ export function generateTestData() {
       teamName: 'Lakers',
       primaryColor: '#552583',
       secondaryColor: '#FDB927',
+      record: '9-5',
+      standing: '3rd in West',
       players: createStats(lakersPlayers, 24),
     },
     quarter: 3,
     timeRemaining: '4:20',
+    targetScore: null,
     status: 'live',
     createdAt: Date.now(),
     updatedAt: Date.now(),

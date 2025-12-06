@@ -76,6 +76,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const patchedCustomThemes = (loadedSettings.customThemes || []).map(theme => ({
       ...theme,
       numberFont: theme.numberFont || theme.headerFont || 'Teko',
+      layout: theme.layout || 'standard',
+      baseScale: theme.baseScale || 1,
     }));
 
     setSettings({
@@ -176,6 +178,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         teamName: homeTeam.name,
         primaryColor: homeTeam.primaryColor,
         secondaryColor: homeTeam.secondaryColor,
+        record: '',
+        standing: '',
         players: createPlayerStats(homeTeam.players),
       },
       awayTeam: {
@@ -183,10 +187,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         teamName: awayTeam.name,
         primaryColor: awayTeam.primaryColor,
         secondaryColor: awayTeam.secondaryColor,
+        record: '',
+        standing: '',
         players: createPlayerStats(awayTeam.players),
       },
       quarter: 1,
       timeRemaining: '12:00',
+      targetScore: null,
       status: 'live',
       createdAt: Date.now(),
       updatedAt: Date.now(),

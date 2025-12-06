@@ -429,6 +429,41 @@ export function ThemesPage() {
                     <option value="16px">Extra Large (16px)</option>
                   </select>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.textSecondary }}>
+                    Layout
+                  </label>
+                  <select
+                    value={formData.layout || 'standard'}
+                    onChange={e => setFormData({ ...formData, layout: e.target.value as 'standard' | 'split' })}
+                    className="w-full px-4 py-3 rounded-lg border focus:outline-none cursor-pointer"
+                    style={{
+                      backgroundColor: currentTheme.backgroundColor,
+                      borderColor: currentTheme.textSecondary + '40',
+                      color: currentTheme.textColor,
+                    }}
+                  >
+                    <option value="standard">Standard (Top Score)</option>
+                    <option value="split">Split (Center Score)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.textSecondary }}>
+                    Font Scaling ({formData.baseScale || 1}x)
+                  </label>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="1.5"
+                    step="0.1"
+                    value={formData.baseScale || 1}
+                    onChange={e => setFormData({ ...formData, baseScale: parseFloat(e.target.value) })}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    style={{
+                      accentColor: currentTheme.accentColor,
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Font Selection */}

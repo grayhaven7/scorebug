@@ -14,6 +14,8 @@ export const espnTheme: Theme = {
   numberFont: 'Saira Condensed',
   borderRadius: '4px',
   scoreboardStyle: 'modern',
+  layout: 'standard',
+  baseScale: 1,
 };
 
 export const tntTheme: Theme = {
@@ -30,6 +32,8 @@ export const tntTheme: Theme = {
   numberFont: 'Barlow Condensed',
   borderRadius: '2px',
   scoreboardStyle: 'classic',
+  layout: 'standard',
+  baseScale: 1,
 };
 
 export const defaultTheme: Theme = {
@@ -46,6 +50,8 @@ export const defaultTheme: Theme = {
   numberFont: 'Teko',
   borderRadius: '8px',
   scoreboardStyle: 'modern',
+  layout: 'standard',
+  baseScale: 1,
 };
 
 export const presetThemes: Theme[] = [defaultTheme, espnTheme, tntTheme];

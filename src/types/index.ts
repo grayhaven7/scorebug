@@ -37,6 +37,8 @@ export interface TeamGameStats {
   teamName: string;
   primaryColor: string;
   secondaryColor: string;
+  record: string;
+  standing: string;
   players: PlayerGameStats[];
 }
 
@@ -47,6 +49,7 @@ export interface Game {
   awayTeam: TeamGameStats;
   quarter: number;
   timeRemaining: string;
+  targetScore: number | null;
   status: 'setup' | 'live' | 'finished';
   createdAt: number;
   updatedAt: number;
@@ -85,6 +88,8 @@ export interface Theme {
   numberFont: string;
   borderRadius: string;
   scoreboardStyle: 'modern' | 'classic' | 'minimal';
+  layout: 'standard' | 'split';
+  baseScale: number;
 }
 
 // Scoreboard display configuration
