@@ -35,25 +35,40 @@ export function TargetScoreBar({
       </div>
 
       {/* Bar Container */}
-      <div 
-        className="flex-1 h-4 relative rounded-full overflow-hidden flex flex-row"
-        style={{ backgroundColor: theme.secondaryBackground }}
-      >
-        {/* Left Half (Home) */}
-        <div className="flex-1 h-full relative border-r" style={{ borderColor: theme.backgroundColor }}>
-          {/* Fill growing from left to right */}
-          <div 
-            className="absolute top-0 left-0 h-full transition-all duration-500 ease-out"
-            style={{ 
-              width: `${homePercent}%`,
-              backgroundColor: homeColor 
-            }}
-          />
+      <div className="flex-1 relative flex items-center">
+        {/* Background Bar */}
+        <div 
+          className="absolute inset-x-0 h-4 rounded-full overflow-hidden flex flex-row"
+          style={{ backgroundColor: theme.secondaryBackground }}
+        >
+          {/* Left Half (Home) */}
+          <div className="flex-1 h-full relative border-r" style={{ borderColor: theme.backgroundColor }}>
+            {/* Fill growing from left to right */}
+            <div 
+              className="absolute top-0 left-0 h-full transition-all duration-500 ease-out"
+              style={{ 
+                width: `${homePercent}%`,
+                backgroundColor: homeColor 
+              }}
+            />
+          </div>
+
+          {/* Right Half (Away) */}
+          <div className="flex-1 h-full relative border-l" style={{ borderColor: theme.backgroundColor }}>
+            {/* Fill growing from right to left */}
+            <div 
+              className="absolute top-0 right-0 h-full transition-all duration-500 ease-out"
+              style={{ 
+                width: `${awayPercent}%`,
+                backgroundColor: awayColor 
+              }}
+            />
+          </div>
         </div>
 
         {/* Center Target Marker */}
         <div 
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs shadow-lg"
+          className="absolute left-1/2 transform -translate-x-1/2 z-10 w-12 h-12 rounded-full border-4 flex items-center justify-center font-bold text-sm shadow-xl transition-all hover:scale-110"
           style={{ 
             backgroundColor: theme.backgroundColor,
             borderColor: theme.secondaryBackground,
@@ -62,18 +77,6 @@ export function TargetScoreBar({
           }}
         >
           {targetScore}
-        </div>
-
-        {/* Right Half (Away) */}
-        <div className="flex-1 h-full relative border-l" style={{ borderColor: theme.backgroundColor }}>
-          {/* Fill growing from right to left */}
-          <div 
-            className="absolute top-0 right-0 h-full transition-all duration-500 ease-out"
-            style={{ 
-              width: `${awayPercent}%`,
-              backgroundColor: awayColor 
-            }}
-          />
         </div>
       </div>
 
