@@ -137,7 +137,7 @@ export function GamePage() {
       >
         <div className="flex items-center gap-3 mb-2">
           <span
-            className="text-lg font-bold tracking-wide"
+            className="text-lg font-bold tracking-wide truncate"
             style={{ fontFamily: currentTheme.headerFont }}
           >
             {team.teamName}
@@ -174,13 +174,13 @@ export function GamePage() {
           <thead>
             <tr style={{ backgroundColor: currentTheme.backgroundColor }}>
               <th
-                className="px-3 py-2 text-left text-xs font-medium"
+                className="px-2 md:px-3 py-2 text-left text-xs font-medium"
                 style={{ color: currentTheme.textSecondary }}
               >
                 #
               </th>
               <th
-                className="px-3 py-2 text-left text-xs font-medium"
+                className="px-2 md:px-3 py-2 text-left text-xs font-medium"
                 style={{ color: currentTheme.textSecondary }}
               >
                 PLAYER
@@ -189,7 +189,7 @@ export function GamePage() {
                 <th
                   key={stat}
                   colSpan={stat === 'points' ? 2 : 1}
-                  className="px-3 py-2 text-center text-xs font-medium"
+                  className="px-2 md:px-3 py-2 text-center text-xs font-medium"
                   style={{ color: currentTheme.textSecondary }}
                 >
                   {statLabels[stat]}
@@ -210,9 +210,9 @@ export function GamePage() {
                       : currentTheme.backgroundColor + '40',
                 }}
               >
-                <td className="px-3 py-2">
+                <td className="px-2 md:px-3 py-2">
                   <span
-                    className="inline-block w-8 h-6 rounded text-center text-xs font-bold leading-6"
+                    className="inline-block w-6 md:w-8 h-6 rounded text-center text-xs font-bold leading-6"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -221,16 +221,16 @@ export function GamePage() {
                     {player.jerseyNumber}
                   </span>
                 </td>
-                <td className="px-3 py-2 font-medium text-sm">{player.playerName}</td>
+                <td className="px-2 md:px-3 py-2 font-medium text-sm">{player.playerName}</td>
                 {enabledStats.map(stat => {
                   const cellId = `${teamType}-${player.playerId}-${stat}`;
                   const value = player[stat as keyof PlayerGameStats];
                   return (
                     <>
-                      <td key={stat} className="px-2 py-2 text-center">
+                      <td key={stat} className="px-1 md:px-2 py-2 text-center">
                         <button
                           onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
-                          className={`w-10 h-8 rounded font-bold text-sm transition-all hover:scale-110 cursor-pointer ${
+                          className={`w-8 md:w-10 h-8 rounded font-bold text-sm transition-all hover:scale-110 cursor-pointer ${
                             animatingCell === cellId ? 'stat-pop' : ''
                           }`}
                           style={{
@@ -244,13 +244,13 @@ export function GamePage() {
                         </button>
                       </td>
                       {stat === 'points' && (
-                        <td className="px-1 py-2 text-center w-24">
+                        <td className="px-1 py-2 text-center w-20 md:w-24">
                           <div className="flex gap-1 justify-center">
                             {[1, 2, 3].map(pts => (
                               <button
                                 key={pts}
                                 onClick={() => updatePlayerStat(teamType, player.playerId, 'points', pts)}
-                                className="w-6 h-8 rounded text-xs font-bold transition-all hover:scale-110 hover:brightness-110"
+                                className="w-5 md:w-6 h-8 rounded text-xs font-bold transition-all hover:scale-110 hover:brightness-110"
                                 style={{
                                   backgroundColor: team.primaryColor,
                                   color: team.secondaryColor,
@@ -327,9 +327,9 @@ export function GamePage() {
               {homeScore}
             </span>
           </div>
-          <div className="hidden sm:block">
+          <div className="hidden sm:block max-w-[150px] md:max-w-xs overflow-hidden">
             <p
-              className="text-sm md:text-lg font-bold"
+              className="text-sm md:text-lg font-bold truncate"
               style={{ fontFamily: currentTheme.headerFont }}
             >
               {homeTeam.teamName}
@@ -349,9 +349,9 @@ export function GamePage() {
           </div>
         </div>
 
-        {/* Center - Quarter & Time */}
+          {/* Center - Quarter & Time */}
         {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) && (
-          <div className="text-center flex flex-col items-center mx-4">
+          <div className="text-center flex flex-col items-center mx-2 md:mx-4 shrink-0">
             {settings.scoreboardConfig.showQuarter && (
               <div className="flex items-center gap-1 md:gap-2 mb-1">
                 <button
@@ -366,7 +366,7 @@ export function GamePage() {
                   <span className="text-xs md:text-sm">◀</span>
                 </button>
                 <span
-                  className="text-lg md:text-2xl font-black px-2 md:px-4"
+                  className="text-lg md:text-2xl font-black px-2 md:px-4 min-w-[3ch]"
                   style={{ fontFamily: currentTheme.numberFont }}
                 >
                   Q{quarter}
@@ -397,7 +397,7 @@ export function GamePage() {
               />
             )}
             {currentGame.targetScore && (
-              <div className="text-xs font-bold mt-1" style={{ color: currentTheme.accentColor }}>
+              <div className="text-[10px] md:text-xs font-bold mt-1 whitespace-nowrap" style={{ color: currentTheme.accentColor }}>
                 TARGET: {currentGame.targetScore}
               </div>
             )}
@@ -406,9 +406,9 @@ export function GamePage() {
 
         {/* Away Team Score */}
         <div className="flex items-center gap-2 md:gap-4">
-          <div className="hidden sm:block text-right">
+          <div className="hidden sm:block text-right max-w-[150px] md:max-w-xs overflow-hidden">
             <p
-              className="text-sm md:text-lg font-bold"
+              className="text-sm md:text-lg font-bold truncate"
               style={{ fontFamily: currentTheme.headerFont }}
             >
               {awayTeam.teamName}
@@ -453,10 +453,10 @@ export function GamePage() {
 
   const renderActionBar = () => (
     <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4 p-4">
-      <div className="flex w-full sm:w-auto justify-between sm:justify-start gap-4">
+      <div className="flex w-full sm:w-auto justify-between sm:justify-start gap-2 sm:gap-4">
         <button
           onClick={() => setShowExitConfirm(true)}
-          className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none"
+          className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none whitespace-nowrap"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -468,7 +468,7 @@ export function GamePage() {
         </button>
         <button
           onClick={() => setShowTargetModal(true)}
-          className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none"
+          className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none whitespace-nowrap"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -480,7 +480,7 @@ export function GamePage() {
         </button>
         <button
           onClick={toggleFullscreen}
-          className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none"
+          className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none whitespace-nowrap"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -488,7 +488,7 @@ export function GamePage() {
             borderRadius: currentTheme.borderRadius,
           }}
         >
-          {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+          {isFullscreen ? 'Exit Full' : 'Fullscreen'}
         </button>
       </div>
       
@@ -526,11 +526,11 @@ export function GamePage() {
           <div className="flex-none">
             {renderActionBar()}
           </div>
-          <div className="flex-1 grid grid-cols-[1fr_auto_1fr] gap-4 overflow-hidden px-4 pb-4">
-            <div className="overflow-y-auto pr-2">
+          <div className="flex-1 flex flex-col lg:grid lg:grid-cols-[1fr_auto_1fr] gap-4 overflow-hidden px-4 pb-4">
+            <div className="flex-1 overflow-y-auto pr-0 lg:pr-2 order-2 lg:order-1">
               {renderTeamStats(homeTeam, 'home', true)}
             </div>
-            <div className="flex flex-col items-center min-w-[300px] h-full gap-4">
+            <div className="flex-none flex flex-col items-center w-full lg:w-auto lg:min-w-[300px] h-auto lg:h-full gap-4 order-1 lg:order-2">
               <div 
                 className="w-full rounded-xl p-4 shadow-xl shrink-0"
                 style={{ backgroundColor: currentTheme.secondaryBackground }}
@@ -551,7 +551,7 @@ export function GamePage() {
                 )}
               </div>
             </div>
-            <div className="overflow-y-auto pl-2">
+            <div className="flex-1 overflow-y-auto pl-0 lg:pl-2 order-3">
               {renderTeamStats(awayTeam, 'away', false)}
             </div>
           </div>
