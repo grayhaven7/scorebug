@@ -69,6 +69,7 @@ export function SettingsPage() {
             { id: 'showTimer', label: 'Game Timer', desc: 'Show time remaining' },
             { id: 'showQuarter', label: 'Quarter/Period', desc: 'Show current period' },
             { id: 'showTargetBar', label: 'Target Score Bar', desc: 'Show vertical progress bar' },
+            { id: 'showQuickPoints', label: 'Quick Points', desc: 'Show +1, +2, +3 buttons' },
           ].map(item => (
             <button
               key={item.id}

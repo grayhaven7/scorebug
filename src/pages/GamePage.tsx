@@ -16,6 +16,7 @@ export function GamePage() {
     clearCurrentGame,
     currentTheme,
     settings,
+    updateScoreboardConfig,
   } = useApp();
 
   const [animatingCell, setAnimatingCell] = useState<string | null>(null);
@@ -188,7 +189,7 @@ export function GamePage() {
               {enabledStats.map(stat => (
                 <th
                   key={stat}
-                  colSpan={stat === 'points' ? 2 : 1}
+                  colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1}
                   className="px-2 md:px-3 py-2 text-center text-xs font-medium"
                   style={{ color: currentTheme.textSecondary }}
                 >
@@ -243,7 +244,7 @@ export function GamePage() {
                           {typeof value === 'number' ? value : 0}
                         </button>
                       </td>
-                      {stat === 'points' && (
+                      {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
                         <td className="px-1 py-2 text-center w-20 md:w-24">
                           <div className="flex gap-1 justify-center">
                             {[1, 2, 3].map(pts => (
@@ -282,7 +283,7 @@ export function GamePage() {
                 TOTAL
               </td>
               {enabledStats.map(stat => (
-                <td key={stat} colSpan={stat === 'points' ? 2 : 1} className="px-2 py-2 text-center">
+                <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-2 py-2 text-center">
                   <span
                     className="inline-block w-10 h-8 leading-8 rounded font-bold text-sm"
                     style={{
@@ -303,12 +304,32 @@ export function GamePage() {
   );
 
   const renderScoreboard = () => (
-    <div className="max-w-7xl mx-auto px-4">
-      <div className="flex items-center justify-between py-2 md:py-4">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4">
+      <div className="flex items-center justify-between py-2 sm:py-4 md:py-8">
         {/* Home Team Score */}
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-end">
+          <div className="hidden sm:block text-right max-w-[80px] sm:max-w-[150px] md:max-w-xs overflow-hidden">
+            <p
+              className="text-sm sm:text-lg md:text-3xl font-bold truncate tracking-tight text-right"
+              style={{ fontFamily: currentTheme.headerFont }}
+            >
+              {homeTeam.teamName}
+            </p>
+            <p className="text-[10px] sm:text-xs md:text-base font-semibold tracking-wider opacity-80 text-right" style={{ color: currentTheme.textSecondary }}>
+              HOME
+            </p>
+          </div>
+          {/* Mobile Team Name (condensed) */}
+          <div className="sm:hidden">
+            <p
+              className="text-sm font-bold text-right"
+              style={{ fontFamily: currentTheme.headerFont }}
+            >
+              {homeTeam.teamName.slice(0, 3).toUpperCase()}
+            </p>
+          </div>
           <div
-            className="w-12 h-12 md:w-16 md:h-16 rounded-lg flex flex-col items-center justify-center relative overflow-hidden"
+            className="w-16 h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
             style={{ backgroundColor: homeTeam.primaryColor }}
           >
             {currentGame.targetScore && (
@@ -318,7 +339,7 @@ export function GamePage() {
               />
             )}
             <span
-              className="text-2xl md:text-3xl font-black relative z-10"
+              className="text-3xl sm:text-4xl md:text-7xl font-black relative z-10"
               style={{
                 color: homeTeam.secondaryColor,
                 fontFamily: currentTheme.numberFont,
@@ -327,60 +348,38 @@ export function GamePage() {
               {homeScore}
             </span>
           </div>
-          <div className="hidden sm:block max-w-[150px] md:max-w-xs overflow-hidden">
-            <p
-              className="text-sm md:text-lg font-bold truncate"
-              style={{ fontFamily: currentTheme.headerFont }}
-            >
-              {homeTeam.teamName}
-            </p>
-            <p className="text-[10px] md:text-xs" style={{ color: currentTheme.textSecondary }}>
-              HOME
-            </p>
-          </div>
-          {/* Mobile Team Name (condensed) */}
-          <div className="sm:hidden">
-            <p
-              className="text-sm font-bold"
-              style={{ fontFamily: currentTheme.headerFont }}
-            >
-              {homeTeam.teamName.slice(0, 3).toUpperCase()}
-            </p>
-          </div>
         </div>
 
           {/* Center - Quarter & Time */}
         {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) && (
-          <div className="text-center flex flex-col items-center mx-2 md:mx-4 shrink-0">
+          <div className="text-center flex flex-col items-center mx-2 sm:mx-4 md:mx-8 shrink-0">
             {settings.scoreboardConfig.showQuarter && (
-              <div className="flex items-center gap-1 md:gap-2 mb-1">
+              <div className="flex items-center gap-1 sm:gap-2 md:gap-4 mb-1 sm:mb-2">
                 <button
                   onClick={() => handleQuarterChange(-1)}
-                  className="w-6 h-6 md:w-8 md:h-8 rounded-full transition-all hover:scale-110 flex items-center justify-center"
+                  className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10"
                   style={{
-                    backgroundColor: currentTheme.accentColor + '20',
                     color: currentTheme.accentColor,
                   }}
                   disabled={quarter <= 1}
                 >
-                  <span className="text-xs md:text-sm">◀</span>
+                  <span className="text-xs sm:text-sm md:text-lg">◀</span>
                 </button>
                 <span
-                  className="text-lg md:text-2xl font-black px-2 md:px-4 min-w-[3ch]"
+                  className="text-lg sm:text-2xl md:text-4xl font-black px-1 sm:px-2 md:px-4 min-w-[2.5ch] sm:min-w-[3ch]"
                   style={{ fontFamily: currentTheme.numberFont }}
                 >
                   Q{quarter}
                 </span>
                 <button
                   onClick={() => handleQuarterChange(1)}
-                  className="w-6 h-6 md:w-8 md:h-8 rounded-full transition-all hover:scale-110 flex items-center justify-center"
+                  className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10"
                   style={{
-                    backgroundColor: currentTheme.accentColor + '20',
                     color: currentTheme.accentColor,
                   }}
                   disabled={quarter >= 4}
                 >
-                  <span className="text-xs md:text-sm">▶</span>
+                  <span className="text-xs sm:text-sm md:text-lg">▶</span>
                 </button>
               </div>
             )}
@@ -389,7 +388,7 @@ export function GamePage() {
                 type="text"
                 value={timeRemaining}
                 onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                className="w-16 md:w-24 text-center bg-transparent border-b-2 text-sm md:text-lg font-mono focus:outline-none"
+                className="w-16 sm:w-24 md:w-32 text-center bg-transparent border-b-2 text-lg sm:text-xl md:text-3xl font-mono focus:outline-none font-bold"
                 style={{
                   borderColor: currentTheme.accentColor,
                   color: currentTheme.textColor,
@@ -397,7 +396,7 @@ export function GamePage() {
               />
             )}
             {currentGame.targetScore && (
-              <div className="text-[10px] md:text-xs font-bold mt-1 whitespace-nowrap" style={{ color: currentTheme.accentColor }}>
+              <div className="text-[10px] sm:text-xs md:text-sm font-bold mt-1 sm:mt-2 whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
                 TARGET: {currentGame.targetScore}
               </div>
             )}
@@ -405,29 +404,9 @@ export function GamePage() {
         )}
 
         {/* Away Team Score */}
-        <div className="flex items-center gap-2 md:gap-4">
-          <div className="hidden sm:block text-right max-w-[150px] md:max-w-xs overflow-hidden">
-            <p
-              className="text-sm md:text-lg font-bold truncate"
-              style={{ fontFamily: currentTheme.headerFont }}
-            >
-              {awayTeam.teamName}
-            </p>
-            <p className="text-[10px] md:text-xs" style={{ color: currentTheme.textSecondary }}>
-              AWAY
-            </p>
-          </div>
-          {/* Mobile Team Name (condensed) */}
-          <div className="sm:hidden text-right">
-            <p
-              className="text-sm font-bold"
-              style={{ fontFamily: currentTheme.headerFont }}
-            >
-              {awayTeam.teamName.slice(0, 3).toUpperCase()}
-            </p>
-          </div>
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-start">
           <div
-            className="w-12 h-12 md:w-16 md:h-16 rounded-lg flex flex-col items-center justify-center relative overflow-hidden"
+            className="w-16 h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
             style={{ backgroundColor: awayTeam.primaryColor }}
           >
             {currentGame.targetScore && (
@@ -437,7 +416,7 @@ export function GamePage() {
               />
             )}
             <span
-              className="text-2xl md:text-3xl font-black relative z-10"
+              className="text-3xl sm:text-4xl md:text-7xl font-black relative z-10"
               style={{
                 color: awayTeam.secondaryColor,
                 fontFamily: currentTheme.numberFont,
@@ -445,6 +424,26 @@ export function GamePage() {
             >
               {awayScore}
             </span>
+          </div>
+          <div className="hidden sm:block text-left max-w-[80px] sm:max-w-[150px] md:max-w-xs overflow-hidden">
+            <p
+              className="text-sm sm:text-lg md:text-3xl font-bold truncate tracking-tight text-left"
+              style={{ fontFamily: currentTheme.headerFont }}
+            >
+              {awayTeam.teamName}
+            </p>
+            <p className="text-[10px] sm:text-xs md:text-base font-semibold tracking-wider opacity-80 text-left" style={{ color: currentTheme.textSecondary }}>
+              AWAY
+            </p>
+          </div>
+          {/* Mobile Team Name (condensed) */}
+          <div className="sm:hidden text-left">
+            <p
+              className="text-sm font-bold text-left"
+              style={{ fontFamily: currentTheme.headerFont }}
+            >
+              {awayTeam.teamName.slice(0, 3).toUpperCase()}
+            </p>
           </div>
         </div>
       </div>
@@ -477,6 +476,18 @@ export function GamePage() {
           }}
         >
           🎯 Target
+        </button>
+        <button
+          onClick={() => updateScoreboardConfig({ showQuickPoints: !settings.scoreboardConfig.showQuickPoints })}
+          className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none whitespace-nowrap"
+          style={{
+            backgroundColor: currentTheme.backgroundColor,
+            border: `1px solid ${currentTheme.textSecondary}40`,
+            color: currentTheme.textSecondary,
+            borderRadius: currentTheme.borderRadius,
+          }}
+        >
+          {settings.scoreboardConfig.showQuickPoints ? 'Hide +Pts' : 'Show +Pts'}
         </button>
         <button
           onClick={toggleFullscreen}
@@ -560,32 +571,31 @@ export function GamePage() {
         // Standard Layout
         <>
           <div
-            className="sticky top-0 z-40"
+            className="sticky top-0 z-40 shadow-sm"
             style={{ backgroundColor: currentTheme.secondaryBackground }}
           >
             {renderScoreboard()}
-          </div>
 
-          {/* Target Score Bar */}
-          {showTargetBar && currentGame.targetScore && (
-            <div 
-              className="sticky z-30 flex justify-center w-full py-1 border-b shadow-sm"
-              style={{ 
-                top: 80, // Approximate height of scoreboard
-                backgroundColor: currentTheme.secondaryBackground,
-                borderColor: currentTheme.backgroundColor 
-              }}
-            >
-              <TargetScoreBar
-                homeScore={homeScore}
-                awayScore={awayScore}
-                targetScore={currentGame.targetScore}
-                homeColor={homeTeam.primaryColor}
-                awayColor={awayTeam.primaryColor}
-                theme={currentTheme}
-              />
-            </div>
-          )}
+            {/* Target Score Bar */}
+            {showTargetBar && currentGame.targetScore && (
+              <div 
+                className="flex justify-center w-full py-1 border-b"
+                style={{ 
+                  backgroundColor: currentTheme.secondaryBackground,
+                  borderColor: currentTheme.backgroundColor 
+                }}
+              >
+                <TargetScoreBar
+                  homeScore={homeScore}
+                  awayScore={awayScore}
+                  targetScore={currentGame.targetScore}
+                  homeColor={homeTeam.primaryColor}
+                  awayColor={awayTeam.primaryColor}
+                  theme={currentTheme}
+                />
+              </div>
+            )}
+          </div>
 
           <div className="max-w-7xl mx-auto px-4 py-6 w-full">
             {renderActionBar()}
