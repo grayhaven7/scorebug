@@ -122,7 +122,7 @@ export function generateTestData() {
     },
     quarter: 4,
     timeRemaining: '0:00',
-    targetScore: null,
+    targetScore: 120,
     status: 'finished',
     createdAt: Date.now() - 86400000 * 2, // 2 days ago
     updatedAt: Date.now() - 86400000 * 2,
@@ -150,7 +150,7 @@ export function generateTestData() {
     },
     quarter: 4,
     timeRemaining: '0:00',
-    targetScore: null,
+    targetScore: 110,
     status: 'finished',
     createdAt: Date.now() - 86400000, // 1 day ago
     updatedAt: Date.now() - 86400000,
@@ -180,7 +180,7 @@ export function generateTestData() {
     },
     quarter: 3,
     timeRemaining: '4:20',
-    targetScore: null,
+    targetScore: 100,
     status: 'live',
     createdAt: Date.now(),
     updatedAt: Date.now(),

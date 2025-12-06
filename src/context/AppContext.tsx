@@ -85,6 +85,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       scoreboardConfig: {
         ...defaultScoreboardConfig,
         ...(loadedSettings.scoreboardConfig || {}),
+        showTargetBar: loadedSettings.scoreboardConfig?.showTargetBar ?? defaultScoreboardConfig.showTargetBar,
       },
       customThemes: patchedCustomThemes,
     });
@@ -193,7 +194,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       },
       quarter: 1,
       timeRemaining: '12:00',
-      targetScore: null,
+      targetScore: 21,
       status: 'live',
       createdAt: Date.now(),
       updatedAt: Date.now(),

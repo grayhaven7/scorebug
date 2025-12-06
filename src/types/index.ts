@@ -96,6 +96,7 @@ export interface Theme {
 export interface ScoreboardConfig {
   showTimer: boolean;
   showQuarter: boolean;
+  showTargetBar: boolean;
 }
 
 // App settings
@@ -122,6 +123,7 @@ export const defaultStatsConfig: StatsConfig = {
 export const defaultScoreboardConfig: ScoreboardConfig = {
   showTimer: true,
   showQuarter: true,
+  showTargetBar: true,
 };
 
 // Stat display names

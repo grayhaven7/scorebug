@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { TargetScoreBar } from '../components/TargetScoreBar';
 import type { PlayerGameStats, StatType } from '../types';
 import { statLabels } from '../types';
 
@@ -48,6 +49,8 @@ export function GamePage() {
   const enabledStats = Object.entries(settings.statsConfig)
     .filter(([, enabled]) => enabled)
     .map(([stat]) => stat as StatType);
+
+  const showTargetBar = !!(currentGame.targetScore && settings.scoreboardConfig.showTargetBar);
 
   // Handle stat click
   const handleStatClick = (
@@ -527,12 +530,25 @@ export function GamePage() {
             <div className="overflow-y-auto pr-2">
               {renderTeamStats(homeTeam, 'home', true)}
             </div>
-            <div className="flex items-center justify-center min-w-[300px]">
+            <div className="flex flex-col items-center min-w-[300px] h-full gap-4">
               <div 
-                className="w-full rounded-xl p-4 shadow-xl"
+                className="w-full rounded-xl p-4 shadow-xl shrink-0"
                 style={{ backgroundColor: currentTheme.secondaryBackground }}
               >
                 {renderScoreboard()}
+                
+                {showTargetBar && currentGame.targetScore && (
+                  <div className="flex justify-center w-full mt-2 pt-2 border-t" style={{ borderColor: currentTheme.backgroundColor }}>
+                    <TargetScoreBar
+                      homeScore={homeScore}
+                      awayScore={awayScore}
+                      targetScore={currentGame.targetScore}
+                      homeColor={homeTeam.primaryColor}
+                      awayColor={awayTeam.primaryColor}
+                      theme={currentTheme}
+                    />
+                  </div>
+                )}
               </div>
             </div>
             <div className="overflow-y-auto pl-2">
@@ -549,6 +565,27 @@ export function GamePage() {
           >
             {renderScoreboard()}
           </div>
+
+          {/* Target Score Bar */}
+          {showTargetBar && currentGame.targetScore && (
+            <div 
+              className="sticky z-30 flex justify-center w-full py-1 border-b shadow-sm"
+              style={{ 
+                top: 80, // Approximate height of scoreboard
+                backgroundColor: currentTheme.secondaryBackground,
+                borderColor: currentTheme.backgroundColor 
+              }}
+            >
+              <TargetScoreBar
+                homeScore={homeScore}
+                awayScore={awayScore}
+                targetScore={currentGame.targetScore}
+                homeColor={homeTeam.primaryColor}
+                awayColor={awayTeam.primaryColor}
+                theme={currentTheme}
+              />
+            </div>
+          )}
 
           <div className="max-w-7xl mx-auto px-4 py-6 w-full">
             {renderActionBar()}
