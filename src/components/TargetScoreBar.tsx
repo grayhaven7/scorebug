@@ -22,10 +22,10 @@ export function TargetScoreBar({
   const awayPercent = Math.min(100, (awayScore / targetScore) * 100);
 
   return (
-    <div className="flex flex-row items-center w-full max-w-2xl px-2 md:px-4 py-3 md:py-4">
+    <div className="flex flex-row items-center w-full max-w-2xl px-2 md:px-4 py-2 md:py-4">
       {/* Home Score (Left) */}
       <div 
-        className="text-xl md:text-2xl font-bold mr-3 md:mr-4"
+        className="text-lg md:text-2xl font-bold mr-2 md:mr-4"
         style={{ 
           fontFamily: theme.numberFont,
           color: theme.textColor 
@@ -38,7 +38,7 @@ export function TargetScoreBar({
       <div className="flex-1 relative flex items-center justify-center">
         {/* Background Bar */}
         <div 
-          className="absolute inset-x-0 h-4 md:h-6 rounded-full overflow-hidden flex flex-row shadow-inner"
+          className="absolute inset-x-0 h-3 md:h-6 rounded-full overflow-hidden flex flex-row shadow-inner"
           style={{ backgroundColor: theme.backgroundColor }}
         >
           {/* Left Half (Home) */}
@@ -68,7 +68,7 @@ export function TargetScoreBar({
 
         {/* Center Target Marker */}
         <div 
-          className="relative z-10 w-12 h-12 md:w-16 md:h-16 rounded-full border-[6px] flex items-center justify-center font-bold text-lg md:text-xl shadow-2xl transition-all hover:scale-110"
+          className="relative z-10 w-10 h-10 md:w-16 md:h-16 rounded-full border-[4px] md:border-[6px] flex items-center justify-center font-bold text-sm md:text-xl shadow-2xl transition-all hover:scale-110"
           style={{ 
             backgroundColor: theme.secondaryBackground,
             borderColor: theme.backgroundColor,
@@ -82,7 +82,7 @@ export function TargetScoreBar({
 
       {/* Away Score (Right) */}
       <div 
-        className="text-xl md:text-2xl font-bold ml-3 md:ml-4"
+        className="text-lg md:text-2xl font-bold ml-2 md:ml-4"
         style={{ 
           fontFamily: theme.numberFont,
           color: theme.textColor 

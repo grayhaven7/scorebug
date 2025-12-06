@@ -130,20 +130,20 @@ export function GamePage() {
     >
       {/* Team Header */}
       <div
-        className="px-4 py-3"
+        className="px-2 md:px-4 py-2 md:py-3"
         style={{
           backgroundColor: team.primaryColor,
           color: team.secondaryColor,
         }}
       >
-        <div className="flex items-center gap-3 mb-2">
+        <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
           <span
-            className="text-lg font-bold tracking-wide truncate"
+            className="text-base md:text-lg font-bold tracking-wide truncate"
             style={{ fontFamily: currentTheme.headerFont }}
           >
             {team.teamName}
           </span>
-          <span className="ml-auto text-sm opacity-80">
+          <span className="ml-auto text-xs md:text-sm opacity-80">
             {isHome ? 'HOME' : 'AWAY'}
           </span>
         </div>
@@ -152,18 +152,18 @@ export function GamePage() {
         <div className="flex gap-2">
           <input
             type="text"
-            placeholder="Record (e.g. 11-3)"
+            placeholder="Record"
             value={team.record || ''}
             onChange={(e) => updateTeamDetails(teamType, 'record', e.target.value)}
-            className="w-24 px-2 py-1 text-xs rounded bg-white/20 border-transparent focus:bg-white/30 focus:outline-none placeholder-white/50"
+            className="w-20 md:w-24 px-1.5 md:px-2 py-1 text-[10px] md:text-xs rounded bg-white/20 border-transparent focus:bg-white/30 focus:outline-none placeholder-white/50"
             style={{ color: team.secondaryColor }}
           />
           <input
             type="text"
-            placeholder="Standing (e.g. 1st)"
+            placeholder="Standing"
             value={team.standing || ''}
             onChange={(e) => updateTeamDetails(teamType, 'standing', e.target.value)}
-            className="flex-1 px-2 py-1 text-xs rounded bg-white/20 border-transparent focus:bg-white/30 focus:outline-none placeholder-white/50"
+            className="flex-1 px-1.5 md:px-2 py-1 text-[10px] md:text-xs rounded bg-white/20 border-transparent focus:bg-white/30 focus:outline-none placeholder-white/50"
             style={{ color: team.secondaryColor }}
           />
         </div>
@@ -175,13 +175,13 @@ export function GamePage() {
           <thead>
             <tr style={{ backgroundColor: currentTheme.backgroundColor }}>
               <th
-                className="px-2 md:px-3 py-2 text-left text-xs font-medium"
+                className="px-1 md:px-3 py-1 md:py-2 text-left text-[10px] md:text-xs font-medium w-8"
                 style={{ color: currentTheme.textSecondary }}
               >
                 #
               </th>
               <th
-                className="px-2 md:px-3 py-2 text-left text-xs font-medium"
+                className="px-1 md:px-3 py-1 md:py-2 text-left text-[10px] md:text-xs font-medium min-w-[80px]"
                 style={{ color: currentTheme.textSecondary }}
               >
                 PLAYER
@@ -190,10 +190,10 @@ export function GamePage() {
                 <th
                   key={stat}
                   colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1}
-                  className="px-2 md:px-3 py-2 text-center text-xs font-medium"
+                  className="px-1 md:px-3 py-1 md:py-2 text-center text-[10px] md:text-xs font-medium"
                   style={{ color: currentTheme.textSecondary }}
                 >
-                  {statLabels[stat]}
+                  {statLabels[stat].slice(0, 3)}
                 </th>
               ))}
             </tr>
@@ -211,9 +211,9 @@ export function GamePage() {
                       : currentTheme.backgroundColor + '40',
                 }}
               >
-                <td className="px-2 md:px-3 py-2">
+                <td className="px-1 md:px-3 py-1 md:py-2">
                   <span
-                    className="inline-block w-6 md:w-8 h-6 rounded text-center text-xs font-bold leading-6"
+                    className="inline-block w-5 h-5 md:w-8 md:h-6 rounded text-center text-[10px] md:text-xs font-bold leading-5 md:leading-6"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -222,16 +222,16 @@ export function GamePage() {
                     {player.jerseyNumber}
                   </span>
                 </td>
-                <td className="px-2 md:px-3 py-2 font-medium text-sm">{player.playerName}</td>
+                <td className="px-1 md:px-3 py-1 md:py-2 font-medium text-xs md:text-sm truncate max-w-[100px]">{player.playerName}</td>
                 {enabledStats.map(stat => {
                   const cellId = `${teamType}-${player.playerId}-${stat}`;
                   const value = player[stat as keyof PlayerGameStats];
                   return (
                     <>
-                      <td key={stat} className="px-1 md:px-2 py-2 text-center">
+                      <td key={stat} className="px-0.5 md:px-2 py-1 md:py-2 text-center">
                         <button
                           onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
-                          className={`w-8 md:w-10 h-8 rounded font-bold text-sm transition-all hover:scale-110 cursor-pointer ${
+                          className={`w-7 h-7 md:w-10 md:h-8 rounded font-bold text-xs md:text-sm transition-all hover:scale-110 cursor-pointer ${
                             animatingCell === cellId ? 'stat-pop' : ''
                           }`}
                           style={{
@@ -245,13 +245,13 @@ export function GamePage() {
                         </button>
                       </td>
                       {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
-                        <td className="px-1 py-2 text-center w-20 md:w-24">
-                          <div className="flex gap-1 justify-center">
+                        <td className="px-0.5 py-1 md:py-2 text-center min-w-[60px] md:w-24">
+                          <div className="flex gap-0.5 md:gap-1 justify-center">
                             {[1, 2, 3].map(pts => (
                               <button
                                 key={pts}
                                 onClick={() => updatePlayerStat(teamType, player.playerId, 'points', pts)}
-                                className="w-5 md:w-6 h-8 rounded text-xs font-bold transition-all hover:scale-110 hover:brightness-110"
+                                className="w-4 h-6 md:w-6 md:h-8 rounded text-[10px] md:text-xs font-bold transition-all hover:scale-110 hover:brightness-110 flex items-center justify-center"
                                 style={{
                                   backgroundColor: team.primaryColor,
                                   color: team.secondaryColor,
@@ -278,14 +278,14 @@ export function GamePage() {
                 backgroundColor: team.primaryColor + '20',
               }}
             >
-              <td className="px-3 py-2"></td>
-              <td className="px-3 py-2" style={{ fontFamily: currentTheme.headerFont }}>
+              <td className="px-1 md:px-3 py-1 md:py-2"></td>
+              <td className="px-1 md:px-3 py-1 md:py-2 text-xs md:text-sm" style={{ fontFamily: currentTheme.headerFont }}>
                 TOTAL
               </td>
               {enabledStats.map(stat => (
-                <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-2 py-2 text-center">
+                <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-0.5 md:px-2 py-1 md:py-2 text-center">
                   <span
-                    className="inline-block w-10 h-8 leading-8 rounded font-bold text-sm"
+                    className="inline-block px-1.5 md:px-0 md:w-10 h-6 md:h-8 leading-6 md:leading-8 rounded font-bold text-xs md:text-sm"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -304,10 +304,10 @@ export function GamePage() {
   );
 
   const renderScoreboard = () => (
-    <div className="max-w-7xl mx-auto px-2 sm:px-4">
-      <div className="flex items-center justify-between py-2 sm:py-4 md:py-8">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4 w-full">
+      <div className="flex items-center justify-between py-2 sm:py-4 md:py-8 gap-2">
         {/* Home Team Score */}
-        <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-end">
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-end min-w-0">
           <div className="hidden sm:block text-right max-w-[80px] sm:max-w-[150px] md:max-w-xs overflow-hidden">
             <p
               className="text-sm sm:text-lg md:text-3xl font-bold truncate tracking-tight text-right"
@@ -320,16 +320,16 @@ export function GamePage() {
             </p>
           </div>
           {/* Mobile Team Name (condensed) */}
-          <div className="sm:hidden">
+          <div className="sm:hidden min-w-0 shrink">
             <p
-              className="text-sm font-bold text-right"
+              className="text-xs xs:text-sm font-bold text-right truncate"
               style={{ fontFamily: currentTheme.headerFont }}
             >
               {homeTeam.teamName.slice(0, 3).toUpperCase()}
             </p>
           </div>
           <div
-            className="w-16 h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+            className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
             style={{ backgroundColor: homeTeam.primaryColor }}
           >
             {currentGame.targetScore && (
@@ -339,7 +339,7 @@ export function GamePage() {
               />
             )}
             <span
-              className="text-3xl sm:text-4xl md:text-7xl font-black relative z-10"
+              className="text-2xl xs:text-3xl sm:text-4xl md:text-7xl font-black relative z-10 leading-none"
               style={{
                 color: homeTeam.secondaryColor,
                 fontFamily: currentTheme.numberFont,
@@ -352,34 +352,34 @@ export function GamePage() {
 
           {/* Center - Quarter & Time */}
         {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) && (
-          <div className="text-center flex flex-col items-center mx-2 sm:mx-4 md:mx-8 shrink-0">
+          <div className="text-center flex flex-col items-center mx-1 xs:mx-2 sm:mx-4 md:mx-8 shrink-0">
             {settings.scoreboardConfig.showQuarter && (
-              <div className="flex items-center gap-1 sm:gap-2 md:gap-4 mb-1 sm:mb-2">
+              <div className="flex items-center gap-1 sm:gap-2 md:gap-4 mb-0.5 sm:mb-2">
                 <button
                   onClick={() => handleQuarterChange(-1)}
-                  className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10"
+                  className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10"
                   style={{
                     color: currentTheme.accentColor,
                   }}
                   disabled={quarter <= 1}
                 >
-                  <span className="text-xs sm:text-sm md:text-lg">◀</span>
+                  <span className="text-[10px] xs:text-xs sm:text-sm md:text-lg">◀</span>
                 </button>
                 <span
-                  className="text-lg sm:text-2xl md:text-4xl font-black px-1 sm:px-2 md:px-4 min-w-[2.5ch] sm:min-w-[3ch]"
+                  className="text-base xs:text-lg sm:text-2xl md:text-4xl font-black px-0.5 sm:px-2 md:px-4 min-w-[2ch] sm:min-w-[3ch]"
                   style={{ fontFamily: currentTheme.numberFont }}
                 >
                   Q{quarter}
                 </span>
                 <button
                   onClick={() => handleQuarterChange(1)}
-                  className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10"
+                  className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10"
                   style={{
                     color: currentTheme.accentColor,
                   }}
                   disabled={quarter >= 4}
                 >
-                  <span className="text-xs sm:text-sm md:text-lg">▶</span>
+                  <span className="text-[10px] xs:text-xs sm:text-sm md:text-lg">▶</span>
                 </button>
               </div>
             )}
@@ -388,7 +388,7 @@ export function GamePage() {
                 type="text"
                 value={timeRemaining}
                 onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                className="w-16 sm:w-24 md:w-32 text-center bg-transparent border-b-2 text-lg sm:text-xl md:text-3xl font-mono focus:outline-none font-bold"
+                className="w-14 xs:w-16 sm:w-24 md:w-32 text-center bg-transparent border-b-2 text-base xs:text-lg sm:text-xl md:text-3xl font-mono focus:outline-none font-bold"
                 style={{
                   borderColor: currentTheme.accentColor,
                   color: currentTheme.textColor,
@@ -396,7 +396,7 @@ export function GamePage() {
               />
             )}
             {currentGame.targetScore && (
-              <div className="text-[10px] sm:text-xs md:text-sm font-bold mt-1 sm:mt-2 whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
+              <div className="text-[8px] xs:text-[10px] sm:text-xs md:text-sm font-bold mt-0.5 sm:mt-2 whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
                 TARGET: {currentGame.targetScore}
               </div>
             )}
@@ -404,9 +404,9 @@ export function GamePage() {
         )}
 
         {/* Away Team Score */}
-        <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-start">
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-start min-w-0">
           <div
-            className="w-16 h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+            className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
             style={{ backgroundColor: awayTeam.primaryColor }}
           >
             {currentGame.targetScore && (
@@ -416,7 +416,7 @@ export function GamePage() {
               />
             )}
             <span
-              className="text-3xl sm:text-4xl md:text-7xl font-black relative z-10"
+              className="text-2xl xs:text-3xl sm:text-4xl md:text-7xl font-black relative z-10 leading-none"
               style={{
                 color: awayTeam.secondaryColor,
                 fontFamily: currentTheme.numberFont,
@@ -437,9 +437,9 @@ export function GamePage() {
             </p>
           </div>
           {/* Mobile Team Name (condensed) */}
-          <div className="sm:hidden text-left">
+          <div className="sm:hidden min-w-0 shrink">
             <p
-              className="text-sm font-bold text-left"
+              className="text-xs xs:text-sm font-bold text-left truncate"
               style={{ fontFamily: currentTheme.headerFont }}
             >
               {awayTeam.teamName.slice(0, 3).toUpperCase()}
@@ -451,11 +451,11 @@ export function GamePage() {
   );
 
   const renderActionBar = () => (
-    <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4 p-4">
-      <div className="flex w-full sm:w-auto justify-between sm:justify-start gap-2 sm:gap-4">
+    <div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-6 gap-3 md:gap-4 p-2 md:p-4">
+      <div className="flex flex-wrap w-full md:w-auto justify-center md:justify-start gap-2">
         <button
           onClick={() => setShowExitConfirm(true)}
-          className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none whitespace-nowrap"
+          className="px-3 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all hover:opacity-80 flex-1 md:flex-none whitespace-nowrap min-w-[70px]"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -467,7 +467,7 @@ export function GamePage() {
         </button>
         <button
           onClick={() => setShowTargetModal(true)}
-          className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none whitespace-nowrap"
+          className="px-3 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all hover:opacity-80 flex-1 md:flex-none whitespace-nowrap min-w-[70px]"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -479,7 +479,7 @@ export function GamePage() {
         </button>
         <button
           onClick={() => updateScoreboardConfig({ showQuickPoints: !settings.scoreboardConfig.showQuickPoints })}
-          className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none whitespace-nowrap"
+          className="px-3 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all hover:opacity-80 flex-1 md:flex-none whitespace-nowrap min-w-[70px]"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -491,7 +491,7 @@ export function GamePage() {
         </button>
         <button
           onClick={toggleFullscreen}
-          className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 flex-1 sm:flex-none whitespace-nowrap"
+          className="px-3 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all hover:opacity-80 flex-1 md:flex-none whitespace-nowrap min-w-[70px]"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -499,17 +499,17 @@ export function GamePage() {
             borderRadius: currentTheme.borderRadius,
           }}
         >
-          {isFullscreen ? 'Exit Full' : 'Fullscreen'}
+          {isFullscreen ? 'Exit Full' : 'Full'}
         </button>
       </div>
       
-      <p className="text-xs text-center order-last sm:order-none" style={{ color: currentTheme.textSecondary }}>
-        Click stat to add • Shift+Click to subtract
+      <p className="hidden xs:block text-[10px] md:text-xs text-center order-last md:order-none opacity-60" style={{ color: currentTheme.textSecondary }}>
+        Click to add • Shift+Click to subtract
       </p>
 
       <button
         onClick={() => setShowEndConfirm(true)}
-        className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105"
+        className="w-full md:w-auto px-4 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105"
         style={{
           backgroundColor: currentTheme.accentColor,
           color: '#fff',
