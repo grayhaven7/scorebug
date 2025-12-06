@@ -45,6 +45,7 @@ export interface TeamGameStats {
 // Game definition
 export interface Game {
   id: string;
+  title?: string;
   homeTeam: TeamGameStats;
   awayTeam: TeamGameStats;
   quarter: number;

@@ -174,6 +174,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     const newGame: Game = {
       id: uuidv4(),
+      title: '',
       homeTeam: {
         teamId: homeTeam.id,
         teamName: homeTeam.name,

@@ -102,6 +102,7 @@ export function generateTestData() {
   // 2. Create History Games (Finished)
   const historyGame1: Game = {
     id: uuidv4(),
+    title: 'Classic Matchup',
     homeTeam: {
       teamId: lakersId,
       teamName: 'Lakers',
@@ -130,6 +131,7 @@ export function generateTestData() {
 
   const historyGame2: Game = {
     id: uuidv4(),
+    title: 'The 72-10 Season',
     homeTeam: {
       teamId: bullsId,
       teamName: 'Bulls (96)',
@@ -160,6 +162,7 @@ export function generateTestData() {
   // High scoring close game
   const activeGame: Game = {
     id: uuidv4(),
+    title: 'Game 4 of Season (2024)',
     homeTeam: {
       teamId: celticsId,
       teamName: 'Celtics',
