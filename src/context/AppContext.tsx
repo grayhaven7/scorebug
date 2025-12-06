@@ -22,6 +22,7 @@ interface AppContextType {
   updatePlayerStat: (teamType: 'home' | 'away', playerId: string, stat: keyof PlayerGameStats, delta: number) => void;
   endGame: () => void;
   clearCurrentGame: () => void;
+  deleteGame: (id: string) => void;
   
   // Settings
   settings: AppSettings;
@@ -86,6 +87,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...defaultScoreboardConfig,
         ...(loadedSettings.scoreboardConfig || {}),
         showTargetBar: loadedSettings.scoreboardConfig?.showTargetBar ?? defaultScoreboardConfig.showTargetBar,
+        showRecord: loadedSettings.scoreboardConfig?.showRecord ?? defaultScoreboardConfig.showRecord,
+        showStanding: loadedSettings.scoreboardConfig?.showStanding ?? defaultScoreboardConfig.showStanding,
+        showTitle: loadedSettings.scoreboardConfig?.showTitle ?? defaultScoreboardConfig.showTitle,
       },
       customThemes: patchedCustomThemes,
     });
@@ -256,6 +260,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     saveCurrentGame(null);
   };
 
+  const deleteGame = (id: string) => {
+    const updatedGames = games.filter(game => game.id !== id);
+    setGames(updatedGames);
+    saveGames(updatedGames);
+  };
+
   // Settings operations
   const updateStatsConfig = (config: Partial<StatsConfig>) => {
     const updated = { ...settings, statsConfig: { ...settings.statsConfig, ...config } };
@@ -322,6 +332,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updatePlayerStat,
         endGame,
         clearCurrentGame,
+        deleteGame,
         settings,
         updateStatsConfig,
         updateScoreboardConfig,

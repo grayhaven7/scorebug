@@ -194,7 +194,7 @@ export function GamePage() {
               >
                 <td className="px-1 md:px-3 py-1 md:py-2">
                   <span
-                    className="inline-block w-5 h-5 md:w-8 md:h-6 rounded text-center text-[10px] md:text-xs font-bold leading-5 md:leading-6"
+                    className="inline-block w-5 h-5 md:w-8 md:h-6 rounded text-center text-xs md:text-sm font-bold leading-5 md:leading-6"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -203,7 +203,7 @@ export function GamePage() {
                     {player.jerseyNumber}
                   </span>
                 </td>
-                <td className="px-1 md:px-3 py-1 md:py-2 font-medium text-xs md:text-sm truncate max-w-[100px]">{player.playerName}</td>
+                <td className="px-1 md:px-3 py-1 md:py-2 font-medium text-sm md:text-base truncate max-w-[100px]">{player.playerName}</td>
                 {enabledStats.map(stat => {
                   const cellId = `${teamType}-${player.playerId}-${stat}`;
                   const value = player[stat as keyof PlayerGameStats];
@@ -212,7 +212,7 @@ export function GamePage() {
                       <td key={stat} className="px-0.5 md:px-2 py-1 md:py-2 text-center">
                         <button
                           onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
-                          className={`w-7 h-7 md:w-10 md:h-8 rounded font-bold text-xs md:text-sm transition-all hover:scale-110 cursor-pointer ${
+                          className={`w-7 h-7 md:w-10 md:h-8 rounded font-bold text-sm md:text-base transition-all hover:scale-110 cursor-pointer ${
                             animatingCell === cellId ? 'stat-pop' : ''
                           }`}
                           style={{
@@ -260,13 +260,13 @@ export function GamePage() {
               }}
             >
               <td className="px-1 md:px-3 py-1 md:py-2"></td>
-              <td className="px-1 md:px-3 py-1 md:py-2 text-xs md:text-sm" style={{ fontFamily: currentTheme.headerFont }}>
+              <td className="px-1 md:px-3 py-1 md:py-2 text-sm md:text-base" style={{ fontFamily: currentTheme.headerFont }}>
                 TOTAL
               </td>
               {enabledStats.map(stat => (
                 <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-0.5 md:px-2 py-1 md:py-2 text-center">
                   <span
-                    className="inline-block px-1.5 md:px-0 md:w-10 h-6 md:h-8 leading-6 md:leading-8 rounded font-bold text-xs md:text-sm"
+                    className="inline-block px-1.5 md:px-0 md:w-10 h-6 md:h-8 leading-6 md:leading-8 rounded font-bold text-sm md:text-base"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -287,22 +287,24 @@ export function GamePage() {
   const renderScoreboard = () => (
     <div className="max-w-7xl mx-auto px-2 sm:px-4 w-full">
       {/* Game Title Input */}
-      <div className="flex justify-center pt-2">
-        <input
-          type="text"
-          placeholder="Game Title (e.g. Game 4 of Season)"
-          value={currentGame.title || ''}
-          onChange={(e) => updateCurrentGame({ title: e.target.value })}
-          className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-4 py-1 w-full max-w-md transition-colors focus:outline-none placeholder-white/20"
-          style={{
-            color: currentTheme.textSecondary,
-            fontFamily: currentTheme.headerFont,
-            fontSize: '0.9rem',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-          }}
-        />
-      </div>
+      {settings.scoreboardConfig.showTitle && (
+        <div className="flex justify-center pt-2">
+          <input
+            type="text"
+            placeholder="Game Title (e.g. Game 4 of Season)"
+            value={currentGame.title || ''}
+            onChange={(e) => updateCurrentGame({ title: e.target.value })}
+            className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-4 py-1 w-full max-w-md transition-colors focus:outline-none placeholder-white/20"
+            style={{
+              color: currentTheme.textSecondary,
+              fontFamily: currentTheme.headerFont,
+              fontSize: '1.1rem',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+            }}
+          />
+        </div>
+      )}
 
       <div className="flex items-center justify-between py-2 sm:py-4 md:py-8 gap-2">
         {/* Home Team Score */}
@@ -318,32 +320,38 @@ export function GamePage() {
             <p className="text-xs md:text-base font-semibold tracking-wider opacity-80 text-right" style={{ color: currentTheme.textSecondary }}>
               HOME
             </p>
-            <div className="flex gap-1 mt-1 justify-end">
-              <input
-                type="text"
-                placeholder="Record"
-                value={homeTeam.record || ''}
-                onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                className="w-16 md:w-20 px-1 py-0.5 text-[10px] md:text-xs rounded border bg-transparent focus:outline-none text-right"
-                style={{ 
-                  borderColor: currentTheme.textSecondary + '40',
-                  color: currentTheme.textSecondary,
-                  fontFamily: currentTheme.headerFont
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Standing"
-                value={homeTeam.standing || ''}
-                onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                className="w-16 md:w-20 px-1 py-0.5 text-[10px] md:text-xs rounded border bg-transparent focus:outline-none text-right"
-                style={{ 
-                  borderColor: currentTheme.textSecondary + '40',
-                  color: currentTheme.textSecondary,
-                  fontFamily: currentTheme.headerFont
-                }}
-              />
-            </div>
+            {settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding ? (
+              <div className="flex gap-1 mt-1 justify-end">
+                {settings.scoreboardConfig.showRecord && (
+                  <input
+                    type="text"
+                    placeholder="Record"
+                    value={homeTeam.record || ''}
+                    onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
+                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-right"
+                    style={{ 
+                      borderColor: currentTheme.textSecondary + '40',
+                      color: currentTheme.textSecondary,
+                      fontFamily: currentTheme.headerFont
+                    }}
+                  />
+                )}
+                {settings.scoreboardConfig.showStanding && (
+                  <input
+                    type="text"
+                    placeholder="Standing"
+                    value={homeTeam.standing || ''}
+                    onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
+                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-right"
+                    style={{ 
+                      borderColor: currentTheme.textSecondary + '40',
+                      color: currentTheme.textSecondary,
+                      fontFamily: currentTheme.headerFont
+                    }}
+                  />
+                )}
+              </div>
+            ) : null}
           </div>
           {/* Mobile Team Name */}
           <div className="sm:hidden min-w-0 shrink flex flex-col items-end">
@@ -353,32 +361,38 @@ export function GamePage() {
             >
               {homeTeam.teamName}
             </p>
-            <div className="flex gap-1 mt-1 justify-end flex-col xs:flex-row items-end">
-              <input
-                type="text"
-                placeholder="Rec"
-                value={homeTeam.record || ''}
-                onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                className="w-14 xs:w-16 px-1 py-1 text-[10px] rounded border bg-transparent focus:outline-none text-right"
-                style={{ 
-                  borderColor: currentTheme.textSecondary + '40',
-                  color: currentTheme.textSecondary,
-                  fontFamily: currentTheme.headerFont
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Std"
-                value={homeTeam.standing || ''}
-                onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                className="w-14 xs:w-16 px-1 py-1 text-[10px] rounded border bg-transparent focus:outline-none text-right"
-                style={{ 
-                  borderColor: currentTheme.textSecondary + '40',
-                  color: currentTheme.textSecondary,
-                  fontFamily: currentTheme.headerFont
-                }}
-              />
-            </div>
+            {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
+              <div className="flex gap-1 mt-1 justify-end flex-col xs:flex-row items-end">
+                {settings.scoreboardConfig.showRecord && (
+                  <input
+                    type="text"
+                    placeholder="Rec"
+                    value={homeTeam.record || ''}
+                    onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
+                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-right"
+                    style={{ 
+                      borderColor: currentTheme.textSecondary + '40',
+                      color: currentTheme.textSecondary,
+                      fontFamily: currentTheme.headerFont
+                    }}
+                  />
+                )}
+                {settings.scoreboardConfig.showStanding && (
+                  <input
+                    type="text"
+                    placeholder="Std"
+                    value={homeTeam.standing || ''}
+                    onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
+                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-right"
+                    style={{ 
+                      borderColor: currentTheme.textSecondary + '40',
+                      color: currentTheme.textSecondary,
+                      fontFamily: currentTheme.headerFont
+                    }}
+                  />
+                )}
+              </div>
+            )}
           </div>
           <div
             className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
@@ -488,32 +502,38 @@ export function GamePage() {
             <p className="text-xs md:text-base font-semibold tracking-wider opacity-80 text-left" style={{ color: currentTheme.textSecondary }}>
               AWAY
             </p>
-            <div className="flex gap-1 mt-1 justify-start">
-              <input
-                type="text"
-                placeholder="Record"
-                value={awayTeam.record || ''}
-                onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                className="w-16 md:w-20 px-1 py-0.5 text-[10px] md:text-xs rounded border bg-transparent focus:outline-none text-left"
-                style={{ 
-                  borderColor: currentTheme.textSecondary + '40',
-                  color: currentTheme.textSecondary,
-                  fontFamily: currentTheme.headerFont
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Standing"
-                value={awayTeam.standing || ''}
-                onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                className="w-16 md:w-20 px-1 py-0.5 text-[10px] md:text-xs rounded border bg-transparent focus:outline-none text-left"
-                style={{ 
-                  borderColor: currentTheme.textSecondary + '40',
-                  color: currentTheme.textSecondary,
-                  fontFamily: currentTheme.headerFont
-                }}
-              />
-            </div>
+            {settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding ? (
+              <div className="flex gap-1 mt-1 justify-start">
+                {settings.scoreboardConfig.showRecord && (
+                  <input
+                    type="text"
+                    placeholder="Record"
+                    value={awayTeam.record || ''}
+                    onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
+                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-left"
+                    style={{ 
+                      borderColor: currentTheme.textSecondary + '40',
+                      color: currentTheme.textSecondary,
+                      fontFamily: currentTheme.headerFont
+                    }}
+                  />
+                )}
+                {settings.scoreboardConfig.showStanding && (
+                  <input
+                    type="text"
+                    placeholder="Standing"
+                    value={awayTeam.standing || ''}
+                    onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
+                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-left"
+                    style={{ 
+                      borderColor: currentTheme.textSecondary + '40',
+                      color: currentTheme.textSecondary,
+                      fontFamily: currentTheme.headerFont
+                    }}
+                  />
+                )}
+              </div>
+            ) : null}
           </div>
           {/* Mobile Team Name */}
           <div className="sm:hidden min-w-0 shrink flex flex-col items-start">
@@ -523,32 +543,38 @@ export function GamePage() {
             >
               {awayTeam.teamName}
             </p>
-            <div className="flex gap-1 mt-1 justify-start flex-col xs:flex-row items-start">
-              <input
-                type="text"
-                placeholder="Rec"
-                value={awayTeam.record || ''}
-                onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                className="w-14 xs:w-16 px-1 py-1 text-[10px] rounded border bg-transparent focus:outline-none text-left"
-                style={{ 
-                  borderColor: currentTheme.textSecondary + '40',
-                  color: currentTheme.textSecondary,
-                  fontFamily: currentTheme.headerFont
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Std"
-                value={awayTeam.standing || ''}
-                onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                className="w-14 xs:w-16 px-1 py-1 text-[10px] rounded border bg-transparent focus:outline-none text-left"
-                style={{ 
-                  borderColor: currentTheme.textSecondary + '40',
-                  color: currentTheme.textSecondary,
-                  fontFamily: currentTheme.headerFont
-                }}
-              />
-            </div>
+            {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
+              <div className="flex gap-1 mt-1 justify-start flex-col xs:flex-row items-start">
+                {settings.scoreboardConfig.showRecord && (
+                  <input
+                    type="text"
+                    placeholder="Rec"
+                    value={awayTeam.record || ''}
+                    onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
+                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-left"
+                    style={{ 
+                      borderColor: currentTheme.textSecondary + '40',
+                      color: currentTheme.textSecondary,
+                      fontFamily: currentTheme.headerFont
+                    }}
+                  />
+                )}
+                {settings.scoreboardConfig.showStanding && (
+                  <input
+                    type="text"
+                    placeholder="Std"
+                    value={awayTeam.standing || ''}
+                    onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
+                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-left"
+                    style={{ 
+                      borderColor: currentTheme.textSecondary + '40',
+                      color: currentTheme.textSecondary,
+                      fontFamily: currentTheme.headerFont
+                    }}
+                  />
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -593,6 +619,42 @@ export function GamePage() {
           }}
         >
           {settings.scoreboardConfig.showQuickPoints ? 'Hide +Pts' : 'Show +Pts'}
+        </button>
+        <button
+          onClick={() => updateScoreboardConfig({ showTitle: !settings.scoreboardConfig.showTitle })}
+          className="px-3 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all hover:opacity-80 flex-1 md:flex-none whitespace-nowrap min-w-[70px]"
+          style={{
+            backgroundColor: currentTheme.backgroundColor,
+            border: `1px solid ${currentTheme.textSecondary}40`,
+            color: currentTheme.textSecondary,
+            borderRadius: currentTheme.borderRadius,
+          }}
+        >
+          {settings.scoreboardConfig.showTitle ? 'Hide Title' : 'Show Title'}
+        </button>
+        <button
+          onClick={() => updateScoreboardConfig({ showRecord: !settings.scoreboardConfig.showRecord })}
+          className="px-3 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all hover:opacity-80 flex-1 md:flex-none whitespace-nowrap min-w-[70px]"
+          style={{
+            backgroundColor: currentTheme.backgroundColor,
+            border: `1px solid ${currentTheme.textSecondary}40`,
+            color: currentTheme.textSecondary,
+            borderRadius: currentTheme.borderRadius,
+          }}
+        >
+          {settings.scoreboardConfig.showRecord ? 'Hide Record' : 'Show Record'}
+        </button>
+        <button
+          onClick={() => updateScoreboardConfig({ showStanding: !settings.scoreboardConfig.showStanding })}
+          className="px-3 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all hover:opacity-80 flex-1 md:flex-none whitespace-nowrap min-w-[70px]"
+          style={{
+            backgroundColor: currentTheme.backgroundColor,
+            border: `1px solid ${currentTheme.textSecondary}40`,
+            color: currentTheme.textSecondary,
+            borderRadius: currentTheme.borderRadius,
+          }}
+        >
+          {settings.scoreboardConfig.showStanding ? 'Hide Standing' : 'Show Standing'}
         </button>
         <button
           onClick={toggleFullscreen}

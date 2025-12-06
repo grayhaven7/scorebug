@@ -3,7 +3,7 @@ import { statLabels } from '../types';
 import type { StatType, PlayerGameStats } from '../types';
 
 export function HistoryPage() {
-  const { games, currentTheme, settings } = useApp();
+  const { games, currentTheme, settings, deleteGame } = useApp();
 
   // Sort by most recent first
   const sortedGames = [...games].sort((a, b) => b.createdAt - a.createdAt);
@@ -120,13 +120,26 @@ export function HistoryPage() {
                     </div>
                   </div>
 
-                  <div className="text-center sm:text-right w-full sm:w-auto border-t sm:border-0 pt-2 sm:pt-0" style={{ borderColor: currentTheme.textSecondary + '20' }}>
-                    <p className="text-sm" style={{ color: currentTheme.textSecondary }}>
-                      {formatDate(game.createdAt)}
-                    </p>
-                    <p className="text-xs" style={{ color: currentTheme.textSecondary }}>
-                      Final • Q{game.quarter}
-                    </p>
+                  <div className="text-center sm:text-right w-full sm:w-auto border-t sm:border-0 pt-2 sm:pt-0 flex flex-col items-center sm:items-end gap-2" style={{ borderColor: currentTheme.textSecondary + '20' }}>
+                    <div>
+                      <p className="text-sm" style={{ color: currentTheme.textSecondary }}>
+                        {formatDate(game.createdAt)}
+                      </p>
+                      <p className="text-xs" style={{ color: currentTheme.textSecondary }}>
+                        Final • Q{game.quarter}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (confirm('Are you sure you want to delete this game?')) {
+                          deleteGame(game.id);
+                        }
+                      }}
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80 bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                      style={{ borderRadius: currentTheme.borderRadius }}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
 

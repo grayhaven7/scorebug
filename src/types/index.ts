@@ -99,6 +99,9 @@ export interface ScoreboardConfig {
   showQuarter: boolean;
   showTargetBar: boolean;
   showQuickPoints: boolean;
+  showRecord: boolean;
+  showStanding: boolean;
+  showTitle: boolean;
 }
 
 // App settings
@@ -127,6 +130,9 @@ export const defaultScoreboardConfig: ScoreboardConfig = {
   showQuarter: true,
   showTargetBar: true,
   showQuickPoints: true,
+  showRecord: true,
+  showStanding: true,
+  showTitle: true,
 };
 
 // Stat display names
