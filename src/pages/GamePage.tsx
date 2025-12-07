@@ -461,9 +461,19 @@ export function GamePage() {
           {/* Home Team Score */}
           <div
             ref={homeScoreBoxRef}
-            className="flex-1 max-w-[200px] xs:max-w-[250px] sm:max-w-[300px] md:max-w-[400px] aspect-square rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
+            className="w-[120px] xs:w-[140px] sm:w-[180px] md:w-[220px] lg:w-[260px] xl:w-[300px] aspect-square rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
             style={{ backgroundColor: homeTeam.primaryColor }}
           >
+            {/* Progress Light Overlay */}
+            {currentGame.targetScore && currentGame.targetScore > 0 && (
+              <div
+                className="absolute inset-0 pointer-events-none transition-all duration-500 ease-out"
+                style={{
+                  background: `linear-gradient(to top, rgba(255, 255, 255, 0.2) ${Math.min(100, (homeScore / currentGame.targetScore) * 100)}%, transparent ${Math.min(100, (homeScore / currentGame.targetScore) * 100)}%)`,
+                  zIndex: 5,
+                }}
+              />
+            )}
             <span
               className="font-black relative z-10 leading-none"
               style={{
@@ -532,9 +542,19 @@ export function GamePage() {
           {/* Away Team Score */}
           <div
             ref={awayScoreBoxRef}
-            className="flex-1 max-w-[200px] xs:max-w-[250px] sm:max-w-[300px] md:max-w-[400px] aspect-square rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
+            className="w-[120px] xs:w-[140px] sm:w-[180px] md:w-[220px] lg:w-[260px] xl:w-[300px] aspect-square rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
             style={{ backgroundColor: awayTeam.primaryColor }}
           >
+            {/* Progress Light Overlay */}
+            {currentGame.targetScore && currentGame.targetScore > 0 && (
+              <div
+                className="absolute inset-0 pointer-events-none transition-all duration-500 ease-out"
+                style={{
+                  background: `linear-gradient(to top, rgba(255, 255, 255, 0.2) ${Math.min(100, (awayScore / currentGame.targetScore) * 100)}%, transparent ${Math.min(100, (awayScore / currentGame.targetScore) * 100)}%)`,
+                  zIndex: 5,
+                }}
+              />
+            )}
             <span
               className="font-black relative z-10 leading-none"
               style={{
