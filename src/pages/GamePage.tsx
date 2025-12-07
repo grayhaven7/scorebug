@@ -48,7 +48,6 @@ export function GamePage() {
   const [showTargetModal, setShowTargetModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [confettiShown, setConfettiShown] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const homeScoreBoxRef = useRef<HTMLDivElement>(null);
   const awayScoreBoxRef = useRef<HTMLDivElement>(null);
   const homeFontSize = useScaledFontSize(homeScoreBoxRef);
@@ -65,16 +64,6 @@ export function GamePage() {
   useEffect(() => {
     setConfettiShown(null);
   }, [currentGame?.id]);
-
-  // Track window size for mobile detection
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    handleResize(); // Set initial value
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Confetti celebration when target is won
   useEffect(() => {
@@ -465,8 +454,8 @@ export function GamePage() {
 
   const renderScoreboard = () => (
     <div className="w-full">
-      {/* Game Title Input - Always show on mobile, conditionally on larger screens */}
-      {(settings.scoreboardConfig.showTitle || isMobile) && (
+      {/* Game Title Input */}
+      {settings.scoreboardConfig.showTitle && (
         <div className="flex justify-center pt-0.5 sm:pt-1 px-2 pb-1">
           <input
             type="text"
