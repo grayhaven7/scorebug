@@ -65,6 +65,13 @@ body {
   background: #5a5a7a;
 }
 
+/* Prevent mobile zoom on input focus */
+input,
+textarea,
+select {
+  font-size: 16px !important;
+}
+
 /* Color picker custom styling */
 input[type="color"] {
   -webkit-appearance: none;
