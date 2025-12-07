@@ -29,6 +29,7 @@ export function TargetScoreBar({
       const circleWidth = circleRef.current.offsetWidth;
       const halfBarWidth = containerWidth / 2;
       // Calculate what percentage of the half-bar reaches the circle edge
+      // This is the maximum percentage the bar should reach when score = targetScore
       const calculatedMax = ((halfBarWidth - circleWidth / 2) / halfBarWidth) * 100;
       setMaxPercent(Math.max(70, Math.min(95, calculatedMax))); // Clamp between 70-95%
     }
@@ -43,8 +44,14 @@ export function TargetScoreBar({
   }, []);
 
   // Calculate fill percentages - bar reaches circle edge exactly when score = target
-  const homePercent = Math.min(maxPercent, (homeScore / targetScore) * maxPercent);
-  const awayPercent = Math.min(maxPercent, (awayScore / targetScore) * maxPercent);
+  // Scale linearly from 0 to maxPercent as score goes from 0 to targetScore
+  // The bar should only reach maxPercent (touching the circle) when score exactly equals targetScore
+  const homePercent = targetScore > 0 
+    ? Math.min(maxPercent, (homeScore / targetScore) * maxPercent)
+    : 0;
+  const awayPercent = targetScore > 0 
+    ? Math.min(maxPercent, (awayScore / targetScore) * maxPercent)
+    : 0;
   
   // Determine winner (if any team has reached or exceeded target)
   const homeWon = homeScore >= targetScore;
