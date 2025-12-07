@@ -322,14 +322,14 @@ export function GamePage() {
               {homeTeam.teamName}
             </p>
             {settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding ? (
-              <div className="flex gap-1 mt-0.5 justify-end">
+              <div className="flex gap-1 mt-0.5 justify-end w-full">
                 {settings.scoreboardConfig.showRecord && (
                   <input
                     type="text"
                     placeholder="Record"
                     value={homeTeam.record || ''}
                     onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                    className="w-16 md:w-20 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-right font-bold"
+                    className="flex-1 min-w-0 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-right font-bold"
                     style={{ 
                       color: currentTheme.textSecondary,
                       fontFamily: currentTheme.headerFont
@@ -342,7 +342,7 @@ export function GamePage() {
                     placeholder="Standing"
                     value={homeTeam.standing || ''}
                     onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                    className="w-16 md:w-20 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-right font-bold"
+                    className="flex-1 min-w-0 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-right font-bold"
                     style={{ 
                       color: currentTheme.textSecondary,
                       fontFamily: currentTheme.headerFont
@@ -372,14 +372,14 @@ export function GamePage() {
               {awayTeam.teamName}
             </p>
             {settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding ? (
-              <div className="flex gap-1 mt-0.5 justify-start">
+              <div className="flex gap-1 mt-0.5 justify-start w-full">
                 {settings.scoreboardConfig.showRecord && (
                   <input
                     type="text"
                     placeholder="Record"
                     value={awayTeam.record || ''}
                     onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                    className="w-16 md:w-20 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-left font-bold"
+                    className="flex-1 min-w-0 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-left font-bold"
                     style={{ 
                       color: currentTheme.textSecondary,
                       fontFamily: currentTheme.headerFont
@@ -392,7 +392,7 @@ export function GamePage() {
                     placeholder="Standing"
                     value={awayTeam.standing || ''}
                     onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                    className="w-16 md:w-20 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-left font-bold"
+                    className="flex-1 min-w-0 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-left font-bold"
                     style={{ 
                       color: currentTheme.textSecondary,
                       fontFamily: currentTheme.headerFont
@@ -409,14 +409,15 @@ export function GamePage() {
           {/* Home Team Score */}
           <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-end min-w-0">
             <div
-              className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+              className="flex-1 max-w-[200px] xs:max-w-[250px] sm:max-w-[300px] md:max-w-[400px] aspect-square rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
               style={{ backgroundColor: homeTeam.primaryColor }}
             >
               <span
-                className="text-2xl xs:text-3xl sm:text-4xl md:text-7xl font-black relative z-10 leading-none"
+                className="font-black relative z-10 leading-none"
                 style={{
                   color: homeTeam.secondaryColor,
                   fontFamily: currentTheme.numberFont,
+                  fontSize: 'clamp(1.25rem, 8vw, 5.5rem)',
                 }}
               >
                 {homeScore}
@@ -480,14 +481,15 @@ export function GamePage() {
           {/* Away Team Score */}
           <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-start min-w-0">
             <div
-              className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+              className="flex-1 max-w-[200px] xs:max-w-[250px] sm:max-w-[300px] md:max-w-[400px] aspect-square rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
               style={{ backgroundColor: awayTeam.primaryColor }}
             >
               <span
-                className="text-2xl xs:text-3xl sm:text-4xl md:text-7xl font-black relative z-10 leading-none"
+                className="font-black relative z-10 leading-none"
                 style={{
                   color: awayTeam.secondaryColor,
                   fontFamily: currentTheme.numberFont,
+                  fontSize: 'clamp(1.25rem, 8vw, 5.5rem)',
                 }}
               >
                 {awayScore}
