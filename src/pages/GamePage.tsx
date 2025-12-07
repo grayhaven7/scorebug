@@ -177,18 +177,18 @@ export function GamePage() {
       </div>
 
       {/* Stats Table */}
-      <div className="overflow-x-auto -mx-2 sm:mx-0">
+      <div className="overflow-x-auto">
         <table className="w-full min-w-[500px]">
           <thead>
             <tr style={{ backgroundColor: currentTheme.backgroundColor }}>
               <th
-                className="px-1 sm:px-2 md:px-3 py-1.5 md:py-2 text-left text-[10px] sm:text-[11px] md:text-xs font-medium w-8 sm:w-10"
+                className="px-2 sm:px-2 md:px-3 py-1.5 sm:py-2 md:py-2 text-left text-[10px] sm:text-[11px] md:text-xs font-medium w-8 sm:w-10"
                 style={{ color: currentTheme.textSecondary }}
               >
                 #
               </th>
               <th
-                className="px-1 sm:px-2 md:px-3 py-1.5 md:py-2 text-left text-[10px] sm:text-[11px] md:text-xs font-medium min-w-[70px] sm:min-w-[80px]"
+                className="px-2 sm:px-2 md:px-3 py-1.5 sm:py-2 md:py-2 text-left text-[10px] sm:text-[11px] md:text-xs font-medium min-w-[70px] sm:min-w-[80px]"
                 style={{ color: currentTheme.textSecondary }}
               >
                 PLAYER
@@ -197,7 +197,7 @@ export function GamePage() {
                 <th
                   key={stat}
                   colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1}
-                  className="px-1 sm:px-2 md:px-3 py-1.5 md:py-2 text-center text-[10px] sm:text-[11px] md:text-xs font-medium"
+                  className="px-2 sm:px-2 md:px-3 py-1.5 sm:py-2 md:py-2 text-center text-[10px] sm:text-[11px] md:text-xs font-medium"
                   style={{ color: currentTheme.textSecondary }}
                 >
                   {statLabels[stat].slice(0, 3)}
@@ -218,7 +218,7 @@ export function GamePage() {
                       : currentTheme.backgroundColor + '40',
                 }}
               >
-                <td className="px-1 sm:px-2 md:px-3 py-1.5 md:py-2">
+                <td className="px-2 sm:px-2 md:px-3 py-1.5 sm:py-2 md:py-2">
                   <span
                     className="inline-block w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-6 rounded text-center text-[11px] sm:text-xs md:text-sm font-bold leading-5 sm:leading-6 md:leading-6"
                     style={{
@@ -229,13 +229,13 @@ export function GamePage() {
                     {player.jerseyNumber}
                   </span>
                 </td>
-                <td className="px-1 sm:px-2 md:px-3 py-1.5 md:py-2 font-medium text-xs sm:text-sm md:text-base truncate max-w-[80px] sm:max-w-[100px]">{player.playerName}</td>
+                <td className="px-2 sm:px-2 md:px-3 py-1.5 sm:py-2 md:py-2 font-medium text-xs sm:text-sm md:text-base truncate max-w-[80px] sm:max-w-[100px]">{player.playerName}</td>
                 {enabledStats.map(stat => {
                   const cellId = `${teamType}-${player.playerId}-${stat}`;
                   const value = player[stat as keyof PlayerGameStats];
                   return (
                     <>
-                      <td key={stat} className="px-0.5 sm:px-1 md:px-2 py-1.5 md:py-2 text-center">
+                      <td key={stat} className="px-1 sm:px-1 md:px-2 py-1.5 sm:py-2 md:py-2 text-center">
                         <button
                           onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
                           className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-8 rounded font-bold text-xs sm:text-sm md:text-base transition-all hover:scale-110 cursor-pointer ${
@@ -252,7 +252,7 @@ export function GamePage() {
                         </button>
                       </td>
                       {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
-                        <td className="px-0.5 sm:px-1 py-1.5 md:py-2 text-center min-w-[50px] sm:min-w-[60px] md:w-24">
+                        <td className="px-1 sm:px-1 md:px-2 py-1.5 sm:py-2 md:py-2 text-center min-w-[50px] sm:min-w-[60px] md:w-24">
                           <div className="flex gap-0.5 sm:gap-1 justify-center">
                             {[1, 2, 3].map(pts => (
                               <button
@@ -285,12 +285,12 @@ export function GamePage() {
                 backgroundColor: team.primaryColor + '20',
               }}
             >
-              <td className="px-1 sm:px-2 md:px-3 py-1.5 md:py-2"></td>
-              <td className="px-1 sm:px-2 md:px-3 py-1.5 md:py-2 text-xs sm:text-sm md:text-base" style={{ fontFamily: currentTheme.headerFont }}>
+              <td className="px-2 sm:px-2 md:px-3 py-1.5 sm:py-2 md:py-2"></td>
+              <td className="px-2 sm:px-2 md:px-3 py-1.5 sm:py-2 md:py-2 text-xs sm:text-sm md:text-base" style={{ fontFamily: currentTheme.headerFont }}>
                 TOTAL
               </td>
               {enabledStats.map(stat => (
-                <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-0.5 sm:px-1 md:px-2 py-1.5 md:py-2 text-center">
+                <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-1 sm:px-1 md:px-2 py-1.5 sm:py-2 md:py-2 text-center">
                   <span
                     className="inline-block px-1 sm:px-1.5 md:px-0 md:w-10 h-6 sm:h-7 md:h-8 leading-6 sm:leading-7 md:leading-8 rounded font-bold text-xs sm:text-sm md:text-base"
                     style={{
