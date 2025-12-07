@@ -285,7 +285,7 @@ export function GamePage() {
   );
 
   const renderScoreboard = () => (
-    <div className="max-w-7xl mx-auto px-2 sm:px-4 w-full">
+    <div className="max-w-7xl mx-auto px-0 sm:px-4 w-full">
       {/* Game Title Input */}
       {settings.scoreboardConfig.showTitle && (
         <div className="flex justify-center pt-2">
@@ -628,7 +628,7 @@ export function GamePage() {
             </div>
             <div className="flex-none flex flex-col items-center w-full lg:w-auto lg:min-w-[300px] h-auto lg:h-full gap-4 order-1 lg:order-2">
               <div 
-                className="w-full rounded-xl p-4 shadow-xl shrink-0"
+                className="w-full rounded-xl p-2 sm:p-4 shadow-xl shrink-0"
                 style={{ backgroundColor: currentTheme.secondaryBackground }}
               >
                 {renderScoreboard()}
