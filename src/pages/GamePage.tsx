@@ -48,6 +48,7 @@ export function GamePage() {
   const [showTargetModal, setShowTargetModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [confettiShown, setConfettiShown] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const homeScoreBoxRef = useRef<HTMLDivElement>(null);
   const awayScoreBoxRef = useRef<HTMLDivElement>(null);
   const homeFontSize = useScaledFontSize(homeScoreBoxRef);
@@ -64,6 +65,16 @@ export function GamePage() {
   useEffect(() => {
     setConfettiShown(null);
   }, [currentGame?.id]);
+
+  // Track window size for mobile detection
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize(); // Set initial value
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Confetti celebration when target is won
   useEffect(() => {
@@ -454,8 +465,8 @@ export function GamePage() {
 
   const renderScoreboard = () => (
     <div className="w-full">
-      {/* Game Title Input */}
-      {settings.scoreboardConfig.showTitle && (
+      {/* Game Title Input - Always show on mobile, conditionally on larger screens */}
+      {(settings.scoreboardConfig.showTitle || isMobile) && (
         <div className="flex justify-center pt-0.5 sm:pt-1 px-2 pb-1">
           <input
             type="text"
@@ -481,7 +492,7 @@ export function GamePage() {
             {/* Home Team Name */}
             <div className="max-w-[120px] xs:max-w-[160px] sm:max-w-[200px] md:max-w-[140px] lg:max-w-[160px] flex flex-col items-center text-center min-w-0">
               <p
-                className="text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-tight leading-tight break-words"
+                className="text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-tight leading-tight break-words"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor
@@ -501,7 +512,7 @@ export function GamePage() {
             {/* Away Team Name */}
             <div className="max-w-[120px] xs:max-w-[160px] sm:max-w-[200px] md:max-w-[140px] lg:max-w-[160px] flex flex-col items-center text-center min-w-0">
               <p
-                className="text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-tight leading-tight break-words"
+                className="text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-tight leading-tight break-words"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor
@@ -528,7 +539,7 @@ export function GamePage() {
                       placeholder="Record"
                       value={homeTeam.record || ''}
                       onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
+                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -544,7 +555,7 @@ export function GamePage() {
                       placeholder="Standing"
                       value={homeTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
+                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -570,7 +581,7 @@ export function GamePage() {
                       placeholder="Standing"
                       value={awayTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
+                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -586,7 +597,7 @@ export function GamePage() {
                       placeholder="Record"
                       value={awayTeam.record || ''}
                       onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
+                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
