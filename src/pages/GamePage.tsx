@@ -827,7 +827,7 @@ export function GamePage() {
   return (
     <div
       ref={gameContainerRef}
-      className="min-h-screen flex flex-col"
+      className={`${isFullscreen ? 'h-full overflow-y-auto' : 'min-h-screen'} flex flex-col`}
       style={{
         backgroundColor: currentTheme.backgroundColor,
         color: currentTheme.textColor,
@@ -836,11 +836,11 @@ export function GamePage() {
     >
       {currentTheme.layout === 'split' ? (
         // Split Layout
-        <div className="flex flex-col h-screen overflow-hidden">
+        <div className={`flex flex-col ${isFullscreen ? 'min-h-full' : 'h-screen overflow-hidden'}`}>
           <div className="flex-none">
             {renderActionBar()}
           </div>
-          <div className="flex-1 flex flex-col md:grid md:grid-cols-[1fr_auto_1fr] gap-3 md:gap-4 overflow-hidden px-2 sm:px-3 md:px-4 pb-2 sm:pb-3 md:pb-4">
+          <div className={`flex-1 flex flex-col md:grid md:grid-cols-[1fr_auto_1fr] gap-3 md:gap-4 ${isFullscreen ? '' : 'overflow-hidden'} px-2 sm:px-3 md:px-4 pb-2 sm:pb-3 md:pb-4`}>
             <div className="flex-1 overflow-y-auto pr-0 md:pr-2 order-2 md:order-1 min-h-0">
               {renderTeamStats(homeTeam, 'home', true)}
             </div>
