@@ -5,6 +5,28 @@ import { TargetScoreBar } from '../components/TargetScoreBar';
 import type { PlayerGameStats, StatType } from '../types';
 import { statLabels } from '../types';
 
+// Hook to calculate font size based on container width
+function useScaledFontSize(boxRef: React.RefObject<HTMLDivElement | null>) {
+  const [fontSize, setFontSize] = useState('clamp(1.25rem, 8vw, 5.5rem)');
+
+  useEffect(() => {
+    const updateFontSize = () => {
+      if (boxRef.current) {
+        const width = boxRef.current.offsetWidth;
+        // Scale font to be approximately 40% of box width for good visibility
+        const calculatedSize = width * 0.4;
+        setFontSize(`${Math.max(20, Math.min(calculatedSize, 88))}px`);
+      }
+    };
+
+    updateFontSize();
+    window.addEventListener('resize', updateFontSize);
+    return () => window.removeEventListener('resize', updateFontSize);
+  }, [boxRef]);
+
+  return fontSize;
+}
+
 export function GamePage() {
   const navigate = useNavigate();
   const gameContainerRef = useRef<HTMLDivElement>(null);
@@ -24,6 +46,10 @@ export function GamePage() {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showTargetModal, setShowTargetModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const homeScoreBoxRef = useRef<HTMLDivElement>(null);
+  const awayScoreBoxRef = useRef<HTMLDivElement>(null);
+  const homeFontSize = useScaledFontSize(homeScoreBoxRef);
+  const awayFontSize = useScaledFontSize(awayScoreBoxRef);
 
   // Redirect if no game
   useEffect(() => {
@@ -285,7 +311,7 @@ export function GamePage() {
   );
 
   const renderScoreboard = () => (
-    <div className="max-w-7xl mx-auto px-0 sm:px-4 w-full">
+    <div className="max-w-7xl mx-auto px-4 w-full">
       {/* Game Title Input */}
       {settings.scoreboardConfig.showTitle && (
         <div className="flex justify-center pt-2">
@@ -308,28 +334,56 @@ export function GamePage() {
 
       <div className="flex flex-col items-center py-2 sm:py-4 md:py-8 gap-2">
         {/* Team Names Row */}
-        <div className="flex items-center justify-between w-full gap-2 sm:gap-4 md:gap-8">
-          {/* Home Team Name */}
-          <div className="flex-1 flex flex-col items-end text-right min-w-0">
-            <p
-              className="text-xs xs:text-sm sm:text-base md:text-lg font-bold tracking-tight leading-tight"
-              style={{ 
-                fontFamily: currentTheme.headerFont,
-                color: currentTheme.textColor
-              }}
-              title={homeTeam.teamName}
-            >
-              {homeTeam.teamName}
-            </p>
-            {settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding ? (
-              <div className="flex gap-1 mt-0.5 justify-end w-full">
+        <div className="flex flex-col w-full gap-2">
+          {/* Team Names - Same Row */}
+          <div className="flex items-center justify-between w-full gap-2 sm:gap-4 md:gap-8">
+            {/* Home Team Name */}
+            <div className="flex-1 flex flex-col items-end text-right min-w-0">
+              <p
+                className="text-xs xs:text-sm sm:text-base md:text-lg font-bold tracking-tight leading-tight"
+                style={{ 
+                  fontFamily: currentTheme.headerFont,
+                  color: currentTheme.textColor
+                }}
+                title={homeTeam.teamName}
+              >
+                {homeTeam.teamName}
+              </p>
+            </div>
+            
+            {/* Center spacer - matches quarter/timer width below */}
+            {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) ? (
+              <div className="hidden sm:flex flex-col items-center mx-1 xs:mx-2 sm:mx-4 md:mx-8 shrink-0 min-w-[60px] sm:min-w-[80px] md:min-w-[120px]">
+              </div>
+            ) : null}
+
+            {/* Away Team Name */}
+            <div className="flex-1 flex flex-col items-start text-left min-w-0">
+              <p
+                className="text-xs xs:text-sm sm:text-base md:text-lg font-bold tracking-tight leading-tight"
+                style={{ 
+                  fontFamily: currentTheme.headerFont,
+                  color: currentTheme.textColor
+                }}
+                title={awayTeam.teamName}
+              >
+                {awayTeam.teamName}
+              </p>
+            </div>
+          </div>
+
+          {/* Record/Standing Row */}
+          {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
+            <div className="flex items-center justify-between w-full gap-2 sm:gap-4 md:gap-8">
+              {/* Home Team Record/Standing */}
+              <div className="flex-1 flex gap-1 justify-end items-center min-w-0">
                 {settings.scoreboardConfig.showRecord && (
                   <input
                     type="text"
                     placeholder="Record"
                     value={homeTeam.record || ''}
                     onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                    className="flex-1 min-w-0 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-right font-bold"
+                    className="w-16 md:w-20 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-right font-bold"
                     style={{ 
                       color: currentTheme.textSecondary,
                       fontFamily: currentTheme.headerFont
@@ -342,7 +396,7 @@ export function GamePage() {
                     placeholder="Standing"
                     value={homeTeam.standing || ''}
                     onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                    className="flex-1 min-w-0 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-right font-bold"
+                    className="w-16 md:w-20 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-right font-bold"
                     style={{ 
                       color: currentTheme.textSecondary,
                       fontFamily: currentTheme.headerFont
@@ -350,49 +404,35 @@ export function GamePage() {
                   />
                 )}
               </div>
-            ) : null}
-          </div>
-          
-          {/* Center spacer - matches quarter/timer width below */}
-          {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) ? (
-            <div className="hidden sm:flex flex-col items-center mx-1 xs:mx-2 sm:mx-4 md:mx-8 shrink-0 min-w-[60px] sm:min-w-[80px] md:min-w-[120px]">
-            </div>
-          ) : null}
+              
+              {/* Center spacer */}
+              {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) ? (
+                <div className="hidden sm:flex flex-col items-center mx-1 xs:mx-2 sm:mx-4 md:mx-8 shrink-0 min-w-[60px] sm:min-w-[80px] md:min-w-[120px]">
+                </div>
+              ) : null}
 
-          {/* Away Team Name */}
-          <div className="flex-1 flex flex-col items-start text-left min-w-0">
-            <p
-              className="text-xs xs:text-sm sm:text-base md:text-lg font-bold tracking-tight leading-tight"
-              style={{ 
-                fontFamily: currentTheme.headerFont,
-                color: currentTheme.textColor
-              }}
-              title={awayTeam.teamName}
-            >
-              {awayTeam.teamName}
-            </p>
-            {settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding ? (
-              <div className="flex gap-1 mt-0.5 justify-start w-full">
-                {settings.scoreboardConfig.showRecord && (
-                  <input
-                    type="text"
-                    placeholder="Record"
-                    value={awayTeam.record || ''}
-                    onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                    className="flex-1 min-w-0 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-left font-bold"
-                    style={{ 
-                      color: currentTheme.textSecondary,
-                      fontFamily: currentTheme.headerFont
-                    }}
-                  />
-                )}
+              {/* Away Team Record/Standing */}
+              <div className="flex-1 flex gap-1 justify-start items-center min-w-0">
                 {settings.scoreboardConfig.showStanding && (
                   <input
                     type="text"
                     placeholder="Standing"
                     value={awayTeam.standing || ''}
                     onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                    className="flex-1 min-w-0 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-left font-bold"
+                    className="w-16 md:w-20 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-left font-bold"
+                    style={{ 
+                      color: currentTheme.textSecondary,
+                      fontFamily: currentTheme.headerFont
+                    }}
+                  />
+                )}
+                {settings.scoreboardConfig.showRecord && (
+                  <input
+                    type="text"
+                    placeholder="Record"
+                    value={awayTeam.record || ''}
+                    onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
+                    className="w-16 md:w-20 px-1 py-0.5 text-sm md:text-base rounded border-0 bg-transparent focus:outline-none text-left font-bold"
                     style={{ 
                       color: currentTheme.textSecondary,
                       fontFamily: currentTheme.headerFont
@@ -400,101 +440,99 @@ export function GamePage() {
                   />
                 )}
               </div>
-            ) : null}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Scores Row */}
-        <div className="flex items-center justify-between w-full gap-2 sm:gap-4 md:gap-8">
+        <div className="flex items-center justify-center w-full gap-4 sm:gap-6 md:gap-8 lg:gap-12">
           {/* Home Team Score */}
-          <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-end min-w-0">
-            <div
-              className="flex-1 max-w-[200px] xs:max-w-[250px] sm:max-w-[300px] md:max-w-[400px] aspect-square rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
-              style={{ backgroundColor: homeTeam.primaryColor }}
+          <div
+            ref={homeScoreBoxRef}
+            className="flex-1 max-w-[200px] xs:max-w-[250px] sm:max-w-[300px] md:max-w-[400px] aspect-square rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
+            style={{ backgroundColor: homeTeam.primaryColor }}
+          >
+            <span
+              className="font-black relative z-10 leading-none"
+              style={{
+                color: homeTeam.secondaryColor,
+                fontFamily: currentTheme.numberFont,
+                fontSize: homeFontSize,
+              }}
             >
-              <span
-                className="font-black relative z-10 leading-none"
-                style={{
-                  color: homeTeam.secondaryColor,
-                  fontFamily: currentTheme.numberFont,
-                  fontSize: 'clamp(1.25rem, 8vw, 5.5rem)',
-                }}
-              >
-                {homeScore}
-              </span>
-            </div>
+              {homeScore}
+            </span>
           </div>
 
           {/* Center - Quarter & Time */}
           {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) && (
-            <div className="text-center flex flex-col items-center mx-1 xs:mx-2 sm:mx-4 md:mx-8 shrink-0">
-            {settings.scoreboardConfig.showQuarter && (
-              <div className="flex items-center gap-1 sm:gap-2 md:gap-4 mb-0.5 sm:mb-2">
-                <button
-                  onClick={() => handleQuarterChange(-1)}
-                  className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10"
+            <div className="text-center flex flex-col items-center mx-2 xs:mx-4 sm:mx-6 md:mx-8 shrink-0">
+              {settings.scoreboardConfig.showQuarter && (
+                <div className="flex items-center gap-1 sm:gap-2 md:gap-4 mb-0.5 sm:mb-2">
+                  <button
+                    onClick={() => handleQuarterChange(-1)}
+                    className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10"
+                    style={{
+                      color: currentTheme.accentColor,
+                    }}
+                    disabled={quarter <= 1}
+                  >
+                    <span className="text-[10px] xs:text-xs sm:text-sm md:text-lg">◀</span>
+                  </button>
+                  <span
+                    className="text-base xs:text-lg sm:text-2xl md:text-4xl font-black px-0.5 sm:px-2 md:px-4 min-w-[2ch] sm:min-w-[3ch]"
+                    style={{ fontFamily: currentTheme.numberFont }}
+                  >
+                    Q{quarter}
+                  </span>
+                  <button
+                    onClick={() => handleQuarterChange(1)}
+                    className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10"
+                    style={{
+                      color: currentTheme.accentColor,
+                    }}
+                    disabled={quarter >= 4}
+                  >
+                    <span className="text-[10px] xs:text-xs sm:text-sm md:text-lg">▶</span>
+                  </button>
+                </div>
+              )}
+              {settings.scoreboardConfig.showTimer && (
+                <input
+                  type="text"
+                  value={timeRemaining}
+                  onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
+                  className="w-14 xs:w-16 sm:w-24 md:w-32 text-center bg-transparent border-b-2 text-base xs:text-lg sm:text-xl md:text-3xl font-mono focus:outline-none font-bold"
                   style={{
-                    color: currentTheme.accentColor,
+                    borderColor: currentTheme.accentColor,
+                    color: currentTheme.textColor,
                   }}
-                  disabled={quarter <= 1}
-                >
-                  <span className="text-[10px] xs:text-xs sm:text-sm md:text-lg">◀</span>
-                </button>
-                <span
-                  className="text-base xs:text-lg sm:text-2xl md:text-4xl font-black px-0.5 sm:px-2 md:px-4 min-w-[2ch] sm:min-w-[3ch]"
-                  style={{ fontFamily: currentTheme.numberFont }}
-                >
-                  Q{quarter}
-                </span>
-                <button
-                  onClick={() => handleQuarterChange(1)}
-                  className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10"
-                  style={{
-                    color: currentTheme.accentColor,
-                  }}
-                  disabled={quarter >= 4}
-                >
-                  <span className="text-[10px] xs:text-xs sm:text-sm md:text-lg">▶</span>
-                </button>
-              </div>
-            )}
-            {settings.scoreboardConfig.showTimer && (
-              <input
-                type="text"
-                value={timeRemaining}
-                onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                className="w-14 xs:w-16 sm:w-24 md:w-32 text-center bg-transparent border-b-2 text-base xs:text-lg sm:text-xl md:text-3xl font-mono focus:outline-none font-bold"
-                style={{
-                  borderColor: currentTheme.accentColor,
-                  color: currentTheme.textColor,
-                }}
-              />
-            )}
-            {currentGame.targetScore && (
-              <div className="text-[8px] xs:text-[10px] sm:text-xs md:text-sm font-bold mt-0.5 sm:mt-2 whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
-                TARGET: {currentGame.targetScore}
-              </div>
-            )}
-          </div>
-        )}
+                />
+              )}
+              {currentGame.targetScore && (
+                <div className="text-[8px] xs:text-[10px] sm:text-xs md:text-sm font-bold mt-0.5 sm:mt-2 whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
+                  TARGET: {currentGame.targetScore}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Away Team Score */}
-          <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-start min-w-0">
-            <div
-              className="flex-1 max-w-[200px] xs:max-w-[250px] sm:max-w-[300px] md:max-w-[400px] aspect-square rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
-              style={{ backgroundColor: awayTeam.primaryColor }}
+          <div
+            ref={awayScoreBoxRef}
+            className="flex-1 max-w-[200px] xs:max-w-[250px] sm:max-w-[300px] md:max-w-[400px] aspect-square rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
+            style={{ backgroundColor: awayTeam.primaryColor }}
+          >
+            <span
+              className="font-black relative z-10 leading-none"
+              style={{
+                color: awayTeam.secondaryColor,
+                fontFamily: currentTheme.numberFont,
+                fontSize: awayFontSize,
+              }}
             >
-              <span
-                className="font-black relative z-10 leading-none"
-                style={{
-                  color: awayTeam.secondaryColor,
-                  fontFamily: currentTheme.numberFont,
-                  fontSize: 'clamp(1.25rem, 8vw, 5.5rem)',
-                }}
-              >
-                {awayScore}
-              </span>
-            </div>
+              {awayScore}
+            </span>
           </div>
         </div>
       </div>
