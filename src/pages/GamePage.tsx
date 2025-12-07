@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import { TargetScoreBar } from '../components/TargetScoreBar';
 import type { PlayerGameStats, StatType } from '../types';
 import { statLabels } from '../types';
+import confetti from 'canvas-confetti';
 
 // Hook to calculate font size based on container width
 function useScaledFontSize(boxRef: React.RefObject<HTMLDivElement | null>) {
@@ -46,17 +47,158 @@ export function GamePage() {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showTargetModal, setShowTargetModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [confettiShown, setConfettiShown] = useState<string | null>(null);
   const homeScoreBoxRef = useRef<HTMLDivElement>(null);
   const awayScoreBoxRef = useRef<HTMLDivElement>(null);
   const homeFontSize = useScaledFontSize(homeScoreBoxRef);
   const awayFontSize = useScaledFontSize(awayScoreBoxRef);
 
-  // Redirect if no game
+  // Redirect if no game and reset confetti when game changes
   useEffect(() => {
     if (!currentGame) {
       navigate('/');
     }
   }, [currentGame, navigate]);
+
+  // Reset confetti when game ID changes (new game started)
+  useEffect(() => {
+    setConfettiShown(null);
+  }, [currentGame?.id]);
+
+  // Confetti celebration when target is won
+  useEffect(() => {
+    if (!currentGame?.targetScore || currentGame.targetScore <= 0 || !currentGame) {
+      // Reset confetti state if target is removed
+      setConfettiShown(null);
+      return;
+    }
+
+    // Calculate scores inline
+    const homeScore = currentGame.homeTeam.players.reduce((sum, p) => {
+      const value = p.points;
+      return typeof value === 'number' ? sum + value : sum;
+    }, 0);
+    const awayScore = currentGame.awayTeam.players.reduce((sum, p) => {
+      const value = p.points;
+      return typeof value === 'number' ? sum + value : sum;
+    }, 0);
+    const targetScore = currentGame.targetScore;
+
+    // Check if a team has won
+    const homeWon = homeScore >= targetScore;
+    const awayWon = awayScore >= targetScore;
+
+    // Determine winner and confetti key
+    let winner: 'home' | 'away' | null = null;
+    let confettiKey: string | null = null;
+
+    if (homeWon && awayWon) {
+      // Both teams reached target - celebrate both (or the one that reached it first)
+      // For simplicity, we'll celebrate the one with higher score
+      if (homeScore >= awayScore) {
+        winner = 'home';
+        confettiKey = `home-${targetScore}`;
+      } else {
+        winner = 'away';
+        confettiKey = `away-${targetScore}`;
+      }
+    } else if (homeWon) {
+      winner = 'home';
+      confettiKey = `home-${targetScore}`;
+    } else if (awayWon) {
+      winner = 'away';
+      confettiKey = `away-${targetScore}`;
+    }
+
+    // Trigger confetti if winner exists and we haven't shown it yet for this target
+    if (winner && confettiKey && confettiShown !== confettiKey) {
+      const winningTeam = winner === 'home' ? currentGame.homeTeam : currentGame.awayTeam;
+      const primaryColor = winningTeam.primaryColor;
+      const secondaryColor = winningTeam.secondaryColor;
+
+      // Ensure colors are in proper hex format for canvas-confetti
+      // canvas-confetti accepts hex strings like '#RRGGBB'
+      const normalizeHex = (color: string): string => {
+        if (!color) return '#ffffff'; // fallback to white
+        
+        // If it's already a hex color, ensure it's properly formatted
+        if (color.startsWith('#')) {
+          // Handle 3-digit hex (#RGB -> #RRGGBB)
+          if (color.length === 4) {
+            const r = color[1];
+            const g = color[2];
+            const b = color[3];
+            return `#${r}${r}${g}${g}${b}${b}`;
+          }
+          // Already 6 or 8 digit hex, return as-is
+          return color;
+        }
+        
+        // If it's not hex, try to parse it or return as-is
+        // (canvas-confetti might handle other formats)
+        return color;
+      };
+
+      const primaryHex = normalizeHex(primaryColor);
+      const secondaryHex = normalizeHex(secondaryColor);
+
+      // Create confetti with team colors
+      const count = 200;
+      const defaults = {
+        origin: { y: 0.7 },
+        zIndex: 10000,
+      };
+
+      function fire(particleRatio: number, opts: confetti.Options) {
+        confetti({
+          ...defaults,
+          ...opts,
+          particleCount: Math.floor(count * particleRatio),
+        });
+      }
+
+      // Fire multiple bursts with team colors (using hex directly)
+      fire(0.25, {
+        spread: 26,
+        startVelocity: 55,
+        colors: [primaryHex],
+      });
+      fire(0.2, {
+        spread: 60,
+        colors: [secondaryHex],
+      });
+      fire(0.35, {
+        spread: 100,
+        decay: 0.91,
+        scalar: 0.8,
+        colors: [primaryHex, secondaryHex],
+      });
+      fire(0.1, {
+        spread: 120,
+        startVelocity: 25,
+        decay: 0.92,
+        scalar: 1.2,
+        colors: [primaryHex, secondaryHex],
+      });
+      fire(0.1, {
+        spread: 120,
+        startVelocity: 45,
+        colors: [primaryHex, secondaryHex],
+      });
+
+      // Mark confetti as shown for this target
+      setConfettiShown(confettiKey);
+    }
+  }, [
+    currentGame?.targetScore,
+    currentGame?.homeTeam.players,
+    currentGame?.awayTeam.players,
+    currentGame?.homeTeam.primaryColor,
+    currentGame?.homeTeam.secondaryColor,
+    currentGame?.awayTeam.primaryColor,
+    currentGame?.awayTeam.secondaryColor,
+    confettiShown,
+  ]);
 
   if (!currentGame) return null;
 
@@ -332,7 +474,7 @@ export function GamePage() {
         </div>
       )}
 
-      <div className="flex flex-col items-center py-2 sm:py-3 md:py-1.5 lg:py-1 gap-1.5 sm:gap-2 md:gap-1">
+      <div className="flex flex-col items-center py-2 sm:py-3 md:py-4 lg:py-5 gap-1.5 sm:gap-2 md:gap-3 lg:gap-4">
         {/* Team Names Row - Above Score Boxes */}
         <div className="flex items-center justify-center w-full mb-1 sm:mb-1.5 md:mb-0 px-2">
           <div className="flex items-center justify-center gap-2 xs:gap-3 sm:gap-4 md:gap-3 lg:gap-4">
@@ -465,7 +607,7 @@ export function GamePage() {
           {/* Home Team Score */}
           <div
             ref={homeScoreBoxRef}
-            className="w-[90px] xs:w-[110px] sm:w-[130px] md:w-[110px] lg:w-[120px] aspect-square rounded-lg sm:rounded-xl md:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
+            className="w-[90px] xs:w-[110px] sm:w-[130px] md:w-[140px] lg:w-[150px] aspect-square rounded-lg sm:rounded-xl md:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
             style={{ backgroundColor: homeTeam.primaryColor }}
           >
             {/* Progress Light Overlay */}
@@ -546,7 +688,7 @@ export function GamePage() {
           {/* Away Team Score */}
           <div
             ref={awayScoreBoxRef}
-            className="w-[90px] xs:w-[110px] sm:w-[130px] md:w-[110px] lg:w-[120px] aspect-square rounded-lg sm:rounded-xl md:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
+            className="w-[90px] xs:w-[110px] sm:w-[130px] md:w-[140px] lg:w-[150px] aspect-square rounded-lg sm:rounded-xl md:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
             style={{ backgroundColor: awayTeam.primaryColor }}
           >
             {/* Progress Light Overlay */}
@@ -704,7 +846,7 @@ export function GamePage() {
             </div>
             <div className="flex-none flex flex-col items-center w-full md:w-auto md:max-w-[320px] lg:max-w-[360px] h-auto md:h-full gap-2 sm:gap-3 md:gap-2 order-1 md:order-2">
               <div 
-                className="w-full rounded-xl p-2 sm:p-3 md:p-2 shadow-xl shrink-0"
+                className="w-full rounded-xl p-2 sm:p-3 md:p-4 shadow-xl shrink-0"
                 style={{ backgroundColor: currentTheme.secondaryBackground }}
               >
                 {renderScoreboard()}
