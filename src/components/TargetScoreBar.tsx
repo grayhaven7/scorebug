@@ -20,6 +20,11 @@ export function TargetScoreBar({
   // Calculate fill percentages (max 100% of the half-bar)
   const homePercent = Math.min(100, (homeScore / targetScore) * 100);
   const awayPercent = Math.min(100, (awayScore / targetScore) * 100);
+  
+  // Determine winner (if any team has reached or exceeded target)
+  const homeWon = homeScore >= targetScore;
+  const awayWon = awayScore >= targetScore;
+  const winnerColor = homeWon ? homeColor : awayWon ? awayColor : null;
 
   return (
     <div className="flex flex-row items-center w-full max-w-2xl px-2 md:px-4 py-2 md:py-4">
@@ -43,11 +48,11 @@ export function TargetScoreBar({
         >
           {/* Left Half (Home) */}
           <div className="flex-1 h-full relative border-r-2" style={{ borderColor: theme.secondaryBackground }}>
-            {/* Fill growing from left to right */}
+            {/* Fill growing from left to right, extending to center circle */}
             <div 
               className="absolute top-0 left-0 h-full transition-all duration-500 ease-out"
               style={{ 
-                width: `${homePercent}%`,
+                width: homePercent >= 100 ? '100%' : `${homePercent}%`,
                 backgroundColor: homeColor 
               }}
             />
@@ -55,11 +60,11 @@ export function TargetScoreBar({
 
           {/* Right Half (Away) */}
           <div className="flex-1 h-full relative border-l-2" style={{ borderColor: theme.secondaryBackground }}>
-            {/* Fill growing from right to left */}
+            {/* Fill growing from right to left, extending to center circle */}
             <div 
               className="absolute top-0 right-0 h-full transition-all duration-500 ease-out"
               style={{ 
-                width: `${awayPercent}%`,
+                width: awayPercent >= 100 ? '100%' : `${awayPercent}%`,
                 backgroundColor: awayColor 
               }}
             />
@@ -70,9 +75,9 @@ export function TargetScoreBar({
         <div 
           className="relative z-10 w-10 h-10 md:w-16 md:h-16 rounded-full border-[4px] md:border-[6px] flex items-center justify-center font-bold text-sm md:text-xl shadow-2xl transition-all hover:scale-110"
           style={{ 
-            backgroundColor: theme.secondaryBackground,
-            borderColor: theme.backgroundColor,
-            color: theme.textColor,
+            backgroundColor: winnerColor || theme.secondaryBackground,
+            borderColor: winnerColor || theme.backgroundColor,
+            color: winnerColor ? '#ffffff' : theme.textColor,
             fontFamily: theme.numberFont
           }}
         >

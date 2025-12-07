@@ -60,6 +60,7 @@ const defaultSettings: AppSettings = {
   statsConfig: defaultStatsConfig,
   scoreboardConfig: defaultScoreboardConfig,
   customThemes: [],
+  defaultTargetScore: 21,
 };
 
 export function loadSettings(): AppSettings {

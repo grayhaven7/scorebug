@@ -4,7 +4,7 @@ import type { StatType } from '../types';
 import { statFullNames, statLabels } from '../types';
 
 export function SettingsPage() {
-  const { settings, updateStatsConfig, updateScoreboardConfig, currentTheme, resetAllData } = useApp();
+  const { settings, updateStatsConfig, updateScoreboardConfig, updateDefaultTargetScore, currentTheme, resetAllData } = useApp();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const handleReset = () => {
@@ -64,7 +64,7 @@ export function SettingsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           {[
             { id: 'showTimer', label: 'Game Timer', desc: 'Show time remaining' },
             { id: 'showQuarter', label: 'Quarter/Period', desc: 'Show current period' },
@@ -108,6 +108,38 @@ export function SettingsPage() {
               </div>
             </button>
           ))}
+        </div>
+
+        {/* Default Target Score */}
+        <div className="pt-6 border-t" style={{ borderColor: currentTheme.textSecondary + '20' }}>
+          <div className="mb-4">
+            <h3
+              className="text-lg font-bold mb-2"
+              style={{ fontFamily: currentTheme.headerFont }}
+            >
+              DEFAULT TARGET SCORE
+            </h3>
+            <p className="text-sm" style={{ color: currentTheme.textSecondary }}>
+              Set the default target score for new games. Set to 0 to disable by default.
+            </p>
+          </div>
+          <input
+            type="number"
+            placeholder="e.g. 21"
+            value={settings.defaultTargetScore || ''}
+            onChange={(e) => {
+              const val = parseInt(e.target.value);
+              updateDefaultTargetScore(val > 0 ? val : null);
+            }}
+            className="w-full px-4 py-3 rounded-lg border text-center text-xl font-bold focus:outline-none"
+            style={{
+              backgroundColor: currentTheme.backgroundColor,
+              borderColor: currentTheme.textSecondary + '40',
+              color: currentTheme.textColor,
+              fontFamily: currentTheme.numberFont,
+              borderRadius: currentTheme.borderRadius,
+            }}
+          />
         </div>
       </div>
 

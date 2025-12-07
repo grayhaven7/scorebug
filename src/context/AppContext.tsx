@@ -28,6 +28,7 @@ interface AppContextType {
   settings: AppSettings;
   updateStatsConfig: (config: Partial<StatsConfig>) => void;
   updateScoreboardConfig: (config: Partial<ScoreboardConfig>) => void;
+  updateDefaultTargetScore: (targetScore: number | null) => void;
   setCurrentTheme: (themeId: string) => void;
   addCustomTheme: (theme: Omit<Theme, 'id'>) => Theme;
   updateCustomTheme: (id: string, updates: Partial<Theme>) => void;
@@ -50,6 +51,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     statsConfig: defaultStatsConfig,
     scoreboardConfig: defaultScoreboardConfig,
     customThemes: [],
+    defaultTargetScore: 21,
   });
 
   // Load data on mount
@@ -92,6 +94,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showTitle: loadedSettings.scoreboardConfig?.showTitle ?? defaultScoreboardConfig.showTitle,
       },
       customThemes: patchedCustomThemes,
+      defaultTargetScore: loadedSettings.defaultTargetScore ?? 21,
     });
   }, []);
 
@@ -108,6 +111,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       statsConfig: defaultStatsConfig,
       scoreboardConfig: defaultScoreboardConfig,
       customThemes: [],
+      defaultTargetScore: 21,
     });
 
     // Reset storage
@@ -119,6 +123,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       statsConfig: defaultStatsConfig,
       scoreboardConfig: defaultScoreboardConfig,
       customThemes: [],
+      defaultTargetScore: 21,
     });
   };
 
@@ -199,7 +204,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       },
       quarter: 1,
       timeRemaining: '12:00',
-      targetScore: 21,
+      targetScore: settings.defaultTargetScore,
       status: 'live',
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -279,6 +284,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     saveSettings(updated);
   };
 
+  const updateDefaultTargetScore = (targetScore: number | null) => {
+    const updated = { ...settings, defaultTargetScore: targetScore };
+    setSettings(updated);
+    saveSettings(updated);
+  };
+
   const setCurrentTheme = (themeId: string) => {
     const updated = { ...settings, currentTheme: themeId };
     setSettings(updated);
@@ -336,6 +347,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         settings,
         updateStatsConfig,
         updateScoreboardConfig,
+        updateDefaultTargetScore,
         setCurrentTheme,
         addCustomTheme,
         updateCustomTheme,

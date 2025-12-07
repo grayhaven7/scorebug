@@ -294,9 +294,9 @@ export function GamePage() {
             placeholder="Game Title (e.g. Game 4 of Season)"
             value={currentGame.title || ''}
             onChange={(e) => updateCurrentGame({ title: e.target.value })}
-            className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-4 py-1 w-full max-w-md transition-colors focus:outline-none placeholder-white/20"
+            className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-4 py-1 w-full max-w-md transition-colors focus:outline-none placeholder-white/20 font-bold"
             style={{
-              color: currentTheme.textSecondary,
+              color: '#ffffff',
               fontFamily: currentTheme.headerFont,
               fontSize: '1.1rem',
               letterSpacing: '0.05em',
@@ -310,13 +310,6 @@ export function GamePage() {
         {/* Home Team Score */}
         <div className="flex items-center gap-2 sm:gap-4 md:gap-8 flex-1 justify-end min-w-0">
           <div className="hidden sm:flex flex-col items-end text-right max-w-[140px] md:max-w-xs">
-            <p
-              className="text-base md:text-3xl font-bold tracking-tight w-full leading-tight break-words"
-              style={{ fontFamily: currentTheme.headerFont }}
-              title={homeTeam.teamName}
-            >
-              {homeTeam.teamName}
-            </p>
             <p className="text-xs md:text-base font-semibold tracking-wider opacity-80 text-right" style={{ color: currentTheme.textSecondary }}>
               HOME
             </p>
@@ -328,10 +321,10 @@ export function GamePage() {
                     placeholder="Record"
                     value={homeTeam.record || ''}
                     onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-right"
+                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-right font-bold"
                     style={{ 
-                      borderColor: currentTheme.textSecondary + '40',
-                      color: currentTheme.textSecondary,
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                      color: '#ffffff',
                       fontFamily: currentTheme.headerFont
                     }}
                   />
@@ -342,10 +335,10 @@ export function GamePage() {
                     placeholder="Standing"
                     value={homeTeam.standing || ''}
                     onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-right"
+                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-right font-bold"
                     style={{ 
-                      borderColor: currentTheme.textSecondary + '40',
-                      color: currentTheme.textSecondary,
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                      color: '#ffffff',
                       fontFamily: currentTheme.headerFont
                     }}
                   />
@@ -355,12 +348,6 @@ export function GamePage() {
           </div>
           {/* Mobile Team Name */}
           <div className="sm:hidden min-w-0 shrink flex flex-col items-end">
-            <p
-              className="text-xs xs:text-sm font-bold text-right w-full leading-tight break-words"
-              style={{ fontFamily: currentTheme.headerFont }}
-            >
-              {homeTeam.teamName}
-            </p>
             {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
               <div className="flex gap-1 mt-1 justify-end flex-col xs:flex-row items-end">
                 {settings.scoreboardConfig.showRecord && (
@@ -369,10 +356,10 @@ export function GamePage() {
                     placeholder="Rec"
                     value={homeTeam.record || ''}
                     onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-right"
+                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-right font-bold"
                     style={{ 
-                      borderColor: currentTheme.textSecondary + '40',
-                      color: currentTheme.textSecondary,
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                      color: '#ffffff',
                       fontFamily: currentTheme.headerFont
                     }}
                   />
@@ -383,10 +370,10 @@ export function GamePage() {
                     placeholder="Std"
                     value={homeTeam.standing || ''}
                     onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-right"
+                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-right font-bold"
                     style={{ 
-                      borderColor: currentTheme.textSecondary + '40',
-                      color: currentTheme.textSecondary,
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                      color: '#ffffff',
                       fontFamily: currentTheme.headerFont
                     }}
                   />
@@ -398,12 +385,19 @@ export function GamePage() {
             className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
             style={{ backgroundColor: homeTeam.primaryColor }}
           >
-            {currentGame.targetScore && (
-              <div 
-                className="absolute bottom-0 left-0 right-0 bg-white/30 transition-all duration-500"
-                style={{ height: `${Math.min(100, (homeScore / currentGame.targetScore) * 100)}%` }}
-              />
-            )}
+            {/* Team Name at Top Center */}
+            <div className="absolute top-1 left-0 right-0 text-center px-1">
+              <p
+                className="text-[8px] xs:text-[10px] sm:text-xs md:text-sm font-bold tracking-tight leading-tight truncate"
+                style={{ 
+                  fontFamily: currentTheme.headerFont,
+                  color: homeTeam.secondaryColor
+                }}
+                title={homeTeam.teamName}
+              >
+                {homeTeam.teamName}
+              </p>
+            </div>
             <span
               className="text-2xl xs:text-3xl sm:text-4xl md:text-7xl font-black relative z-10 leading-none"
               style={{
@@ -475,12 +469,19 @@ export function GamePage() {
             className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 rounded-lg sm:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
             style={{ backgroundColor: awayTeam.primaryColor }}
           >
-            {currentGame.targetScore && (
-              <div 
-                className="absolute bottom-0 left-0 right-0 bg-white/30 transition-all duration-500"
-                style={{ height: `${Math.min(100, (awayScore / currentGame.targetScore) * 100)}%` }}
-              />
-            )}
+            {/* Team Name at Top Center */}
+            <div className="absolute top-1 left-0 right-0 text-center px-1">
+              <p
+                className="text-[8px] xs:text-[10px] sm:text-xs md:text-sm font-bold tracking-tight leading-tight truncate"
+                style={{ 
+                  fontFamily: currentTheme.headerFont,
+                  color: awayTeam.secondaryColor
+                }}
+                title={awayTeam.teamName}
+              >
+                {awayTeam.teamName}
+              </p>
+            </div>
             <span
               className="text-2xl xs:text-3xl sm:text-4xl md:text-7xl font-black relative z-10 leading-none"
               style={{
@@ -492,13 +493,6 @@ export function GamePage() {
             </span>
           </div>
           <div className="hidden sm:flex flex-col items-start text-left max-w-[140px] md:max-w-xs">
-            <p
-              className="text-base md:text-3xl font-bold tracking-tight w-full leading-tight break-words"
-              style={{ fontFamily: currentTheme.headerFont }}
-              title={awayTeam.teamName}
-            >
-              {awayTeam.teamName}
-            </p>
             <p className="text-xs md:text-base font-semibold tracking-wider opacity-80 text-left" style={{ color: currentTheme.textSecondary }}>
               AWAY
             </p>
@@ -510,10 +504,10 @@ export function GamePage() {
                     placeholder="Record"
                     value={awayTeam.record || ''}
                     onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-left"
+                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-left font-bold"
                     style={{ 
-                      borderColor: currentTheme.textSecondary + '40',
-                      color: currentTheme.textSecondary,
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                      color: '#ffffff',
                       fontFamily: currentTheme.headerFont
                     }}
                   />
@@ -524,10 +518,10 @@ export function GamePage() {
                     placeholder="Standing"
                     value={awayTeam.standing || ''}
                     onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-left"
+                    className="w-16 md:w-20 px-1 py-0.5 text-xs md:text-sm rounded border bg-transparent focus:outline-none text-left font-bold"
                     style={{ 
-                      borderColor: currentTheme.textSecondary + '40',
-                      color: currentTheme.textSecondary,
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                      color: '#ffffff',
                       fontFamily: currentTheme.headerFont
                     }}
                   />
@@ -537,12 +531,6 @@ export function GamePage() {
           </div>
           {/* Mobile Team Name */}
           <div className="sm:hidden min-w-0 shrink flex flex-col items-start">
-            <p
-              className="text-xs xs:text-sm font-bold text-left w-full leading-tight break-words"
-              style={{ fontFamily: currentTheme.headerFont }}
-            >
-              {awayTeam.teamName}
-            </p>
             {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
               <div className="flex gap-1 mt-1 justify-start flex-col xs:flex-row items-start">
                 {settings.scoreboardConfig.showRecord && (
@@ -551,10 +539,10 @@ export function GamePage() {
                     placeholder="Rec"
                     value={awayTeam.record || ''}
                     onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-left"
+                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-left font-bold"
                     style={{ 
-                      borderColor: currentTheme.textSecondary + '40',
-                      color: currentTheme.textSecondary,
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                      color: '#ffffff',
                       fontFamily: currentTheme.headerFont
                     }}
                   />
@@ -565,10 +553,10 @@ export function GamePage() {
                     placeholder="Std"
                     value={awayTeam.standing || ''}
                     onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-left"
+                    className="w-14 xs:w-16 px-1 py-1 text-xs rounded border bg-transparent focus:outline-none text-left font-bold"
                     style={{ 
-                      borderColor: currentTheme.textSecondary + '40',
-                      color: currentTheme.textSecondary,
+                      borderColor: 'rgba(255, 255, 255, 0.4)',
+                      color: '#ffffff',
                       fontFamily: currentTheme.headerFont
                     }}
                   />

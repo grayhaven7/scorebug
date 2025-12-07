@@ -110,6 +110,7 @@ export interface AppSettings {
   statsConfig: StatsConfig;
   scoreboardConfig: ScoreboardConfig;
   customThemes: Theme[];
+  defaultTargetScore: number | null;
 }
 
 // Default stats configuration
