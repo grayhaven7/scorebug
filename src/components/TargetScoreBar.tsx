@@ -1,3 +1,4 @@
+import { useRef, useEffect, useState } from 'react';
 import type { Theme } from '../types';
 
 interface TargetScoreBarProps {
@@ -17,9 +18,33 @@ export function TargetScoreBar({
   awayColor,
   theme,
 }: TargetScoreBarProps) {
-  // Calculate fill percentages (max 100% of the half-bar)
-  const homePercent = Math.min(100, (homeScore / targetScore) * 100);
-  const awayPercent = Math.min(100, (awayScore / targetScore) * 100);
+  const barContainerRef = useRef<HTMLDivElement>(null);
+  const circleRef = useRef<HTMLDivElement>(null);
+  const [maxPercent, setMaxPercent] = useState(85); // Default fallback
+
+  const calculateMaxPercent = () => {
+    // Calculate the exact percentage needed to reach the circle edge
+    if (barContainerRef.current && circleRef.current) {
+      const containerWidth = barContainerRef.current.offsetWidth;
+      const circleWidth = circleRef.current.offsetWidth;
+      const halfBarWidth = containerWidth / 2;
+      // Calculate what percentage of the half-bar reaches the circle edge
+      const calculatedMax = ((halfBarWidth - circleWidth / 2) / halfBarWidth) * 100;
+      setMaxPercent(Math.max(70, Math.min(95, calculatedMax))); // Clamp between 70-95%
+    }
+  };
+
+  useEffect(() => {
+    calculateMaxPercent();
+    
+    // Recalculate on window resize
+    window.addEventListener('resize', calculateMaxPercent);
+    return () => window.removeEventListener('resize', calculateMaxPercent);
+  }, []);
+
+  // Calculate fill percentages - bar reaches circle edge exactly when score = target
+  const homePercent = Math.min(maxPercent, (homeScore / targetScore) * maxPercent);
+  const awayPercent = Math.min(maxPercent, (awayScore / targetScore) * maxPercent);
   
   // Determine winner (if any team has reached or exceeded target)
   const homeWon = homeScore >= targetScore;
@@ -40,7 +65,7 @@ export function TargetScoreBar({
       </div>
 
       {/* Bar Container */}
-      <div className="flex-1 relative flex items-center justify-center">
+      <div ref={barContainerRef} className="flex-1 relative flex items-center justify-center">
         {/* Background Bar */}
         <div 
           className="absolute inset-x-0 h-3 md:h-6 rounded-full overflow-hidden flex flex-row shadow-inner"
@@ -52,7 +77,7 @@ export function TargetScoreBar({
             <div 
               className="absolute top-0 left-0 h-full transition-all duration-500 ease-out"
               style={{ 
-                width: homePercent >= 100 ? '100%' : `${homePercent}%`,
+                width: `${homePercent}%`,
                 backgroundColor: homeColor 
               }}
             />
@@ -64,7 +89,7 @@ export function TargetScoreBar({
             <div 
               className="absolute top-0 right-0 h-full transition-all duration-500 ease-out"
               style={{ 
-                width: awayPercent >= 100 ? '100%' : `${awayPercent}%`,
+                width: `${awayPercent}%`,
                 backgroundColor: awayColor 
               }}
             />
@@ -73,6 +98,7 @@ export function TargetScoreBar({
 
         {/* Center Target Marker */}
         <div 
+          ref={circleRef}
           className="relative z-10 w-10 h-10 md:w-16 md:h-16 rounded-full border-[4px] md:border-[6px] flex items-center justify-center font-bold text-sm md:text-xl shadow-2xl transition-all hover:scale-110"
           style={{ 
             backgroundColor: winnerColor || theme.secondaryBackground,
