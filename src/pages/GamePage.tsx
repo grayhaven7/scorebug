@@ -319,57 +319,72 @@ export function GamePage() {
     >
       {/* Team Header */}
       <div
-        className="px-2 sm:px-3 md:px-2 lg:px-2.5 py-1.5 sm:py-2 md:py-1.5 lg:py-2"
+        className="px-2 sm:px-3 md:px-2 lg:px-2.5"
         style={{
           backgroundColor: team.primaryColor,
           color: team.secondaryColor,
+          paddingTop: 'clamp(0.25rem, 1vh + 0.2rem, 0.5rem)',
+          paddingBottom: 'clamp(0.25rem, 1vh + 0.2rem, 0.5rem)',
         }}
       >
-        <div className="flex items-center gap-2 sm:gap-2.5 md:gap-2.5 lg:gap-3 mb-1 sm:mb-1.5 md:mb-1.5 lg:mb-2">
+        <div className="flex items-center" style={{ 
+          gap: 'clamp(0.5rem, 1vw + 0.3rem, 0.75rem)',
+          marginBottom: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.5rem)'
+        }}>
             {/* Home team: Toggle on left (outer edge), name centered, HOME on right */}
             {/* Away team: AWAY on left, name centered, Toggle on right (outer edge) */}
             {isHome ? (
               <>
                 <button
                   onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
-                  className="px-2 py-1 rounded text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 shrink-0"
+                  className="rounded font-medium transition-all hover:opacity-80 shrink-0"
                   style={{
                     backgroundColor: team.secondaryColor + '30',
                     color: team.secondaryColor,
                     borderRadius: currentTheme.borderRadius,
+                    fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)',
+                    padding: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.375rem) clamp(0.375rem, 0.8vw + 0.2rem, 0.5rem)'
                   }}
                   title={isExpanded ? 'Collapse stats' : 'Expand stats'}
                 >
                   {isExpanded ? '▼' : '▶'}
                 </button>
                 <span
-                  className="text-xs sm:text-sm md:text-sm lg:text-base font-bold tracking-wide truncate flex-1 min-w-0 text-center"
-                  style={{ fontFamily: currentTheme.headerFont }}
+                  className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
+                  style={{ 
+                    fontFamily: currentTheme.headerFont,
+                    fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 1rem)'
+                  }}
                 >
                   {team.teamName}
                 </span>
-                <span className="text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs opacity-80 shrink-0">
+                <span className="opacity-80 shrink-0" style={{ fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)' }}>
                   HOME
                 </span>
               </>
             ) : (
               <>
-                <span className="text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs opacity-80 shrink-0">
+                <span className="opacity-80 shrink-0" style={{ fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)' }}>
                   AWAY
                 </span>
                 <span
-                  className="text-xs sm:text-sm md:text-sm lg:text-base font-bold tracking-wide truncate flex-1 min-w-0 text-center"
-                  style={{ fontFamily: currentTheme.headerFont }}
+                  className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
+                  style={{ 
+                    fontFamily: currentTheme.headerFont,
+                    fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 1rem)'
+                  }}
                 >
                   {team.teamName}
                 </span>
                 <button
                   onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
-                  className="px-2 py-1 rounded text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 shrink-0"
+                  className="rounded font-medium transition-all hover:opacity-80 shrink-0"
                   style={{
                     backgroundColor: team.secondaryColor + '30',
                     color: team.secondaryColor,
                     borderRadius: currentTheme.borderRadius,
+                    fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)',
+                    padding: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.375rem) clamp(0.375rem, 0.8vw + 0.2rem, 0.5rem)'
                   }}
                   title={isExpanded ? 'Collapse stats' : 'Expand stats'}
                 >
@@ -390,8 +405,11 @@ export function GamePage() {
                 className="text-left font-medium w-10 sm:w-12 md:w-12 lg:w-14"
                 style={{ 
                   color: currentTheme.textSecondary,
-                  fontSize: 'clamp(0.625rem, 1.2vw + 0.4rem, 0.875rem)',
-                  padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)'
+                  fontSize: 'clamp(0.5rem, 1.2vw + 0.3rem, 0.875rem)',
+                  paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                  paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                  paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
                 }}
               >
                 #
@@ -400,8 +418,11 @@ export function GamePage() {
                 className="text-left font-medium min-w-[100px] sm:min-w-[120px] md:min-w-[140px] lg:min-w-[160px]"
                 style={{ 
                   color: currentTheme.textSecondary,
-                  fontSize: 'clamp(0.625rem, 1.2vw + 0.4rem, 0.875rem)',
-                  padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)'
+                  fontSize: 'clamp(0.5rem, 1.2vw + 0.3rem, 0.875rem)',
+                  paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                  paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                  paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
                 }}
               >
                 PLAYER
@@ -413,8 +434,11 @@ export function GamePage() {
                   className="text-center font-medium"
                   style={{ 
                     color: currentTheme.textSecondary,
-                    fontSize: 'clamp(0.625rem, 1.2vw + 0.4rem, 0.875rem)',
-                    padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)'
+                    fontSize: 'clamp(0.5rem, 1.2vw + 0.3rem, 0.875rem)',
+                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                    paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
                   }}
                 >
                   {statLabels[stat].slice(0, 3)}
@@ -435,16 +459,21 @@ export function GamePage() {
                       : currentTheme.backgroundColor + '40',
                 }}
               >
-                <td style={{ padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)' }}>
+                <td style={{ 
+                  paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                  paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                  paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
+                }}>
                   <span
                     className="inline-block rounded text-center font-bold"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
-                      fontSize: 'clamp(0.75rem, 1.5vw + 0.5rem, 1.125rem)',
-                      width: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
-                      height: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
-                      lineHeight: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
+                      fontSize: 'clamp(0.6rem, 1.2vw + 0.4rem, 1.125rem)',
+                      width: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                      height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                      lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
                     }}
                   >
                     {player.jerseyNumber}
@@ -454,9 +483,11 @@ export function GamePage() {
                   className="font-medium truncate max-w-[120px] sm:max-w-[140px] md:max-w-[160px] lg:max-w-[180px]"
                   style={{
                     fontSize: settings.scoreboardConfig.showQuickPoints 
-                      ? 'clamp(0.625rem, 1vw + 0.4rem, 0.875rem)'
-                      : 'clamp(0.75rem, 1.5vw + 0.5rem, 1.125rem)',
-                    padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)',
+                      ? 'clamp(0.5rem, 0.9vw + 0.3rem, 0.875rem)'
+                      : 'clamp(0.6rem, 1.2vw + 0.4rem, 1.125rem)',
+                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
                     paddingRight: 'clamp(0.25rem, 0.8vw + 0.2rem, 0.625rem)'
                   }}
                 >
@@ -471,7 +502,10 @@ export function GamePage() {
                         key={stat} 
                         className="text-center"
                         style={{
-                          padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.25rem, 0.8vw + 0.2rem, 0.75rem)'
+                          paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                          paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                          paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                          paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
                         }}
                       >
                         <button
@@ -481,9 +515,9 @@ export function GamePage() {
                             backgroundColor: currentTheme.accentColor + '20',
                             color: currentTheme.accentColor,
                             borderRadius: currentTheme.borderRadius,
-                            fontSize: 'clamp(0.875rem, 2vw + 0.5rem, 1.25rem)',
-                            width: 'clamp(2.25rem, 4vw + 1.5rem, 3rem)',
-                            height: 'clamp(2.25rem, 4vw + 1.5rem, 3rem)',
+                            fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
+                            width: 'clamp(1.75rem, 3vw + 1rem, 3rem)',
+                            height: 'clamp(1.75rem, 3vw + 1rem, 3rem)',
                           }}
                           title="Click to add, Shift+Click to subtract"
                         >
@@ -494,11 +528,14 @@ export function GamePage() {
                         <td 
                           className="text-center"
                           style={{
-                            padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.25rem, 0.8vw + 0.2rem, 0.75rem)',
+                            paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                            paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                            paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                            paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
                             minWidth: 'clamp(5rem, 8vw + 3rem, 7.5rem)'
                           }}
                         >
-                          <div className="flex justify-center" style={{ gap: 'clamp(0.25rem, 0.8vw + 0.2rem, 0.5rem)' }}>
+                          <div className="flex justify-center" style={{ gap: 'clamp(0.125rem, 0.5vw + 0.15rem, 0.5rem)' }}>
                             {[1, 2, 3].map(pts => (
                               <button
                                 key={pts}
@@ -509,9 +546,9 @@ export function GamePage() {
                                   color: team.secondaryColor,
                                   borderRadius: currentTheme.borderRadius,
                                   opacity: 0.9,
-                                  fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 0.875rem)',
-                                  width: 'clamp(1.75rem, 2.5vw + 1rem, 2.5rem)',
-                                  height: 'clamp(2.25rem, 3vw + 1.5rem, 3rem)',
+                                  fontSize: 'clamp(0.5rem, 0.9vw + 0.3rem, 0.875rem)',
+                                  width: 'clamp(1.5rem, 2vw + 0.8rem, 2.5rem)',
+                                  height: 'clamp(1.75rem, 2.5vw + 1rem, 3rem)',
                                 }}
                               >
                                 +{pts}
@@ -533,13 +570,21 @@ export function GamePage() {
                 backgroundColor: team.primaryColor + '20',
               }}
             >
-              <td style={{ padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)' }}></td>
+              <td style={{ 
+                paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
+              }}></td>
               <td 
                 className="font-bold" 
                 style={{ 
                   fontFamily: currentTheme.headerFont,
-                  fontSize: 'clamp(0.875rem, 1.5vw + 0.5rem, 1.25rem)',
-                  padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)'
+                  fontSize: 'clamp(0.7rem, 1.2vw + 0.4rem, 1.25rem)',
+                  paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                  paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                  paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
                 }}
               >
                 TOTAL
@@ -550,7 +595,10 @@ export function GamePage() {
                   colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} 
                   className="text-center"
                   style={{
-                    padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.25rem, 0.8vw + 0.2rem, 0.75rem)'
+                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                    paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
                   }}
                 >
                   <span
@@ -559,10 +607,10 @@ export function GamePage() {
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
                       borderRadius: currentTheme.borderRadius,
-                      fontSize: 'clamp(0.875rem, 2vw + 0.5rem, 1.25rem)',
-                      height: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
-                      lineHeight: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
-                      padding: '0 clamp(0.5rem, 1.2vw + 0.25rem, 1.25rem)'
+                      fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
+                      height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                      lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                      padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
                     }}
                   >
                     {calculateTotal(team.players, stat as keyof PlayerGameStats)}
