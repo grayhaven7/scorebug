@@ -619,7 +619,7 @@ export function GamePage() {
           {/* Home Team Score */}
           <div
             ref={homeScoreBoxRef}
-            className="w-[72px] xs:w-[85px] sm:w-[105px] md:w-[120px] lg:w-[135px] xl:w-[150px] 2xl:w-[165px] aspect-square rounded-md xs:rounded-lg sm:rounded-xl md:rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+            className="w-[65px] xs:w-[75px] sm:w-[90px] md:w-[105px] lg:w-[120px] xl:w-[135px] 2xl:w-[150px] aspect-square rounded-md xs:rounded-lg sm:rounded-xl md:rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
             style={{ backgroundColor: homeTeam.primaryColor }}
           >
             <span
@@ -690,7 +690,7 @@ export function GamePage() {
           {/* Away Team Score */}
           <div
             ref={awayScoreBoxRef}
-            className="w-[72px] xs:w-[85px] sm:w-[105px] md:w-[120px] lg:w-[135px] xl:w-[150px] 2xl:w-[165px] aspect-square rounded-md xs:rounded-lg sm:rounded-xl md:rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+            className="w-[65px] xs:w-[75px] sm:w-[90px] md:w-[105px] lg:w-[120px] xl:w-[135px] 2xl:w-[150px] aspect-square rounded-md xs:rounded-lg sm:rounded-xl md:rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
             style={{ backgroundColor: awayTeam.primaryColor }}
           >
             <span
