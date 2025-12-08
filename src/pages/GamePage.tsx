@@ -326,27 +326,57 @@ export function GamePage() {
         }}
       >
         <div className="flex items-center gap-2 sm:gap-2.5 md:gap-2.5 lg:gap-3 mb-1 sm:mb-1.5 md:mb-1.5 lg:mb-2">
-            <span
-              className="text-xs sm:text-sm md:text-sm lg:text-base font-bold tracking-wide truncate flex-1 min-w-0"
-              style={{ fontFamily: currentTheme.headerFont }}
-            >
-              {team.teamName}
-            </span>
-            <button
-              onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
-              className="px-2 py-1 rounded text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 shrink-0"
-              style={{
-                backgroundColor: team.secondaryColor + '30',
-                color: team.secondaryColor,
-                borderRadius: currentTheme.borderRadius,
-              }}
-              title={isExpanded ? 'Collapse stats' : 'Expand stats'}
-            >
-              {isExpanded ? '▼' : '▶'}
-            </button>
-            <span className="text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs opacity-80 shrink-0">
-              {isHome ? 'HOME' : 'AWAY'}
-            </span>
+            {/* Home team: Toggle on left (outer edge), name centered, HOME on right */}
+            {/* Away team: AWAY on left, name centered, Toggle on right (outer edge) */}
+            {isHome ? (
+              <>
+                <button
+                  onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
+                  className="px-2 py-1 rounded text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 shrink-0"
+                  style={{
+                    backgroundColor: team.secondaryColor + '30',
+                    color: team.secondaryColor,
+                    borderRadius: currentTheme.borderRadius,
+                  }}
+                  title={isExpanded ? 'Collapse stats' : 'Expand stats'}
+                >
+                  {isExpanded ? '▼' : '▶'}
+                </button>
+                <span
+                  className="text-xs sm:text-sm md:text-sm lg:text-base font-bold tracking-wide truncate flex-1 min-w-0 text-center"
+                  style={{ fontFamily: currentTheme.headerFont }}
+                >
+                  {team.teamName}
+                </span>
+                <span className="text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs opacity-80 shrink-0">
+                  HOME
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs opacity-80 shrink-0">
+                  AWAY
+                </span>
+                <span
+                  className="text-xs sm:text-sm md:text-sm lg:text-base font-bold tracking-wide truncate flex-1 min-w-0 text-center"
+                  style={{ fontFamily: currentTheme.headerFont }}
+                >
+                  {team.teamName}
+                </span>
+                <button
+                  onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
+                  className="px-2 py-1 rounded text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 shrink-0"
+                  style={{
+                    backgroundColor: team.secondaryColor + '30',
+                    color: team.secondaryColor,
+                    borderRadius: currentTheme.borderRadius,
+                  }}
+                  title={isExpanded ? 'Collapse stats' : 'Expand stats'}
+                >
+                  {isExpanded ? '▼' : '▶'}
+                </button>
+              </>
+            )}
         </div>
         
       </div>
@@ -437,17 +467,23 @@ export function GamePage() {
                   const value = player[stat as keyof PlayerGameStats];
                   return (
                     <>
-                      <td key={stat} className={`${settings.scoreboardConfig.showQuickPoints ? 'px-1 sm:px-2 md:px-2 lg:px-3' : 'px-0.5 sm:px-1 md:px-1 lg:px-1.5'} py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center`}>
+                      <td 
+                        key={stat} 
+                        className="text-center"
+                        style={{
+                          padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.25rem, 0.8vw + 0.2rem, 0.75rem)'
+                        }}
+                      >
                         <button
                           onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
-                          className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded font-bold transition-all hover:scale-110 cursor-pointer ${
-                            animatingCell === cellId ? 'stat-pop' : ''
-                          }`}
+                          className="rounded font-bold transition-all hover:scale-110 cursor-pointer"
                           style={{
                             backgroundColor: currentTheme.accentColor + '20',
                             color: currentTheme.accentColor,
                             borderRadius: currentTheme.borderRadius,
                             fontSize: 'clamp(0.875rem, 2vw + 0.5rem, 1.25rem)',
+                            width: 'clamp(2.25rem, 4vw + 1.5rem, 3rem)',
+                            height: 'clamp(2.25rem, 4vw + 1.5rem, 3rem)',
                           }}
                           title="Click to add, Shift+Click to subtract"
                         >
@@ -455,18 +491,27 @@ export function GamePage() {
                         </button>
                       </td>
                       {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
-                        <td className="px-1 sm:px-2 md:px-2 lg:px-3 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center min-w-[80px] sm:min-w-[100px] md:min-w-[110px] lg:min-w-[120px]">
-                          <div className="flex gap-1 sm:gap-1.5 md:gap-2 lg:gap-2 justify-center">
+                        <td 
+                          className="text-center"
+                          style={{
+                            padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.25rem, 0.8vw + 0.2rem, 0.75rem)',
+                            minWidth: 'clamp(5rem, 8vw + 3rem, 7.5rem)'
+                          }}
+                        >
+                          <div className="flex justify-center" style={{ gap: 'clamp(0.25rem, 0.8vw + 0.2rem, 0.5rem)' }}>
                             {[1, 2, 3].map(pts => (
                               <button
                                 key={pts}
                                 onClick={() => updatePlayerStat(teamType, player.playerId, 'points', pts)}
-                                className="w-7 h-9 sm:w-8 sm:h-10 md:w-9 md:h-11 lg:w-10 lg:h-12 rounded text-[10px] sm:text-xs md:text-xs lg:text-sm font-bold transition-all hover:scale-110 hover:brightness-110 flex items-center justify-center"
+                                className="rounded font-bold transition-all hover:scale-110 hover:brightness-110 flex items-center justify-center"
                                 style={{
                                   backgroundColor: team.primaryColor,
                                   color: team.secondaryColor,
                                   borderRadius: currentTheme.borderRadius,
                                   opacity: 0.9,
+                                  fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 0.875rem)',
+                                  width: 'clamp(1.75rem, 2.5vw + 1rem, 2.5rem)',
+                                  height: 'clamp(2.25rem, 3vw + 1.5rem, 3rem)',
                                 }}
                               >
                                 +{pts}
@@ -488,20 +533,28 @@ export function GamePage() {
                 backgroundColor: team.primaryColor + '20',
               }}
             >
-              <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5"></td>
+              <td style={{ padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)' }}></td>
               <td 
-                className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 font-bold" 
+                className="font-bold" 
                 style={{ 
                   fontFamily: currentTheme.headerFont,
-                  fontSize: 'clamp(0.875rem, 1.5vw + 0.5rem, 1.25rem)'
+                  fontSize: 'clamp(0.875rem, 1.5vw + 0.5rem, 1.25rem)',
+                  padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)'
                 }}
               >
                 TOTAL
               </td>
               {visibleStats.map(stat => (
-                <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-1 sm:px-2 md:px-2 lg:px-3 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center">
+                <td 
+                  key={stat} 
+                  colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} 
+                  className="text-center"
+                  style={{
+                    padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.25rem, 0.8vw + 0.2rem, 0.75rem)'
+                  }}
+                >
                   <span
-                    className="inline-block px-2 sm:px-3 md:px-4 lg:px-5 rounded font-bold"
+                    className="inline-block rounded font-bold"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -509,6 +562,7 @@ export function GamePage() {
                       fontSize: 'clamp(0.875rem, 2vw + 0.5rem, 1.25rem)',
                       height: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
                       lineHeight: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
+                      padding: '0 clamp(0.5rem, 1.2vw + 0.25rem, 1.25rem)'
                     }}
                   >
                     {calculateTotal(team.players, stat as keyof PlayerGameStats)}
