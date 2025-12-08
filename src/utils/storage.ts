@@ -66,3 +66,10 @@ const defaultSettings: AppSettings = {
 export function loadSettings(): AppSettings {
   return safeJsonParse(localStorage.getItem(STORAGE_KEYS.SETTINGS), defaultSettings);
 }
+
+// Clear all localStorage data
+export function clearAllStorage(): void {
+  Object.values(STORAGE_KEYS).forEach(key => {
+    localStorage.removeItem(key);
+  });
+}

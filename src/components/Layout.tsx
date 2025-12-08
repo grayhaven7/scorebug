@@ -43,7 +43,7 @@ export function Layout({ children }: LayoutProps) {
             <div className="flex items-center justify-between h-16">
               <Link to="/" className="flex items-center gap-3">
                 <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg"
+                  className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-base sm:text-lg"
                   style={{
                     backgroundColor: currentTheme.accentColor,
                     fontFamily: currentTheme.headerFont,
@@ -52,7 +52,7 @@ export function Layout({ children }: LayoutProps) {
                   SB
                 </div>
                 <span
-                  className="text-xl font-bold tracking-wide"
+                  className="text-base sm:text-lg md:text-xl font-bold tracking-wide"
                   style={{ fontFamily: currentTheme.headerFont }}
                 >
                   SCOREBUG
@@ -77,8 +77,8 @@ export function Layout({ children }: LayoutProps) {
                           : currentTheme.textSecondary,
                     }}
                   >
-                    <span>{item.icon}</span>
-                    <span className="font-medium">{item.label}</span>
+                    <span className="text-base">{item.icon}</span>
+                    <span className="text-sm sm:text-base font-medium">{item.label}</span>
                   </Link>
                 ))}
               </div>
@@ -120,8 +120,8 @@ export function Layout({ children }: LayoutProps) {
                           : currentTheme.textSecondary,
                     }}
                   >
-                    <span className="text-xl">{item.icon}</span>
-                    <span className="font-medium text-lg">{item.label}</span>
+                    <span className="text-lg">{item.icon}</span>
+                    <span className="font-medium text-base">{item.label}</span>
                   </Link>
                 ))}
               </div>

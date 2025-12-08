@@ -462,11 +462,10 @@ export function GamePage() {
             placeholder="Game Title (e.g. Game 4 of Season)"
             value={currentGame.title || ''}
             onChange={(e) => updateCurrentGame({ title: e.target.value })}
-            className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-1.5 sm:px-2 md:px-3 py-0.5 w-full max-w-md transition-colors focus:outline-none placeholder-white/20 font-bold text-[10px] sm:text-xs md:text-sm"
+            className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-1.5 sm:px-2 md:px-3 py-0.5 w-full max-w-md transition-colors focus:outline-none placeholder-white/20 font-bold text-xs xs:text-sm sm:text-sm md:text-sm"
             style={{
               color: '#ffffff',
               fontFamily: currentTheme.headerFont,
-              fontSize: 'clamp(0.65rem, 1.5vw, 0.9rem)',
               letterSpacing: '0.05em',
               textTransform: 'uppercase',
             }}
@@ -481,7 +480,7 @@ export function GamePage() {
             {/* Home Team Name */}
             <div className="max-w-[100px] xs:max-w-[130px] sm:max-w-[160px] md:max-w-[120px] lg:max-w-[140px] flex flex-col items-center text-center min-w-0">
               <p
-                className="text-[10px] xs:text-xs sm:text-sm md:text-sm font-bold break-words leading-normal"
+                className="text-xs xs:text-sm sm:text-sm md:text-sm font-bold break-words leading-normal"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor
@@ -501,7 +500,7 @@ export function GamePage() {
             {/* Away Team Name */}
             <div className="max-w-[100px] xs:max-w-[130px] sm:max-w-[160px] md:max-w-[120px] lg:max-w-[140px] flex flex-col items-center text-center min-w-0">
               <p
-                className="text-[10px] xs:text-xs sm:text-sm md:text-sm font-bold break-words leading-normal"
+                className="text-xs xs:text-sm sm:text-sm md:text-sm font-bold break-words leading-normal"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor
@@ -528,7 +527,7 @@ export function GamePage() {
                       placeholder="Record"
                       value={homeTeam.record || ''}
                       onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                      className="w-12 xs:w-14 sm:w-16 md:w-18 lg:w-20 px-0.5 py-0 text-[10px] xs:text-xs sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
+                      className="w-12 xs:w-14 sm:w-16 md:w-20 lg:w-24 px-0.5 py-0 text-xs xs:text-sm sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -544,7 +543,7 @@ export function GamePage() {
                       placeholder="Standing"
                       value={homeTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                      className="w-12 xs:w-14 sm:w-16 md:w-18 lg:w-20 px-0.5 py-0 text-[10px] xs:text-xs sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
+                      className="w-14 xs:w-16 sm:w-20 md:w-24 lg:w-28 px-0.5 py-0 text-xs xs:text-sm sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -570,7 +569,7 @@ export function GamePage() {
                       placeholder="Standing"
                       value={awayTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                      className="w-12 xs:w-14 sm:w-16 md:w-18 lg:w-20 px-0.5 py-0 text-[10px] xs:text-xs sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
+                      className="w-14 xs:w-16 sm:w-20 md:w-24 lg:w-28 px-0.5 py-0 text-xs xs:text-sm sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -586,7 +585,7 @@ export function GamePage() {
                       placeholder="Record"
                       value={awayTeam.record || ''}
                       onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                      className="w-12 xs:w-14 sm:w-16 md:w-18 lg:w-20 px-0.5 py-0 text-[10px] xs:text-xs sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
+                      className="w-12 xs:w-14 sm:w-16 md:w-20 lg:w-24 px-0.5 py-0 text-xs xs:text-sm sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -660,7 +659,7 @@ export function GamePage() {
                   type="text"
                   value={timeRemaining}
                   onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                  className="w-10 xs:w-12 sm:w-14 md:w-16 lg:w-18 text-center bg-transparent border-b-2 text-xs xs:text-sm sm:text-base md:text-base font-mono focus:outline-none font-bold"
+                  className="w-10 xs:w-12 sm:w-14 md:w-16 lg:w-20 text-center bg-transparent border-b-2 text-xs xs:text-sm sm:text-base md:text-base font-mono focus:outline-none font-bold"
                   style={{
                     borderColor: currentTheme.accentColor,
                     color: currentTheme.textColor,
