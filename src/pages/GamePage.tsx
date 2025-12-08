@@ -56,7 +56,6 @@ export function GamePage() {
     updateScoreboardConfig,
   } = useApp();
 
-  const [animatingCell, setAnimatingCell] = useState<string | null>(null);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showTargetModal, setShowTargetModal] = useState(false);
@@ -245,11 +244,6 @@ export function GamePage() {
   ) => {
     const delta = event.shiftKey ? -1 : 1;
     updatePlayerStat(teamType, playerId, stat, delta);
-
-    // Animate
-    const cellId = `${teamType}-${playerId}-${stat}`;
-    setAnimatingCell(cellId);
-    setTimeout(() => setAnimatingCell(null), 200);
   };
 
   // Handle quarter change
@@ -531,7 +525,6 @@ export function GamePage() {
                   {player.playerName}
                 </td>
                 {visibleStats.map(stat => {
-                  const cellId = `${teamType}-${player.playerId}-${stat}`;
                   const value = player[stat as keyof PlayerGameStats];
                   return (
                     <>
