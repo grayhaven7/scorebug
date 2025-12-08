@@ -523,8 +523,8 @@ export function GamePage() {
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
                   textAlign: 'center',
-                  focusRingColor: currentTheme.accentColor + '50'
-                }}
+                  '--tw-ring-color': currentTheme.accentColor + '50'
+                } as React.CSSProperties & { '--tw-ring-color'?: string }}
                 title={`Full name: ${homeTeam.teamName}`}
               />
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
@@ -639,8 +639,8 @@ export function GamePage() {
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
                   textAlign: 'center',
-                  focusRingColor: currentTheme.accentColor + '50'
-                }}
+                  '--tw-ring-color': currentTheme.accentColor + '50'
+                } as React.CSSProperties & { '--tw-ring-color'?: string }}
                 title={`Full name: ${awayTeam.teamName}`}
               />
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
@@ -900,8 +900,8 @@ export function GamePage() {
                             fontFamily: currentTheme.headerFont,
                             color: currentTheme.textColor,
                             textAlign: 'center',
-                            focusRingColor: currentTheme.accentColor + '50'
-                          }}
+                            '--tw-ring-color': currentTheme.accentColor + '50'
+                          } as React.CSSProperties & { '--tw-ring-color'?: string }}
                           title={`Full name: ${homeTeam.teamName}`}
                         />
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
@@ -1014,8 +1014,8 @@ export function GamePage() {
                             fontFamily: currentTheme.headerFont,
                             color: currentTheme.textColor,
                             textAlign: 'center',
-                            focusRingColor: currentTheme.accentColor + '50'
-                          }}
+                            '--tw-ring-color': currentTheme.accentColor + '50'
+                          } as React.CSSProperties & { '--tw-ring-color'?: string }}
                           title={`Full name: ${awayTeam.teamName}`}
                         />
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
