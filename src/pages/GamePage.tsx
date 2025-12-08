@@ -331,67 +331,104 @@ export function GamePage() {
           gap: 'clamp(0.5rem, 1vw + 0.3rem, 0.75rem)',
           marginBottom: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.5rem)'
         }}>
-            {/* Home team: Toggle on left (outer edge), name centered, HOME on right */}
-            {/* Away team: AWAY on left, name centered, Toggle on right (outer edge) */}
-            {isHome ? (
-              <>
-                <button
-                  onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
-                  className="rounded font-medium transition-all hover:opacity-80 shrink-0"
-                  style={{
-                    backgroundColor: team.secondaryColor + '30',
-                    color: team.secondaryColor,
-                    borderRadius: currentTheme.borderRadius,
-                    fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)',
-                    padding: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.375rem) clamp(0.375rem, 0.8vw + 0.2rem, 0.5rem)'
-                  }}
-                  title={isExpanded ? 'Collapse stats' : 'Expand stats'}
-                >
-                  {isExpanded ? '▼' : '▶'}
-                </button>
-                <span
-                  className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
-                  style={{ 
-                    fontFamily: currentTheme.headerFont,
-                    fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 1rem)'
-                  }}
-                >
-                  {team.teamName}
-                </span>
-                <span className="opacity-80 shrink-0" style={{ fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)' }}>
-                  HOME
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="opacity-80 shrink-0" style={{ fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)' }}>
-                  AWAY
-                </span>
-                <span
-                  className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
-                  style={{ 
-                    fontFamily: currentTheme.headerFont,
-                    fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 1rem)'
-                  }}
-                >
-                  {team.teamName}
-                </span>
-                <button
-                  onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
-                  className="rounded font-medium transition-all hover:opacity-80 shrink-0"
-                  style={{
-                    backgroundColor: team.secondaryColor + '30',
-                    color: team.secondaryColor,
-                    borderRadius: currentTheme.borderRadius,
-                    fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)',
-                    padding: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.375rem) clamp(0.375rem, 0.8vw + 0.2rem, 0.5rem)'
-                  }}
-                  title={isExpanded ? 'Collapse stats' : 'Expand stats'}
-                >
-                  {isExpanded ? '▼' : '▶'}
-                </button>
-              </>
-            )}
+            {/* Mobile: Both teams have [Toggle] [Team Name] [HOME/AWAY] */}
+            {/* Desktop: Home team [Toggle] [Team Name] [HOME], Away team [AWAY] [Team Name] [Toggle] */}
+            {/* Mobile layout - same for both teams */}
+            <div className="flex items-center md:hidden w-full" style={{ 
+              gap: 'clamp(0.5rem, 1vw + 0.3rem, 0.75rem)'
+            }}>
+              <button
+                onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
+                className="rounded font-medium transition-all hover:opacity-80 shrink-0"
+                style={{
+                  backgroundColor: team.secondaryColor + '30',
+                  color: team.secondaryColor,
+                  borderRadius: currentTheme.borderRadius,
+                  fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)',
+                  padding: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.375rem) clamp(0.375rem, 0.8vw + 0.2rem, 0.5rem)'
+                }}
+                title={isExpanded ? 'Collapse stats' : 'Expand stats'}
+              >
+                {isExpanded ? '▼' : '▶'}
+              </button>
+              <span
+                className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
+                style={{ 
+                  fontFamily: currentTheme.headerFont,
+                  fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 1rem)'
+                }}
+              >
+                {team.teamName}
+              </span>
+              <span className="opacity-80 shrink-0" style={{ fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)' }}>
+                {isHome ? 'HOME' : 'AWAY'}
+              </span>
+            </div>
+            
+            {/* Desktop layout - symmetrical */}
+            <div className="hidden md:flex items-center w-full" style={{ 
+              gap: 'clamp(0.5rem, 1vw + 0.3rem, 0.75rem)'
+            }}>
+              {isHome ? (
+                <>
+                  <button
+                    onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
+                    className="rounded font-medium transition-all hover:opacity-80 shrink-0"
+                    style={{
+                      backgroundColor: team.secondaryColor + '30',
+                      color: team.secondaryColor,
+                      borderRadius: currentTheme.borderRadius,
+                      fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)',
+                      padding: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.375rem) clamp(0.375rem, 0.8vw + 0.2rem, 0.5rem)'
+                    }}
+                    title={isExpanded ? 'Collapse stats' : 'Expand stats'}
+                  >
+                    {isExpanded ? '▼' : '▶'}
+                  </button>
+                  <span
+                    className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
+                    style={{ 
+                      fontFamily: currentTheme.headerFont,
+                      fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 1rem)'
+                    }}
+                  >
+                    {team.teamName}
+                  </span>
+                  <span className="opacity-80 shrink-0" style={{ fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)' }}>
+                    HOME
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="opacity-80 shrink-0" style={{ fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)' }}>
+                    AWAY
+                  </span>
+                  <span
+                    className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
+                    style={{ 
+                      fontFamily: currentTheme.headerFont,
+                      fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 1rem)'
+                    }}
+                  >
+                    {team.teamName}
+                  </span>
+                  <button
+                    onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
+                    className="rounded font-medium transition-all hover:opacity-80 shrink-0"
+                    style={{
+                      backgroundColor: team.secondaryColor + '30',
+                      color: team.secondaryColor,
+                      borderRadius: currentTheme.borderRadius,
+                      fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)',
+                      padding: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.375rem) clamp(0.375rem, 0.8vw + 0.2rem, 0.5rem)'
+                    }}
+                    title={isExpanded ? 'Collapse stats' : 'Expand stats'}
+                  >
+                    {isExpanded ? '▼' : '▶'}
+                  </button>
+                </>
+              )}
+            </div>
         </div>
         
       </div>
