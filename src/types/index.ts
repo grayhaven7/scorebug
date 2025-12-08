@@ -131,7 +131,7 @@ export const defaultScoreboardConfig: ScoreboardConfig = {
   showTimer: true,
   showQuarter: true,
   showTargetBar: true,
-  showQuickPoints: true,
+  showQuickPoints: false,
   showRecord: true,
   showStanding: true,
   showTitle: true,

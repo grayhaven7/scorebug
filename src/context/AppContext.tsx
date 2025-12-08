@@ -92,6 +92,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showRecord: loadedSettings.scoreboardConfig?.showRecord ?? defaultScoreboardConfig.showRecord,
         showStanding: loadedSettings.scoreboardConfig?.showStanding ?? defaultScoreboardConfig.showStanding,
         showTitle: loadedSettings.scoreboardConfig?.showTitle ?? defaultScoreboardConfig.showTitle,
+        showQuickPoints: loadedSettings.scoreboardConfig?.showQuickPoints ?? defaultScoreboardConfig.showQuickPoints,
       },
       customThemes: patchedCustomThemes,
       defaultTargetScore: loadedSettings.defaultTargetScore ?? 21,

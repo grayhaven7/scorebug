@@ -357,14 +357,22 @@ export function GamePage() {
           <thead>
             <tr style={{ backgroundColor: currentTheme.backgroundColor }}>
               <th
-                className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-left text-[10px] sm:text-xs md:text-xs lg:text-sm font-medium w-10 sm:w-12 md:w-12 lg:w-14"
-                style={{ color: currentTheme.textSecondary }}
+                className="text-left font-medium w-10 sm:w-12 md:w-12 lg:w-14"
+                style={{ 
+                  color: currentTheme.textSecondary,
+                  fontSize: 'clamp(0.625rem, 1.2vw + 0.4rem, 0.875rem)',
+                  padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)'
+                }}
               >
                 #
               </th>
               <th
-                className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-left text-[10px] sm:text-xs md:text-xs lg:text-sm font-medium min-w-[100px] sm:min-w-[120px] md:min-w-[140px] lg:min-w-[160px]"
-                style={{ color: currentTheme.textSecondary }}
+                className="text-left font-medium min-w-[100px] sm:min-w-[120px] md:min-w-[140px] lg:min-w-[160px]"
+                style={{ 
+                  color: currentTheme.textSecondary,
+                  fontSize: 'clamp(0.625rem, 1.2vw + 0.4rem, 0.875rem)',
+                  padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)'
+                }}
               >
                 PLAYER
               </th>
@@ -372,8 +380,12 @@ export function GamePage() {
                 <th
                   key={stat}
                   colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1}
-                  className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center text-[10px] sm:text-xs md:text-xs lg:text-sm font-medium"
-                  style={{ color: currentTheme.textSecondary }}
+                  className="text-center font-medium"
+                  style={{ 
+                    color: currentTheme.textSecondary,
+                    fontSize: 'clamp(0.625rem, 1.2vw + 0.4rem, 0.875rem)',
+                    padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)'
+                  }}
                 >
                   {statLabels[stat].slice(0, 3)}
                 </th>
@@ -393,18 +405,33 @@ export function GamePage() {
                       : currentTheme.backgroundColor + '40',
                 }}
               >
-                <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5">
+                <td style={{ padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)' }}>
                   <span
-                    className="inline-block w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded text-center text-xs sm:text-sm md:text-base lg:text-lg font-bold leading-7 sm:leading-8 md:leading-9 lg:leading-10"
+                    className="inline-block rounded text-center font-bold"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
+                      fontSize: 'clamp(0.75rem, 1.5vw + 0.5rem, 1.125rem)',
+                      width: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
+                      height: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
+                      lineHeight: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
                     }}
                   >
                     {player.jerseyNumber}
                   </span>
                 </td>
-                <td className={`px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 font-medium truncate max-w-[120px] sm:max-w-[140px] md:max-w-[160px] lg:max-w-[180px] ${settings.scoreboardConfig.showQuickPoints ? 'text-[10px] sm:text-xs md:text-xs lg:text-sm' : 'text-xs sm:text-sm md:text-base lg:text-lg pr-1 sm:pr-1 md:pr-1 lg:pr-1.5'}`}>{player.playerName}</td>
+                <td 
+                  className="font-medium truncate max-w-[120px] sm:max-w-[140px] md:max-w-[160px] lg:max-w-[180px]"
+                  style={{
+                    fontSize: settings.scoreboardConfig.showQuickPoints 
+                      ? 'clamp(0.625rem, 1vw + 0.4rem, 0.875rem)'
+                      : 'clamp(0.75rem, 1.5vw + 0.5rem, 1.125rem)',
+                    padding: 'clamp(0.375rem, 1vw + 0.25rem, 0.625rem) clamp(0.5rem, 1.2vw + 0.25rem, 1rem)',
+                    paddingRight: 'clamp(0.25rem, 0.8vw + 0.2rem, 0.625rem)'
+                  }}
+                >
+                  {player.playerName}
+                </td>
                 {visibleStats.map(stat => {
                   const cellId = `${teamType}-${player.playerId}-${stat}`;
                   const value = player[stat as keyof PlayerGameStats];
@@ -413,13 +440,14 @@ export function GamePage() {
                       <td key={stat} className={`${settings.scoreboardConfig.showQuickPoints ? 'px-1 sm:px-2 md:px-2 lg:px-3' : 'px-0.5 sm:px-1 md:px-1 lg:px-1.5'} py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center`}>
                         <button
                           onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
-                          className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded font-bold text-sm sm:text-base md:text-lg lg:text-xl transition-all hover:scale-110 cursor-pointer ${
+                          className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded font-bold transition-all hover:scale-110 cursor-pointer ${
                             animatingCell === cellId ? 'stat-pop' : ''
                           }`}
                           style={{
                             backgroundColor: currentTheme.accentColor + '20',
                             color: currentTheme.accentColor,
                             borderRadius: currentTheme.borderRadius,
+                            fontSize: 'clamp(0.875rem, 2vw + 0.5rem, 1.25rem)',
                           }}
                           title="Click to add, Shift+Click to subtract"
                         >
@@ -461,17 +489,26 @@ export function GamePage() {
               }}
             >
               <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5"></td>
-              <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-sm sm:text-base md:text-lg lg:text-xl font-bold" style={{ fontFamily: currentTheme.headerFont }}>
+              <td 
+                className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 font-bold" 
+                style={{ 
+                  fontFamily: currentTheme.headerFont,
+                  fontSize: 'clamp(0.875rem, 1.5vw + 0.5rem, 1.25rem)'
+                }}
+              >
                 TOTAL
               </td>
               {visibleStats.map(stat => (
                 <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-1 sm:px-2 md:px-2 lg:px-3 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center">
                   <span
-                    className="inline-block px-2 sm:px-3 md:px-4 lg:px-5 h-7 sm:h-8 md:h-9 lg:h-10 leading-7 sm:leading-8 md:leading-9 lg:leading-10 rounded font-bold text-sm sm:text-base md:text-lg lg:text-xl"
+                    className="inline-block px-2 sm:px-3 md:px-4 lg:px-5 rounded font-bold"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
                       borderRadius: currentTheme.borderRadius,
+                      fontSize: 'clamp(0.875rem, 2vw + 0.5rem, 1.25rem)',
+                      height: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
+                      lineHeight: 'clamp(1.75rem, 3.5vw + 1rem, 2.5rem)',
                     }}
                   >
                     {calculateTotal(team.players, stat as keyof PlayerGameStats)}
