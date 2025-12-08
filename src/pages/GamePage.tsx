@@ -319,15 +319,15 @@ export function GamePage() {
         }}
       >
         <div className="flex items-center gap-2 sm:gap-2.5 md:gap-2.5 lg:gap-3 mb-1 sm:mb-1.5 md:mb-1.5 lg:mb-2">
-          <span
-            className="text-base sm:text-lg md:text-lg lg:text-xl font-bold tracking-wide truncate flex-1 min-w-0"
-            style={{ fontFamily: currentTheme.headerFont }}
-          >
-            {team.teamName}
-          </span>
-          <span className="ml-auto text-xs sm:text-sm md:text-sm lg:text-base opacity-80 shrink-0">
-            {isHome ? 'HOME' : 'AWAY'}
-          </span>
+            <span
+              className="text-xs sm:text-sm md:text-sm lg:text-base font-bold tracking-wide truncate flex-1 min-w-0"
+              style={{ fontFamily: currentTheme.headerFont }}
+            >
+              {team.teamName}
+            </span>
+            <span className="ml-auto text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs opacity-80 shrink-0">
+              {isHome ? 'HOME' : 'AWAY'}
+            </span>
         </div>
         
       </div>
@@ -338,13 +338,13 @@ export function GamePage() {
           <thead>
             <tr style={{ backgroundColor: currentTheme.backgroundColor }}>
               <th
-                className="px-2 sm:px-3 md:px-3 lg:px-4 py-2 sm:py-2.5 md:py-2 lg:py-2.5 text-left text-sm sm:text-base md:text-base lg:text-lg font-medium w-10 sm:w-12 md:w-12 lg:w-14"
+                className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-left text-[10px] sm:text-xs md:text-xs lg:text-sm font-medium w-10 sm:w-12 md:w-12 lg:w-14"
                 style={{ color: currentTheme.textSecondary }}
               >
                 #
               </th>
               <th
-                className="px-2 sm:px-3 md:px-3 lg:px-4 py-2 sm:py-2.5 md:py-2 lg:py-2.5 text-left text-sm sm:text-base md:text-base lg:text-lg font-medium min-w-[100px] sm:min-w-[120px] md:min-w-[140px] lg:min-w-[160px]"
+                className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-left text-[10px] sm:text-xs md:text-xs lg:text-sm font-medium min-w-[100px] sm:min-w-[120px] md:min-w-[140px] lg:min-w-[160px]"
                 style={{ color: currentTheme.textSecondary }}
               >
                 PLAYER
@@ -353,7 +353,7 @@ export function GamePage() {
                 <th
                   key={stat}
                   colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1}
-                  className="px-2 sm:px-3 md:px-3 lg:px-4 py-2 sm:py-2.5 md:py-2 lg:py-2.5 text-center text-sm sm:text-base md:text-base lg:text-lg font-medium"
+                  className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center text-[10px] sm:text-xs md:text-xs lg:text-sm font-medium"
                   style={{ color: currentTheme.textSecondary }}
                 >
                   {statLabels[stat].slice(0, 3)}
@@ -374,9 +374,9 @@ export function GamePage() {
                       : currentTheme.backgroundColor + '40',
                 }}
               >
-                <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-2 sm:py-2.5 md:py-2 lg:py-2.5">
+                <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5">
                   <span
-                    className="inline-block w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-11 lg:h-11 rounded text-center text-sm sm:text-base md:text-base lg:text-lg font-bold leading-8 sm:leading-9 md:leading-10 lg:leading-11"
+                    className="inline-block w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded text-center text-[10px] sm:text-xs md:text-xs lg:text-sm font-bold leading-7 sm:leading-8 md:leading-9 lg:leading-10"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -385,16 +385,16 @@ export function GamePage() {
                     {player.jerseyNumber}
                   </span>
                 </td>
-                <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-2 sm:py-2.5 md:py-2 lg:py-2.5 font-medium text-sm sm:text-base md:text-base lg:text-lg truncate max-w-[120px] sm:max-w-[140px] md:max-w-[160px] lg:max-w-[180px]">{player.playerName}</td>
+                <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 font-medium text-[10px] sm:text-xs md:text-xs lg:text-sm truncate max-w-[120px] sm:max-w-[140px] md:max-w-[160px] lg:max-w-[180px]">{player.playerName}</td>
                 {enabledStats.map(stat => {
                   const cellId = `${teamType}-${player.playerId}-${stat}`;
                   const value = player[stat as keyof PlayerGameStats];
                   return (
                     <>
-                      <td key={stat} className="px-1 sm:px-2 md:px-2 lg:px-3 py-2 sm:py-2.5 md:py-2 lg:py-2.5 text-center">
+                      <td key={stat} className="px-1 sm:px-2 md:px-2 lg:px-3 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center">
                         <button
                           onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
-                          className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded font-bold text-base sm:text-lg md:text-lg lg:text-xl transition-all hover:scale-110 cursor-pointer ${
+                          className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded font-bold text-xs sm:text-sm md:text-sm lg:text-base transition-all hover:scale-110 cursor-pointer ${
                             animatingCell === cellId ? 'stat-pop' : ''
                           }`}
                           style={{
@@ -408,13 +408,13 @@ export function GamePage() {
                         </button>
                       </td>
                       {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
-                        <td className="px-1 sm:px-2 md:px-2 lg:px-3 py-2 sm:py-2.5 md:py-2 lg:py-2.5 text-center min-w-[80px] sm:min-w-[100px] md:min-w-[110px] lg:min-w-[120px]">
+                        <td className="px-1 sm:px-2 md:px-2 lg:px-3 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center min-w-[80px] sm:min-w-[100px] md:min-w-[110px] lg:min-w-[120px]">
                           <div className="flex gap-1 sm:gap-1.5 md:gap-2 lg:gap-2 justify-center">
                             {[1, 2, 3].map(pts => (
                               <button
                                 key={pts}
                                 onClick={() => updatePlayerStat(teamType, player.playerId, 'points', pts)}
-                                className="w-8 h-10 sm:w-9 sm:h-11 md:w-10 md:h-12 lg:w-11 lg:h-14 rounded text-sm sm:text-base md:text-base lg:text-lg font-bold transition-all hover:scale-110 hover:brightness-110 flex items-center justify-center"
+                                className="w-7 h-9 sm:w-8 sm:h-10 md:w-9 md:h-11 lg:w-10 lg:h-12 rounded text-[10px] sm:text-xs md:text-xs lg:text-sm font-bold transition-all hover:scale-110 hover:brightness-110 flex items-center justify-center"
                                 style={{
                                   backgroundColor: team.primaryColor,
                                   color: team.secondaryColor,
@@ -441,14 +441,14 @@ export function GamePage() {
                 backgroundColor: team.primaryColor + '20',
               }}
             >
-              <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-2 sm:py-2.5 md:py-2 lg:py-2.5"></td>
-              <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-2 sm:py-2.5 md:py-2 lg:py-2.5 text-base sm:text-lg md:text-lg lg:text-xl font-bold" style={{ fontFamily: currentTheme.headerFont }}>
+              <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5"></td>
+              <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-xs sm:text-sm md:text-sm lg:text-base font-bold" style={{ fontFamily: currentTheme.headerFont }}>
                 TOTAL
               </td>
               {enabledStats.map(stat => (
-                <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-1 sm:px-2 md:px-2 lg:px-3 py-2 sm:py-2.5 md:py-2 lg:py-2.5 text-center">
+                <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-1 sm:px-2 md:px-2 lg:px-3 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center">
                   <span
-                    className="inline-block px-3 sm:px-4 md:px-5 lg:px-6 h-8 sm:h-9 md:h-10 lg:h-11 leading-8 sm:leading-9 md:leading-10 lg:leading-11 rounded font-bold text-base sm:text-lg md:text-lg lg:text-xl"
+                    className="inline-block px-2 sm:px-3 md:px-4 lg:px-5 h-7 sm:h-8 md:h-9 lg:h-10 leading-7 sm:leading-8 md:leading-9 lg:leading-10 rounded font-bold text-xs sm:text-sm md:text-sm lg:text-base"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -539,7 +539,7 @@ export function GamePage() {
             </div>
             <div
               ref={homeScoreBoxRef}
-              className="w-[65px] xs:w-[75px] sm:w-[90px] md:w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-md xs:rounded-lg sm:rounded-xl md:rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+              className="w-[65px] xs:w-[75px] sm:w-[90px] md:w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
               style={{ backgroundColor: homeTeam.primaryColor }}
             >
               <span
@@ -657,7 +657,7 @@ export function GamePage() {
             </div>
             <div
               ref={awayScoreBoxRef}
-              className="w-[65px] xs:w-[75px] sm:w-[90px] md:w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-md xs:rounded-lg sm:rounded-xl md:rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+              className="w-[65px] xs:w-[75px] sm:w-[90px] md:w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
               style={{ backgroundColor: awayTeam.primaryColor }}
             >
               <span
@@ -678,7 +678,7 @@ export function GamePage() {
   );
 
   const renderActionBar = () => (
-    <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between mb-4 md:mb-2 lg:mb-3 gap-3 md:gap-2 lg:gap-3 p-2 sm:p-3 md:p-2 lg:p-3">
+    <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between mb-2 md:mb-2 lg:mb-2 gap-3 md:gap-2 lg:gap-3 p-2 sm:p-3 md:p-2 lg:p-2">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap w-full md:w-auto justify-center md:justify-start gap-2 md:gap-1.5 lg:gap-2">
         <button
           onClick={() => setShowExitConfirm(true)}
@@ -864,18 +864,20 @@ export function GamePage() {
             </div>
           </div>
 
-          <div className="max-w-full mx-auto px-2 sm:px-3 md:px-3 lg:px-4 py-4 sm:py-5 md:py-3 lg:py-4 w-full overflow-x-hidden">
+          <div className="max-w-full mx-auto px-2 sm:px-3 md:px-3 lg:px-4 py-2 md:py-2 lg:py-3 w-full overflow-x-hidden">
             {renderActionBar()}
 
-            {/* Desktop: Three Column Layout - Home Stats | Scoreboard | Away Stats */}
-            <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] gap-2 lg:gap-3 items-start">
-              {/* Home Team Stats */}
-              <div className="min-h-0 overflow-x-auto overflow-y-hidden h-full flex flex-col">
-                {renderTeamStats(homeTeam, 'home', true)}
-              </div>
+            {/* Desktop: Wrapper for Tables and Target Bar */}
+            <div className="hidden md:flex md:flex-col" style={{ height: showTargetBar && currentGame.targetScore ? 'calc(100vh - 120px)' : 'calc(100vh - 80px)', minHeight: 0 }}>
+              {/* Desktop: Three Column Layout - Home Stats | Scoreboard | Away Stats */}
+              <div className="grid grid-cols-[1fr_auto_1fr] gap-2 lg:gap-3 items-start flex-1 min-h-0">
+                {/* Home Team Stats */}
+                <div className="min-h-0 overflow-x-auto overflow-y-auto flex flex-col h-full">
+                  {renderTeamStats(homeTeam, 'home', true)}
+                </div>
 
-              {/* Scoreboard Section - Middle */}
-              <div className="flex flex-col items-center justify-center sticky top-4 self-start w-[200px] md:w-[220px] lg:w-[260px] xl:w-[300px] h-[calc(100vh-120px)] md:h-[calc(100vh-100px)] shrink-0">
+                {/* Scoreboard Section - Middle */}
+                <div className="flex flex-col items-center justify-center sticky top-4 self-start w-[280px] md:w-[280px] lg:w-[320px] xl:w-[360px] h-full shrink-0">
                 <div 
                   className="rounded-lg p-2 lg:p-3 shadow-xl w-full flex flex-col"
                   style={{ backgroundColor: currentTheme.secondaryBackground }}
@@ -905,7 +907,7 @@ export function GamePage() {
                     <div className="flex flex-col items-center gap-1 lg:gap-1.5 flex-1 min-w-0">
                       <div className="flex flex-col items-center gap-0.5 lg:gap-1 w-full shrink-0">
                         <p
-                          className="text-xs lg:text-sm font-bold text-center w-full truncate px-1"
+                          className="text-sm lg:text-base font-bold text-center w-full truncate px-1"
                           style={{ 
                             fontFamily: currentTheme.headerFont,
                             color: currentTheme.textColor,
@@ -950,7 +952,7 @@ export function GamePage() {
                       </div>
                       <div
                         ref={homeScoreBoxRef}
-                        className="w-full max-w-[90px] lg:max-w-[100px] xl:max-w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
+                        className="w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
                         style={{ backgroundColor: homeTeam.primaryColor }}
                       >
                         <span
@@ -972,7 +974,7 @@ export function GamePage() {
                         <div className="flex items-center gap-1 lg:gap-1.5">
                           <button
                             onClick={() => handleQuarterChange(-1)}
-                            className="w-5 h-5 lg:w-6 lg:h-6 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95"
+                            className="w-5 h-5 lg:w-6 lg:h-6 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95 shrink-0"
                             style={{
                               color: currentTheme.accentColor,
                             }}
@@ -988,7 +990,7 @@ export function GamePage() {
                           </span>
                           <button
                             onClick={() => handleQuarterChange(1)}
-                            className="w-5 h-5 lg:w-6 lg:h-6 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95"
+                            className="w-5 h-5 lg:w-6 lg:h-6 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95 shrink-0"
                             style={{
                               color: currentTheme.accentColor,
                             }}
@@ -1003,7 +1005,7 @@ export function GamePage() {
                           type="text"
                           value={timeRemaining}
                           onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                          className="w-full max-w-[80px] lg:max-w-[90px] text-center bg-transparent border-b-2 text-xs lg:text-sm xl:text-base font-mono focus:outline-none font-bold"
+                          className="w-[60px] lg:w-[70px] text-center bg-transparent border-b-2 text-sm lg:text-base xl:text-lg font-mono focus:outline-none font-bold"
                           style={{
                             borderColor: currentTheme.accentColor,
                             color: currentTheme.textColor,
@@ -1011,7 +1013,7 @@ export function GamePage() {
                         />
                       )}
                       {currentGame.targetScore && (
-                        <div className="text-[7px] lg:text-[8px] font-bold whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
+                        <div className="text-[8px] lg:text-[9px] font-bold whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
                           T: {currentGame.targetScore}
                         </div>
                       )}
@@ -1021,7 +1023,7 @@ export function GamePage() {
                     <div className="flex flex-col items-center gap-1 lg:gap-1.5 flex-1 min-w-0">
                       <div className="flex flex-col items-center gap-0.5 lg:gap-1 w-full shrink-0">
                         <p
-                          className="text-xs lg:text-sm font-bold text-center w-full truncate px-1"
+                          className="text-sm lg:text-base font-bold text-center w-full truncate px-1"
                           style={{ 
                             fontFamily: currentTheme.headerFont,
                             color: currentTheme.textColor,
@@ -1066,7 +1068,7 @@ export function GamePage() {
                       </div>
                       <div
                         ref={awayScoreBoxRef}
-                        className="w-full max-w-[90px] lg:max-w-[100px] xl:max-w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
+                        className="w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
                         style={{ backgroundColor: awayTeam.primaryColor }}
                       >
                         <span
@@ -1082,27 +1084,30 @@ export function GamePage() {
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Target Score Bar - Inside Scoreboard */}
-                  {showTargetBar && currentGame.targetScore && (
-                    <div className="flex justify-center w-full mt-2 lg:mt-2.5 shrink-0">
-                      <TargetScoreBar
-                        homeScore={homeScore}
-                        awayScore={awayScore}
-                        targetScore={currentGame.targetScore}
-                        homeColor={homeTeam.primaryColor}
-                        awayColor={awayTeam.primaryColor}
-                        theme={currentTheme}
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
 
-              {/* Away Team Stats */}
-              <div className="min-h-0 overflow-x-auto overflow-y-hidden h-full flex flex-col">
-                {renderTeamStats(awayTeam, 'away', false)}
+                {/* Away Team Stats */}
+                <div className="min-h-0 overflow-x-auto overflow-y-auto flex flex-col h-full">
+                  {renderTeamStats(awayTeam, 'away', false)}
+                </div>
               </div>
+
+              {/* Desktop: Target Score Bar - Full Width Below Tables */}
+              {showTargetBar && currentGame.targetScore && (
+                <div className="flex justify-center w-full mt-2 lg:mt-3 shrink-0">
+                  <div className="w-full">
+                    <TargetScoreBar
+                      homeScore={homeScore}
+                      awayScore={awayScore}
+                      targetScore={currentGame.targetScore}
+                      homeColor={homeTeam.primaryColor}
+                      awayColor={awayTeam.primaryColor}
+                      theme={currentTheme}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Mobile: Two Column Layout */}
