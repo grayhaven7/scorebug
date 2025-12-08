@@ -488,146 +488,6 @@ export function GamePage() {
       )}
 
       <div className="flex flex-col items-center gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-1 shrink-0">
-        {/* Team Names Row - Above Score Boxes */}
-        <div className="flex items-center justify-center w-full mb-0 px-1 xs:px-1.5 sm:px-2 md:px-2 lg:px-2.5 min-w-0">
-          <div className="flex items-center justify-center w-full">
-            {/* Left spacer - balances the layout */}
-            <div className="flex-1"></div>
-            
-            {/* Team Names Group - Centered together */}
-            <div className="flex items-center justify-center gap-2 xs:gap-2.5 sm:gap-3 md:gap-2.5 lg:gap-3 shrink-0">
-              {/* Home Team Name */}
-              <div className="flex flex-col items-end text-right min-w-0 max-w-[120px] xs:max-w-[140px] sm:max-w-[160px] md:max-w-[140px] lg:max-w-[160px] px-1 xs:px-1.5 sm:px-2 md:px-1.5 lg:px-2">
-                <p
-                  className="text-sm xs:text-base sm:text-base md:text-sm lg:text-base font-bold break-words leading-tight line-clamp-2 w-full"
-                  style={{ 
-                    fontFamily: currentTheme.headerFont,
-                    color: currentTheme.textColor
-                  }}
-                  title={homeTeam.teamName}
-                >
-                  {homeTeam.teamName}
-                </p>
-              </div>
-              
-              {/* Center spacer - matches quarter/timer width below */}
-              {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) ? (
-                <div className="hidden xs:flex flex-col items-center shrink-0 min-w-[70px] xs:min-w-[85px] sm:min-w-[100px] md:min-w-[70px] lg:min-w-[80px]">
-                </div>
-              ) : (
-                <div className="w-3 xs:w-4 sm:w-5 md:w-4 lg:w-5 shrink-0"></div>
-              )}
-
-              {/* Away Team Name */}
-              <div className="flex flex-col items-start text-left min-w-0 max-w-[120px] xs:max-w-[140px] sm:max-w-[160px] md:max-w-[140px] lg:max-w-[160px] px-1 xs:px-1.5 sm:px-2 md:px-1.5 lg:px-2">
-                <p
-                  className="text-sm xs:text-base sm:text-base md:text-sm lg:text-base font-bold break-words leading-tight line-clamp-2 w-full"
-                  style={{ 
-                    fontFamily: currentTheme.headerFont,
-                    color: currentTheme.textColor
-                  }}
-                  title={awayTeam.teamName}
-                >
-                  {awayTeam.teamName}
-                </p>
-              </div>
-            </div>
-            
-            {/* Right spacer - balances the layout */}
-            <div className="flex-1"></div>
-          </div>
-        </div>
-
-        {/* Record/Standing Row */}
-        <div className="flex flex-col w-full gap-0 px-1 xs:px-1.5 sm:px-2 md:px-2 lg:px-2.5 min-w-0">
-          {/* Record/Standing Row */}
-          {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-            <div className="flex items-center justify-center w-full min-w-0">
-              <div className="flex items-center justify-center gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-1.5 lg:gap-2 w-full max-w-full">
-                {/* Home Team Record/Standing */}
-                <div className="flex gap-0.5 xs:gap-0.5 sm:gap-1 items-center flex-1 min-w-0 justify-end">
-                  {settings.scoreboardConfig.showRecord && (
-                    <input
-                      type="text"
-                      placeholder="Record"
-                      value={homeTeam.record || ''}
-                      onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                      className="w-10 xs:w-12 sm:w-14 md:w-16 lg:w-20 xl:w-24 px-0.5 py-0 text-[9px] xs:text-[10px] sm:text-xs md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
-                      style={{ 
-                        color: currentTheme.textSecondary,
-                        fontFamily: currentTheme.headerFont,
-                        border: 'none',
-                        outline: 'none',
-                        boxShadow: 'none'
-                      }}
-                    />
-                  )}
-                  {settings.scoreboardConfig.showStanding && (
-                    <input
-                      type="text"
-                      placeholder="Standing"
-                      value={homeTeam.standing || ''}
-                      onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                      className="w-20 xs:w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 px-0.5 py-0 text-[9px] xs:text-[10px] sm:text-xs md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
-                      style={{ 
-                        color: currentTheme.textSecondary,
-                        fontFamily: currentTheme.headerFont,
-                        border: 'none',
-                        outline: 'none',
-                        boxShadow: 'none'
-                      }}
-                    />
-                  )}
-                </div>
-                
-                {/* Center spacer */}
-                {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) ? (
-                  <div className="hidden xs:flex flex-col items-center mx-0.5 xs:mx-1 sm:mx-1.5 md:mx-2 lg:mx-2.5 shrink-0 min-w-[70px] xs:min-w-[85px] sm:min-w-[100px] md:min-w-[70px] lg:min-w-[80px]">
-                  </div>
-                ) : (
-                  <div className="w-1 xs:w-1.5 sm:w-2 md:w-2 lg:w-2.5 shrink-0"></div>
-                )}
-
-                {/* Away Team Record/Standing */}
-                <div className="flex gap-0.5 xs:gap-0.5 sm:gap-1 items-center flex-1 min-w-0 justify-start">
-                  {settings.scoreboardConfig.showStanding && (
-                    <input
-                      type="text"
-                      placeholder="Standing"
-                      value={awayTeam.standing || ''}
-                      onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                      className="w-20 xs:w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 px-0.5 py-0 text-[9px] xs:text-[10px] sm:text-xs md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
-                      style={{ 
-                        color: currentTheme.textSecondary,
-                        fontFamily: currentTheme.headerFont,
-                        border: 'none',
-                        outline: 'none',
-                        boxShadow: 'none'
-                      }}
-                    />
-                  )}
-                  {settings.scoreboardConfig.showRecord && (
-                    <input
-                      type="text"
-                      placeholder="Record"
-                      value={awayTeam.record || ''}
-                      onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                      className="w-10 xs:w-12 sm:w-14 md:w-16 lg:w-20 xl:w-24 px-0.5 py-0 text-[9px] xs:text-[10px] sm:text-xs md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
-                      style={{ 
-                        color: currentTheme.textSecondary,
-                        fontFamily: currentTheme.headerFont,
-                        border: 'none',
-                        outline: 'none',
-                        boxShadow: 'none'
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* Scores Row - Horizontal Layout */}
         <div className="flex items-center justify-center w-full gap-0.5 xs:gap-1 sm:gap-1.5 md:gap-2 lg:gap-2.5 px-1 xs:px-1.5 sm:px-2 md:px-2 lg:px-2.5 min-w-0 shrink-0">
           {/* Home Team Score */}
@@ -637,24 +497,26 @@ export function GamePage() {
                 className="text-sm xs:text-base sm:text-base md:text-sm lg:text-base font-bold text-center w-full truncate px-1"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
-                  color: currentTheme.textColor
+                  color: currentTheme.textColor,
+                  textAlign: 'center'
                 }}
                 title={homeTeam.teamName}
               >
                 {homeTeam.teamName}
               </p>
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                <div className="flex gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-[9px] xs:text-[10px] sm:text-xs md:text-[9px] lg:text-[10px]">
+                <div className="flex flex-col gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-[9px] xs:text-[10px] sm:text-xs md:text-[9px] lg:text-[10px] w-full">
                   {settings.scoreboardConfig.showRecord && (
                     <input
                       type="text"
                       placeholder="R"
                       value={homeTeam.record || ''}
                       onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                      className="w-8 xs:w-10 sm:w-12 md:w-8 lg:w-9 px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[60px] xs:max-w-[70px] sm:max-w-[80px] md:max-w-[65px] lg:max-w-[75px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
+                        textAlign: 'center'
                       }}
                     />
                   )}
@@ -664,10 +526,11 @@ export function GamePage() {
                       placeholder="S"
                       value={homeTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                      className="w-9 xs:w-11 sm:w-14 md:w-9 lg:w-10 px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[80px] xs:max-w-[90px] sm:max-w-[100px] md:max-w-[85px] lg:max-w-[95px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
+                        textAlign: 'center'
                       }}
                     />
                   )}
@@ -752,37 +615,40 @@ export function GamePage() {
                 className="text-sm xs:text-base sm:text-base md:text-sm lg:text-base font-bold text-center w-full truncate px-1"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
-                  color: currentTheme.textColor
+                  color: currentTheme.textColor,
+                  textAlign: 'center'
                 }}
                 title={awayTeam.teamName}
               >
                 {awayTeam.teamName}
               </p>
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                <div className="flex gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-[9px] xs:text-[10px] sm:text-xs md:text-[9px] lg:text-[10px]">
-                  {settings.scoreboardConfig.showStanding && (
-                    <input
-                      type="text"
-                      placeholder="S"
-                      value={awayTeam.standing || ''}
-                      onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                      className="w-9 xs:w-11 sm:w-14 md:w-9 lg:w-10 px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
-                      style={{ 
-                        color: currentTheme.textSecondary,
-                        fontFamily: currentTheme.headerFont,
-                      }}
-                    />
-                  )}
+                <div className="flex flex-col gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-[9px] xs:text-[10px] sm:text-xs md:text-[9px] lg:text-[10px] w-full">
                   {settings.scoreboardConfig.showRecord && (
                     <input
                       type="text"
                       placeholder="R"
                       value={awayTeam.record || ''}
                       onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                      className="w-8 xs:w-10 sm:w-12 md:w-8 lg:w-9 px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[60px] xs:max-w-[70px] sm:max-w-[80px] md:max-w-[65px] lg:max-w-[75px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
+                        textAlign: 'center'
+                      }}
+                    />
+                  )}
+                  {settings.scoreboardConfig.showStanding && (
+                    <input
+                      type="text"
+                      placeholder="S"
+                      value={awayTeam.standing || ''}
+                      onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
+                      className="w-full max-w-[80px] xs:max-w-[90px] sm:max-w-[100px] md:max-w-[85px] lg:max-w-[95px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      style={{ 
+                        color: currentTheme.textSecondary,
+                        fontFamily: currentTheme.headerFont,
+                        textAlign: 'center'
                       }}
                     />
                   )}
@@ -1042,24 +908,26 @@ export function GamePage() {
                           className="text-xs lg:text-sm font-bold text-center w-full truncate px-1"
                           style={{ 
                             fontFamily: currentTheme.headerFont,
-                            color: currentTheme.textColor
+                            color: currentTheme.textColor,
+                            textAlign: 'center'
                           }}
                           title={homeTeam.teamName}
                         >
                           {homeTeam.teamName}
                         </p>
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                          <div className="flex gap-0.5 lg:gap-1 items-center justify-center text-[8px] lg:text-[9px]">
+                          <div className="flex flex-col gap-0.5 lg:gap-1 items-center justify-center text-[8px] lg:text-[9px] w-full">
                             {settings.scoreboardConfig.showRecord && (
                               <input
                                 type="text"
                                 placeholder="R"
                                 value={homeTeam.record || ''}
                                 onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                                className="w-8 lg:w-9 px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                                className="w-full max-w-[60px] lg:max-w-[75px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
+                                  textAlign: 'center'
                                 }}
                               />
                             )}
@@ -1069,10 +937,11 @@ export function GamePage() {
                                 placeholder="S"
                                 value={homeTeam.standing || ''}
                                 onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                                className="w-9 lg:w-10 px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                                className="w-full max-w-[80px] lg:max-w-[95px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
+                                  textAlign: 'center'
                                 }}
                               />
                             )}
@@ -1155,37 +1024,40 @@ export function GamePage() {
                           className="text-xs lg:text-sm font-bold text-center w-full truncate px-1"
                           style={{ 
                             fontFamily: currentTheme.headerFont,
-                            color: currentTheme.textColor
+                            color: currentTheme.textColor,
+                            textAlign: 'center'
                           }}
                           title={awayTeam.teamName}
                         >
                           {awayTeam.teamName}
                         </p>
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                          <div className="flex gap-0.5 lg:gap-1 items-center justify-center text-[8px] lg:text-[9px]">
-                            {settings.scoreboardConfig.showStanding && (
-                              <input
-                                type="text"
-                                placeholder="S"
-                                value={awayTeam.standing || ''}
-                                onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                                className="w-9 lg:w-10 px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
-                                style={{ 
-                                  color: currentTheme.textSecondary,
-                                  fontFamily: currentTheme.headerFont,
-                                }}
-                              />
-                            )}
+                          <div className="flex flex-col gap-0.5 lg:gap-1 items-center justify-center text-[8px] lg:text-[9px] w-full">
                             {settings.scoreboardConfig.showRecord && (
                               <input
                                 type="text"
                                 placeholder="R"
                                 value={awayTeam.record || ''}
                                 onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                                className="w-8 lg:w-9 px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                                className="w-full max-w-[60px] lg:max-w-[75px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
+                                  textAlign: 'center'
+                                }}
+                              />
+                            )}
+                            {settings.scoreboardConfig.showStanding && (
+                              <input
+                                type="text"
+                                placeholder="S"
+                                value={awayTeam.standing || ''}
+                                onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
+                                className="w-full max-w-[80px] lg:max-w-[95px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                                style={{ 
+                                  color: currentTheme.textSecondary,
+                                  fontFamily: currentTheme.headerFont,
+                                  textAlign: 'center'
                                 }}
                               />
                             )}
