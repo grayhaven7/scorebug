@@ -35,6 +35,7 @@ export interface PlayerGameStats {
 export interface TeamGameStats {
   teamId: string;
   teamName: string;
+  displayName?: string; // Optional shortened display name for scoreboard
   primaryColor: string;
   secondaryColor: string;
   record: string;

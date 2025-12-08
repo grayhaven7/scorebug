@@ -431,24 +431,6 @@ export function ThemesPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.textSecondary }}>
-                    Layout
-                  </label>
-                  <select
-                    value={formData.layout || 'standard'}
-                    onChange={e => setFormData({ ...formData, layout: e.target.value as 'standard' | 'split' })}
-                    className="w-full px-4 py-3 rounded-lg border focus:outline-none cursor-pointer"
-                    style={{
-                      backgroundColor: currentTheme.backgroundColor,
-                      borderColor: currentTheme.textSecondary + '40',
-                      color: currentTheme.textColor,
-                    }}
-                  >
-                    <option value="standard">Standard (Top Score)</option>
-                    <option value="split">Split (Center Score)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.textSecondary }}>
                     Font Scaling ({formData.baseScale || 1}x)
                   </label>
                   <input

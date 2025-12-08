@@ -38,10 +38,16 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 
 console.log('Main.tsx loading...');
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </StrictMode>,
-)
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  console.error('Root element not found!');
+  document.body.innerHTML = '<div style="padding: 20px; color: red; background: white;">Error: Root element not found!</div>';
+} else {
+  createRoot(rootElement).render(
+    <StrictMode>
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    </StrictMode>,
+  );
+}

@@ -130,7 +130,9 @@ export function TargetScoreBar({
           className="relative z-10 w-14 h-14 sm:w-16 sm:h-16 md:w-[72px] md:h-[72px] lg:w-20 lg:h-20 rounded-full border-[3.5px] sm:border-[4px] md:border-[4px] lg:border-[4.5px] flex items-center justify-center font-bold text-base sm:text-lg md:text-xl lg:text-2xl shadow-2xl transition-all hover:scale-110 shrink-0"
           style={{ 
             backgroundColor: winnerColor || theme.backgroundColor,
-            borderColor: winnerColor || theme.backgroundColor,
+            borderColor: winnerColor || theme.accentColor || theme.textColor,
+            outline: `2px solid ${winnerColor || theme.accentColor || theme.textColor}`,
+            outlineOffset: '2px',
             color: winnerColor ? '#ffffff' : theme.textColor,
             fontFamily: theme.numberFont
           }}

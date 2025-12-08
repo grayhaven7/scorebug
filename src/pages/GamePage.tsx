@@ -62,6 +62,7 @@ export function GamePage() {
   const [showTargetModal, setShowTargetModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [confettiShown, setConfettiShown] = useState<string | null>(null);
+  const [expandedStats, setExpandedStats] = useState<{ home: boolean; away: boolean }>({ home: false, away: false });
   const homeScoreBoxRef = useRef<HTMLDivElement>(null);
   const awayScoreBoxRef = useRef<HTMLDivElement>(null);
   const homeFontSize = useScaledFontSize(homeScoreBoxRef);
@@ -293,7 +294,7 @@ export function GamePage() {
   }, []);
 
   // Update Team Details
-  const updateTeamDetails = (teamType: 'home' | 'away', field: 'record' | 'standing', value: string) => {
+  const updateTeamDetails = (teamType: 'home' | 'away', field: 'record' | 'standing' | 'displayName', value: string) => {
     const teamKey = teamType === 'home' ? 'homeTeam' : 'awayTeam';
     updateCurrentGame({
       [teamKey]: { ...currentGame[teamKey], [field]: value }
@@ -305,7 +306,13 @@ export function GamePage() {
     team: typeof homeTeam,
     teamType: 'home' | 'away',
     isHome: boolean
-  ) => (
+  ) => {
+    const isExpanded = expandedStats[teamType];
+    const visibleStats = isExpanded 
+      ? enabledStats 
+      : enabledStats.filter(stat => stat === 'points');
+    
+    return (
     <div
       className="rounded-xl overflow-hidden h-full flex flex-col"
       style={{ backgroundColor: currentTheme.secondaryBackground }}
@@ -325,7 +332,19 @@ export function GamePage() {
             >
               {team.teamName}
             </span>
-            <span className="ml-auto text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs opacity-80 shrink-0">
+            <button
+              onClick={() => setExpandedStats(prev => ({ ...prev, [teamType]: !prev[teamType] }))}
+              className="px-2 py-1 rounded text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 shrink-0"
+              style={{
+                backgroundColor: team.secondaryColor + '30',
+                color: team.secondaryColor,
+                borderRadius: currentTheme.borderRadius,
+              }}
+              title={isExpanded ? 'Collapse stats' : 'Expand stats'}
+            >
+              {isExpanded ? '▼' : '▶'}
+            </button>
+            <span className="text-[9px] sm:text-[10px] md:text-[10px] lg:text-xs opacity-80 shrink-0">
               {isHome ? 'HOME' : 'AWAY'}
             </span>
         </div>
@@ -349,7 +368,7 @@ export function GamePage() {
               >
                 PLAYER
               </th>
-              {enabledStats.map(stat => (
+              {visibleStats.map(stat => (
                 <th
                   key={stat}
                   colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1}
@@ -376,7 +395,7 @@ export function GamePage() {
               >
                 <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5">
                   <span
-                    className="inline-block w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded text-center text-[10px] sm:text-xs md:text-xs lg:text-sm font-bold leading-7 sm:leading-8 md:leading-9 lg:leading-10"
+                    className="inline-block w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded text-center text-xs sm:text-sm md:text-base lg:text-lg font-bold leading-7 sm:leading-8 md:leading-9 lg:leading-10"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -385,16 +404,16 @@ export function GamePage() {
                     {player.jerseyNumber}
                   </span>
                 </td>
-                <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 font-medium text-[10px] sm:text-xs md:text-xs lg:text-sm truncate max-w-[120px] sm:max-w-[140px] md:max-w-[160px] lg:max-w-[180px]">{player.playerName}</td>
-                {enabledStats.map(stat => {
+                <td className={`px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 font-medium truncate max-w-[120px] sm:max-w-[140px] md:max-w-[160px] lg:max-w-[180px] ${settings.scoreboardConfig.showQuickPoints ? 'text-[10px] sm:text-xs md:text-xs lg:text-sm' : 'text-xs sm:text-sm md:text-base lg:text-lg pr-1 sm:pr-1 md:pr-1 lg:pr-1.5'}`}>{player.playerName}</td>
+                {visibleStats.map(stat => {
                   const cellId = `${teamType}-${player.playerId}-${stat}`;
                   const value = player[stat as keyof PlayerGameStats];
                   return (
                     <>
-                      <td key={stat} className="px-1 sm:px-2 md:px-2 lg:px-3 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center">
+                      <td key={stat} className={`${settings.scoreboardConfig.showQuickPoints ? 'px-1 sm:px-2 md:px-2 lg:px-3' : 'px-0.5 sm:px-1 md:px-1 lg:px-1.5'} py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center`}>
                         <button
                           onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
-                          className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded font-bold text-xs sm:text-sm md:text-sm lg:text-base transition-all hover:scale-110 cursor-pointer ${
+                          className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 rounded font-bold text-sm sm:text-base md:text-lg lg:text-xl transition-all hover:scale-110 cursor-pointer ${
                             animatingCell === cellId ? 'stat-pop' : ''
                           }`}
                           style={{
@@ -442,13 +461,13 @@ export function GamePage() {
               }}
             >
               <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5"></td>
-              <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-xs sm:text-sm md:text-sm lg:text-base font-bold" style={{ fontFamily: currentTheme.headerFont }}>
+              <td className="px-2 sm:px-3 md:px-3 lg:px-4 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-sm sm:text-base md:text-lg lg:text-xl font-bold" style={{ fontFamily: currentTheme.headerFont }}>
                 TOTAL
               </td>
-              {enabledStats.map(stat => (
+              {visibleStats.map(stat => (
                 <td key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} className="px-1 sm:px-2 md:px-2 lg:px-3 py-1.5 sm:py-2 md:py-2 lg:py-2.5 text-center">
                   <span
-                    className="inline-block px-2 sm:px-3 md:px-4 lg:px-5 h-7 sm:h-8 md:h-9 lg:h-10 leading-7 sm:leading-8 md:leading-9 lg:leading-10 rounded font-bold text-xs sm:text-sm md:text-sm lg:text-base"
+                    className="inline-block px-2 sm:px-3 md:px-4 lg:px-5 h-7 sm:h-8 md:h-9 lg:h-10 leading-7 sm:leading-8 md:leading-9 lg:leading-10 rounded font-bold text-sm sm:text-base md:text-lg lg:text-xl"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -464,7 +483,8 @@ export function GamePage() {
         </table>
       </div>
     </div>
-  );
+    );
+  };
 
   const renderScoreboard = () => (
     <div className="w-full min-w-0 flex flex-col">
@@ -493,17 +513,20 @@ export function GamePage() {
           {/* Home Team Score */}
           <div className="flex flex-col items-center gap-1 xs:gap-1.5 sm:gap-2 md:gap-1 lg:gap-1.5">
             <div className="flex flex-col items-center gap-0.5 xs:gap-1 sm:gap-1 md:gap-0.5 lg:gap-1 w-full shrink-0">
-              <p
-                className="text-sm xs:text-base sm:text-base md:text-sm lg:text-base font-bold text-center w-full truncate px-1"
+              <input
+                type="text"
+                value={homeTeam.displayName || homeTeam.teamName}
+                onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
+                placeholder={homeTeam.teamName}
+                className="text-sm xs:text-base sm:text-base md:text-sm lg:text-base font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  focusRingColor: currentTheme.accentColor + '50'
                 }}
-                title={homeTeam.teamName}
-              >
-                {homeTeam.teamName}
-              </p>
+                title={`Full name: ${homeTeam.teamName}`}
+              />
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
                 <div className="flex flex-col gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-[9px] xs:text-[10px] sm:text-xs md:text-[9px] lg:text-[10px] w-full">
                   {settings.scoreboardConfig.showRecord && (
@@ -600,28 +623,26 @@ export function GamePage() {
                   }}
                 />
               )}
-              {currentGame.targetScore && (
-                <div className="text-[6px] xs:text-[7px] sm:text-[8px] md:text-[7px] lg:text-[8px] font-bold mt-0.5 xs:mt-0 md:mt-0.5 lg:mt-1 whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
-                  TARGET: {currentGame.targetScore}
-                </div>
-              )}
             </div>
           )}
 
           {/* Away Team Score */}
           <div className="flex flex-col items-center gap-1 xs:gap-1.5 sm:gap-2 md:gap-1 lg:gap-1.5">
             <div className="flex flex-col items-center gap-0.5 xs:gap-1 sm:gap-1 md:gap-0.5 lg:gap-1 w-full shrink-0">
-              <p
-                className="text-sm xs:text-base sm:text-base md:text-sm lg:text-base font-bold text-center w-full truncate px-1"
+              <input
+                type="text"
+                value={awayTeam.displayName || awayTeam.teamName}
+                onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
+                placeholder={awayTeam.teamName}
+                className="text-sm xs:text-base sm:text-base md:text-sm lg:text-base font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  focusRingColor: currentTheme.accentColor + '50'
                 }}
-                title={awayTeam.teamName}
-              >
-                {awayTeam.teamName}
-              </p>
+                title={`Full name: ${awayTeam.teamName}`}
+              />
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
                 <div className="flex flex-col gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-[9px] xs:text-[10px] sm:text-xs md:text-[9px] lg:text-[10px] w-full">
                   {settings.scoreboardConfig.showRecord && (
@@ -794,44 +815,7 @@ export function GamePage() {
         fontSize: `${currentTheme.baseScale || 1}em`, // Font scaling
       }}
     >
-      {currentTheme.layout === 'split' ? (
-        // Split Layout
-        <div className={`flex flex-col ${isFullscreen ? 'min-h-full' : 'h-screen overflow-hidden'}`}>
-          <div className="flex-none">
-            {renderActionBar()}
-          </div>
-          <div className={`flex-1 flex flex-col md:grid md:grid-cols-[1fr_auto_1fr] gap-2 md:gap-3 lg:gap-4 ${isFullscreen ? '' : 'overflow-hidden'} px-2 sm:px-3 md:px-3 lg:px-4 pb-2 sm:pb-3 md:pb-3 lg:pb-4`}>
-            <div className="flex-1 overflow-x-auto overflow-y-hidden pr-0 md:pr-2 lg:pr-3 order-2 md:order-1 min-h-0">
-              {renderTeamStats(homeTeam, 'home', true)}
-            </div>
-            <div className="flex-none flex flex-col items-center justify-center w-full md:w-auto md:max-w-[280px] lg:max-w-[320px] xl:max-w-[360px] h-full gap-1 sm:gap-2 md:gap-2 lg:gap-2.5 order-1 md:order-2">
-              <div 
-                className="w-full rounded-xl p-2 sm:p-3 md:p-3 lg:p-4 shadow-xl shrink-0 flex flex-col"
-                style={{ backgroundColor: currentTheme.secondaryBackground }}
-              >
-                {renderScoreboard()}
-                
-                {showTargetBar && currentGame.targetScore && (
-                  <div className="flex justify-center w-full mt-2 sm:mt-2.5 md:mt-3 shrink-0">
-                    <TargetScoreBar
-                      homeScore={homeScore}
-                      awayScore={awayScore}
-                      targetScore={currentGame.targetScore}
-                      homeColor={homeTeam.primaryColor}
-                      awayColor={awayTeam.primaryColor}
-                      theme={currentTheme}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="flex-1 overflow-x-auto overflow-y-hidden pl-0 md:pl-2 lg:pl-3 order-3 min-h-0">
-              {renderTeamStats(awayTeam, 'away', false)}
-            </div>
-          </div>
-        </div>
-      ) : (
-        // Standard Layout
+      {/* Standard Layout */}
         <>
           {/* Mobile: Sticky Header */}
           <div
@@ -906,17 +890,20 @@ export function GamePage() {
                     {/* Home Team Score - Left Side */}
                     <div className="flex flex-col items-center gap-1 lg:gap-1.5 flex-1 min-w-0">
                       <div className="flex flex-col items-center gap-0.5 lg:gap-1 w-full shrink-0">
-                        <p
-                          className="text-sm lg:text-base font-bold text-center w-full truncate px-1"
+                        <input
+                          type="text"
+                          value={homeTeam.displayName || homeTeam.teamName}
+                          onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
+                          placeholder={homeTeam.teamName}
+                          className="text-sm lg:text-base font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
                           style={{ 
                             fontFamily: currentTheme.headerFont,
                             color: currentTheme.textColor,
-                            textAlign: 'center'
+                            textAlign: 'center',
+                            focusRingColor: currentTheme.accentColor + '50'
                           }}
-                          title={homeTeam.teamName}
-                        >
-                          {homeTeam.teamName}
-                        </p>
+                          title={`Full name: ${homeTeam.teamName}`}
+                        />
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
                           <div className="flex flex-col gap-0.5 lg:gap-1 items-center justify-center text-[8px] lg:text-[9px] w-full">
                             {settings.scoreboardConfig.showRecord && (
@@ -1012,27 +999,25 @@ export function GamePage() {
                           }}
                         />
                       )}
-                      {currentGame.targetScore && (
-                        <div className="text-[8px] lg:text-[9px] font-bold whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
-                          T: {currentGame.targetScore}
-                        </div>
-                      )}
                     </div>
 
                     {/* Away Team Score - Right Side */}
                     <div className="flex flex-col items-center gap-1 lg:gap-1.5 flex-1 min-w-0">
                       <div className="flex flex-col items-center gap-0.5 lg:gap-1 w-full shrink-0">
-                        <p
-                          className="text-sm lg:text-base font-bold text-center w-full truncate px-1"
+                        <input
+                          type="text"
+                          value={awayTeam.displayName || awayTeam.teamName}
+                          onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
+                          placeholder={awayTeam.teamName}
+                          className="text-sm lg:text-base font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
                           style={{ 
                             fontFamily: currentTheme.headerFont,
                             color: currentTheme.textColor,
-                            textAlign: 'center'
+                            textAlign: 'center',
+                            focusRingColor: currentTheme.accentColor + '50'
                           }}
-                          title={awayTeam.teamName}
-                        >
-                          {awayTeam.teamName}
-                        </p>
+                          title={`Full name: ${awayTeam.teamName}`}
+                        />
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
                           <div className="flex flex-col gap-0.5 lg:gap-1 items-center justify-center text-[8px] lg:text-[9px] w-full">
                             {settings.scoreboardConfig.showRecord && (
@@ -1116,8 +1101,6 @@ export function GamePage() {
               {renderTeamStats(awayTeam, 'away', false)}
             </div>
           </div>
-        </>
-      )}
 
       {/* Target Score Modal */}
       {showTargetModal && (
@@ -1254,6 +1237,7 @@ export function GamePage() {
           </div>
         </div>
       )}
+      </>
     </div>
   );
 }
