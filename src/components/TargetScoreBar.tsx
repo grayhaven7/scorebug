@@ -43,26 +43,27 @@ export function TargetScoreBar({
     return () => window.removeEventListener('resize', calculateMaxPercent);
   }, []);
 
-  // Calculate fill percentages - bar reaches circle edge exactly when score = target
-  // Scale linearly from 0 to maxPercent as score goes from 0 to targetScore
-  // The bar should only reach maxPercent (touching the circle) when score exactly equals targetScore
-  const homePercent = targetScore > 0 
-    ? Math.min(maxPercent, (homeScore / targetScore) * maxPercent)
-    : 0;
-  const awayPercent = targetScore > 0 
-    ? Math.min(maxPercent, (awayScore / targetScore) * maxPercent)
-    : 0;
-  
   // Determine winner (if any team has reached or exceeded target)
   const homeWon = homeScore >= targetScore;
   const awayWon = awayScore >= targetScore;
   const winnerColor = homeWon ? homeColor : awayWon ? awayColor : null;
+  const hasWinner = homeWon || awayWon;
+  
+  // Calculate fill percentages - bar reaches circle edge exactly when score = target
+  // Scale linearly from 0 to maxPercent as score goes from 0 to targetScore
+  // When a team wins, extend to 100% to fully reach the circle edge with no gap
+  const homePercent = targetScore > 0 
+    ? (homeWon ? 100 : Math.min(maxPercent, (homeScore / targetScore) * maxPercent))
+    : 0;
+  const awayPercent = targetScore > 0 
+    ? (awayWon ? 100 : Math.min(maxPercent, (awayScore / targetScore) * maxPercent))
+    : 0;
 
   return (
-    <div className="flex flex-row items-center w-full max-w-2xl px-1 xs:px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 lg:py-4">
+    <div className="flex flex-row items-center w-full max-w-4xl mx-1 xs:mx-2 sm:mx-3 md:mx-4 px-1 xs:px-2 sm:px-3 md:px-4 py-1 xs:py-1.5 sm:py-2 md:py-2.5">
       {/* Home Score (Left) */}
       <div 
-        className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl font-bold mr-1 xs:mr-2 sm:mr-3 md:mr-4 shrink-0"
+        className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl font-bold mr-1 xs:mr-1.5 sm:mr-2 md:mr-2.5 shrink-0"
         style={{ 
           fontFamily: theme.numberFont,
           color: theme.textColor 
@@ -75,11 +76,14 @@ export function TargetScoreBar({
       <div ref={barContainerRef} className="flex-1 relative flex items-center justify-center min-w-0">
         {/* Background Bar */}
         <div 
-          className="absolute inset-x-0 h-2.5 xs:h-3 sm:h-4 md:h-5 lg:h-6 rounded-full overflow-hidden flex flex-row shadow-inner"
+          className="absolute inset-x-0 h-3 xs:h-3.5 sm:h-4 md:h-4.5 lg:h-5 rounded-full overflow-hidden flex flex-row shadow-inner"
           style={{ backgroundColor: theme.backgroundColor }}
         >
           {/* Left Half (Home) */}
-          <div className="flex-1 h-full relative border-r-2" style={{ borderColor: theme.secondaryBackground }}>
+          <div 
+            className={`flex-1 h-full relative ${hasWinner ? '' : 'border-r-2'}`}
+            style={hasWinner ? {} : { borderColor: theme.secondaryBackground }}
+          >
             {/* Fill growing from left to right, extending to center circle */}
             <div 
               className="absolute top-0 left-0 h-full transition-all duration-500 ease-out"
@@ -91,7 +95,10 @@ export function TargetScoreBar({
           </div>
 
           {/* Right Half (Away) */}
-          <div className="flex-1 h-full relative border-l-2" style={{ borderColor: theme.secondaryBackground }}>
+          <div 
+            className={`flex-1 h-full relative ${hasWinner ? '' : 'border-l-2'}`}
+            style={hasWinner ? {} : { borderColor: theme.secondaryBackground }}
+          >
             {/* Fill growing from right to left, extending to center circle */}
             <div 
               className="absolute top-0 right-0 h-full transition-all duration-500 ease-out"
@@ -106,7 +113,7 @@ export function TargetScoreBar({
         {/* Center Target Marker */}
         <div 
           ref={circleRef}
-          className="relative z-10 w-8 h-8 xs:w-9 xs:h-9 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-[3px] xs:border-[3.5px] sm:border-[4px] md:border-[5px] lg:border-[6px] flex items-center justify-center font-bold text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl shadow-2xl transition-all hover:scale-110 shrink-0"
+          className="relative z-10 w-8 h-8 xs:w-10 xs:h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-full border-[3px] xs:border-[3px] sm:border-[3.5px] md:border-[4px] lg:border-[4px] flex items-center justify-center font-bold text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl shadow-2xl transition-all hover:scale-110 shrink-0"
           style={{ 
             backgroundColor: winnerColor || theme.secondaryBackground,
             borderColor: winnerColor || theme.backgroundColor,
@@ -120,7 +127,7 @@ export function TargetScoreBar({
 
       {/* Away Score (Right) */}
       <div 
-        className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl font-bold ml-1 xs:ml-2 sm:ml-3 md:ml-4 shrink-0"
+        className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl font-bold ml-1 xs:ml-1.5 sm:ml-2 md:ml-2.5 shrink-0"
         style={{ 
           fontFamily: theme.numberFont,
           color: theme.textColor 

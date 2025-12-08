@@ -456,17 +456,17 @@ export function GamePage() {
     <div className="w-full">
       {/* Game Title Input */}
       {settings.scoreboardConfig.showTitle && (
-        <div className="flex justify-center pt-0.5 sm:pt-1 px-2 pb-1">
+        <div className="flex justify-center pt-1 px-2 pb-1">
           <input
             type="text"
             placeholder="Game Title (e.g. Game 4 of Season)"
             value={currentGame.title || ''}
             onChange={(e) => updateCurrentGame({ title: e.target.value })}
-            className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-2 sm:px-3 md:px-4 py-1 w-full max-w-md transition-colors focus:outline-none placeholder-white/20 font-bold text-xs sm:text-sm md:text-base"
+            className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-1.5 sm:px-2 md:px-3 py-0.5 w-full max-w-md transition-colors focus:outline-none placeholder-white/20 font-bold text-[10px] sm:text-xs md:text-sm"
             style={{
               color: '#ffffff',
               fontFamily: currentTheme.headerFont,
-              fontSize: 'clamp(0.75rem, 2vw, 1.1rem)',
+              fontSize: 'clamp(0.65rem, 1.5vw, 0.9rem)',
               letterSpacing: '0.05em',
               textTransform: 'uppercase',
             }}
@@ -474,14 +474,14 @@ export function GamePage() {
         </div>
       )}
 
-      <div className="flex flex-col items-center py-2 sm:py-3 md:py-4 lg:py-5 gap-1.5 sm:gap-2 md:gap-3 lg:gap-4">
+      <div className="flex flex-col items-center py-1 sm:py-1.5 md:py-2 gap-0.5 sm:gap-1 md:gap-1">
         {/* Team Names Row - Above Score Boxes */}
-        <div className="flex items-center justify-center w-full mb-1 sm:mb-1.5 md:mb-0 px-2">
-          <div className="flex items-center justify-center gap-2 xs:gap-3 sm:gap-4 md:gap-3 lg:gap-4">
+        <div className="flex items-center justify-center w-full mb-0 px-2">
+          <div className="flex items-center justify-center gap-1.5 xs:gap-2 sm:gap-2.5 md:gap-3">
             {/* Home Team Name */}
-            <div className="max-w-[120px] xs:max-w-[160px] sm:max-w-[200px] md:max-w-[140px] lg:max-w-[160px] flex flex-col items-center text-center min-w-0">
+            <div className="max-w-[100px] xs:max-w-[130px] sm:max-w-[160px] md:max-w-[120px] lg:max-w-[140px] flex flex-col items-center text-center min-w-0">
               <p
-                className="text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-tight leading-tight break-words"
+                className="text-[10px] xs:text-xs sm:text-sm md:text-sm font-bold tracking-tight leading-tight break-words"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor
@@ -499,9 +499,9 @@ export function GamePage() {
             ) : null}
 
             {/* Away Team Name */}
-            <div className="max-w-[120px] xs:max-w-[160px] sm:max-w-[200px] md:max-w-[140px] lg:max-w-[160px] flex flex-col items-center text-center min-w-0">
+            <div className="max-w-[100px] xs:max-w-[130px] sm:max-w-[160px] md:max-w-[120px] lg:max-w-[140px] flex flex-col items-center text-center min-w-0">
               <p
-                className="text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-tight leading-tight break-words"
+                className="text-[10px] xs:text-xs sm:text-sm md:text-sm font-bold tracking-tight leading-tight break-words"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor
@@ -515,20 +515,20 @@ export function GamePage() {
         </div>
 
         {/* Record/Standing Row */}
-        <div className="flex flex-col w-full gap-0.5 sm:gap-1 md:gap-0 px-2">
+        <div className="flex flex-col w-full gap-0 px-2">
           {/* Record/Standing Row */}
           {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
             <div className="flex items-center justify-center w-full">
-              <div className="flex items-center justify-center gap-1 xs:gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+              <div className="flex items-center justify-center gap-0.5 xs:gap-1 sm:gap-1.5 md:gap-2">
                 {/* Home Team Record/Standing */}
-                <div className="flex gap-0.5 xs:gap-1 items-center">
+                <div className="flex gap-0.5 items-center">
                   {settings.scoreboardConfig.showRecord && (
                     <input
                       type="text"
                       placeholder="Record"
                       value={homeTeam.record || ''}
                       onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
+                      className="w-12 xs:w-14 sm:w-16 md:w-18 lg:w-20 px-0.5 py-0 text-[10px] xs:text-xs sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -544,7 +544,7 @@ export function GamePage() {
                       placeholder="Standing"
                       value={homeTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
+                      className="w-12 xs:w-14 sm:w-16 md:w-18 lg:w-20 px-0.5 py-0 text-[10px] xs:text-xs sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-right font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -563,14 +563,14 @@ export function GamePage() {
                 ) : null}
 
                 {/* Away Team Record/Standing */}
-                <div className="flex gap-0.5 xs:gap-1 items-center">
+                <div className="flex gap-0.5 items-center">
                   {settings.scoreboardConfig.showStanding && (
                     <input
                       type="text"
                       placeholder="Standing"
                       value={awayTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
+                      className="w-12 xs:w-14 sm:w-16 md:w-18 lg:w-20 px-0.5 py-0 text-[10px] xs:text-xs sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -586,7 +586,7 @@ export function GamePage() {
                       placeholder="Record"
                       value={awayTeam.record || ''}
                       onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                      className="w-16 xs:w-20 sm:w-24 md:w-28 lg:w-32 px-0.5 xs:px-1 py-0.5 text-sm xs:text-sm sm:text-base md:text-lg lg:text-xl rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
+                      className="w-12 xs:w-14 sm:w-16 md:w-18 lg:w-20 px-0.5 py-0 text-[10px] xs:text-xs sm:text-sm md:text-sm rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-left font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -603,23 +603,13 @@ export function GamePage() {
         </div>
 
         {/* Scores Row */}
-        <div className="flex items-center justify-center w-full gap-1.5 xs:gap-2 sm:gap-3 md:gap-3 lg:gap-4 px-2">
+        <div className="flex items-center justify-center w-full gap-1 xs:gap-1.5 sm:gap-2 md:gap-2 px-2">
           {/* Home Team Score */}
           <div
             ref={homeScoreBoxRef}
-            className="w-[90px] xs:w-[110px] sm:w-[130px] md:w-[140px] lg:w-[150px] aspect-square rounded-lg sm:rounded-xl md:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
+            className="w-[70px] xs:w-[85px] sm:w-[100px] md:w-[110px] lg:w-[120px] aspect-square rounded-lg sm:rounded-xl md:rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
             style={{ backgroundColor: homeTeam.primaryColor }}
           >
-            {/* Progress Light Overlay */}
-            {currentGame.targetScore && currentGame.targetScore > 0 && (
-              <div
-                className="absolute inset-0 pointer-events-none transition-all duration-500 ease-out"
-                style={{
-                  background: `linear-gradient(to top, rgba(255, 255, 255, 0.2) ${Math.min(100, (homeScore / currentGame.targetScore) * 100)}%, transparent ${Math.min(100, (homeScore / currentGame.targetScore) * 100)}%)`,
-                  zIndex: 5,
-                }}
-              />
-            )}
             <span
               className="font-black relative z-10 leading-none"
               style={{
@@ -634,34 +624,34 @@ export function GamePage() {
 
           {/* Center - Quarter & Time */}
           {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) && (
-            <div className="text-center flex flex-col items-center mx-1 xs:mx-2 sm:mx-3 md:mx-2 lg:mx-3 shrink-0">
+            <div className="text-center flex flex-col items-center mx-0.5 xs:mx-1 sm:mx-1.5 md:mx-2 shrink-0">
               {settings.scoreboardConfig.showQuarter && (
-                <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 md:gap-2 mb-1 sm:mb-1.5 md:mb-0.5">
+                <div className="flex items-center gap-0.5 xs:gap-1 sm:gap-1 md:gap-1.5 mb-0.5 sm:mb-0.5 md:mb-0">
                   <button
                     onClick={() => handleQuarterChange(-1)}
-                    className="w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 md:w-7 md:h-7 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95"
+                    className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95"
                     style={{
                       color: currentTheme.accentColor,
                     }}
                     disabled={quarter <= 1}
                   >
-                    <span className="text-[10px] xs:text-xs sm:text-sm md:text-sm">◀</span>
+                    <span className="text-[8px] xs:text-[9px] sm:text-[10px] md:text-xs">◀</span>
                   </button>
                   <span
-                    className="text-sm xs:text-base sm:text-lg md:text-lg lg:text-xl font-black px-1 xs:px-1.5 sm:px-2 md:px-2 min-w-[2ch] sm:min-w-[2.5ch]"
+                    className="text-xs xs:text-sm sm:text-base md:text-base font-black px-0.5 xs:px-1 sm:px-1 md:px-1.5 min-w-[2ch]"
                     style={{ fontFamily: currentTheme.numberFont }}
                   >
                     Q{quarter}
                   </span>
                   <button
                     onClick={() => handleQuarterChange(1)}
-                    className="w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 md:w-7 md:h-7 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95"
+                    className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95"
                     style={{
                       color: currentTheme.accentColor,
                     }}
                     disabled={quarter >= 4}
                   >
-                    <span className="text-[10px] xs:text-xs sm:text-sm md:text-sm">▶</span>
+                    <span className="text-[8px] xs:text-[9px] sm:text-[10px] md:text-xs">▶</span>
                   </button>
                 </div>
               )}
@@ -670,7 +660,7 @@ export function GamePage() {
                   type="text"
                   value={timeRemaining}
                   onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                  className="w-12 xs:w-14 sm:w-18 md:w-20 lg:w-24 text-center bg-transparent border-b-2 text-sm xs:text-base sm:text-lg md:text-lg lg:text-xl font-mono focus:outline-none font-bold"
+                  className="w-10 xs:w-12 sm:w-14 md:w-16 lg:w-18 text-center bg-transparent border-b-2 text-xs xs:text-sm sm:text-base md:text-base font-mono focus:outline-none font-bold"
                   style={{
                     borderColor: currentTheme.accentColor,
                     color: currentTheme.textColor,
@@ -678,7 +668,7 @@ export function GamePage() {
                 />
               )}
               {currentGame.targetScore && (
-                <div className="text-[8px] xs:text-[9px] sm:text-[10px] md:text-[10px] font-bold mt-0.5 sm:mt-1 md:mt-0.5 whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
+                <div className="text-[7px] xs:text-[8px] sm:text-[9px] md:text-[9px] font-bold mt-0 whitespace-nowrap uppercase tracking-wider" style={{ color: currentTheme.accentColor }}>
                   TARGET: {currentGame.targetScore}
                 </div>
               )}
@@ -688,19 +678,9 @@ export function GamePage() {
           {/* Away Team Score */}
           <div
             ref={awayScoreBoxRef}
-            className="w-[90px] xs:w-[110px] sm:w-[130px] md:w-[140px] lg:w-[150px] aspect-square rounded-lg sm:rounded-xl md:rounded-2xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
+            className="w-[70px] xs:w-[85px] sm:w-[100px] md:w-[110px] lg:w-[120px] aspect-square rounded-lg sm:rounded-xl md:rounded-xl flex flex-col items-center justify-center relative overflow-hidden shadow-lg"
             style={{ backgroundColor: awayTeam.primaryColor }}
           >
-            {/* Progress Light Overlay */}
-            {currentGame.targetScore && currentGame.targetScore > 0 && (
-              <div
-                className="absolute inset-0 pointer-events-none transition-all duration-500 ease-out"
-                style={{
-                  background: `linear-gradient(to top, rgba(255, 255, 255, 0.2) ${Math.min(100, (awayScore / currentGame.targetScore) * 100)}%, transparent ${Math.min(100, (awayScore / currentGame.targetScore) * 100)}%)`,
-                  zIndex: 5,
-                }}
-              />
-            )}
             <span
               className="font-black relative z-10 leading-none"
               style={{
@@ -844,15 +824,15 @@ export function GamePage() {
             <div className="flex-1 overflow-y-auto pr-0 md:pr-2 order-2 md:order-1 min-h-0">
               {renderTeamStats(homeTeam, 'home', true)}
             </div>
-            <div className="flex-none flex flex-col items-center w-full md:w-auto md:max-w-[320px] lg:max-w-[360px] h-auto md:h-full gap-2 sm:gap-3 md:gap-2 order-1 md:order-2">
+            <div className="flex-none flex flex-col items-center w-full md:w-auto md:max-w-[320px] lg:max-w-[360px] h-auto md:max-h-[45vh] gap-2 sm:gap-3 md:gap-2 order-1 md:order-2">
               <div 
-                className="w-full rounded-xl p-2 sm:p-3 md:p-4 shadow-xl shrink-0"
+                className="w-full rounded-xl p-2 sm:p-3 md:p-4 py-2 sm:py-3 md:py-4 shadow-xl shrink-0"
                 style={{ backgroundColor: currentTheme.secondaryBackground }}
               >
                 {renderScoreboard()}
                 
                 {showTargetBar && currentGame.targetScore && (
-                  <div className="flex justify-center w-full mt-1 pt-1 border-t" style={{ borderColor: currentTheme.backgroundColor }}>
+                  <div className="flex justify-center w-full mt-0.5 pt-0.5 border-t" style={{ borderColor: currentTheme.backgroundColor }}>
                     <TargetScoreBar
                       homeScore={homeScore}
                       awayScore={awayScore}
@@ -874,7 +854,7 @@ export function GamePage() {
         // Standard Layout
         <>
           <div
-            className="sticky top-0 z-40 shadow-sm"
+            className="sticky top-0 z-40 shadow-sm max-h-[45vh] py-1 sm:py-1.5 md:py-2"
             style={{ backgroundColor: currentTheme.secondaryBackground }}
           >
             {renderScoreboard()}
@@ -882,7 +862,7 @@ export function GamePage() {
             {/* Target Score Bar */}
             {showTargetBar && currentGame.targetScore && (
               <div 
-                className="flex justify-center w-full py-1 border-b"
+                className="flex justify-center w-full py-0.5 border-b"
                 style={{ 
                   backgroundColor: currentTheme.secondaryBackground,
                   borderColor: currentTheme.backgroundColor 
