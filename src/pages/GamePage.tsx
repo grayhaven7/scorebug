@@ -481,7 +481,7 @@ export function GamePage() {
             {/* Home Team Name */}
             <div className="max-w-[100px] xs:max-w-[130px] sm:max-w-[160px] md:max-w-[120px] lg:max-w-[140px] flex flex-col items-center text-center min-w-0">
               <p
-                className="text-[10px] xs:text-xs sm:text-sm md:text-sm font-bold tracking-tight leading-tight break-words"
+                className="text-[10px] xs:text-xs sm:text-sm md:text-sm font-bold break-words leading-normal"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor
@@ -501,7 +501,7 @@ export function GamePage() {
             {/* Away Team Name */}
             <div className="max-w-[100px] xs:max-w-[130px] sm:max-w-[160px] md:max-w-[120px] lg:max-w-[140px] flex flex-col items-center text-center min-w-0">
               <p
-                className="text-[10px] xs:text-xs sm:text-sm md:text-sm font-bold tracking-tight leading-tight break-words"
+                className="text-[10px] xs:text-xs sm:text-sm md:text-sm font-bold break-words leading-normal"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor
