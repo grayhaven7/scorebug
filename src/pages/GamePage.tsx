@@ -42,6 +42,7 @@ function useScaledFontSize(boxRef: React.RefObject<HTMLDivElement | null>) {
   return fontSize;
 }
 
+
 export function GamePage() {
   const navigate = useNavigate();
   const gameContainerRef = useRef<HTMLDivElement>(null);
@@ -64,8 +65,66 @@ export function GamePage() {
   const [expandedStats, setExpandedStats] = useState<{ home: boolean; away: boolean }>({ home: false, away: false });
   const homeScoreBoxRef = useRef<HTMLDivElement>(null);
   const awayScoreBoxRef = useRef<HTMLDivElement>(null);
+  const mobileScoreboardRef = useRef<HTMLDivElement>(null);
+  const desktopScoreboardRef = useRef<HTMLDivElement>(null);
+
   const homeFontSize = useScaledFontSize(homeScoreBoxRef);
   const awayFontSize = useScaledFontSize(awayScoreBoxRef);
+  const [fontSizes, setFontSizes] = useState({
+    title: '32px',
+    teamName: '48px',
+    record: '26px',
+    standing: '26px',
+    timer: '32px',
+    quarter: '44px',
+  });
+
+  useEffect(() => {
+    const clampSize = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
+
+    const updateFonts = () => {
+      // Use scoreboard container width to scale everything together
+      const widths: number[] = [];
+      if (desktopScoreboardRef.current?.offsetWidth) widths.push(desktopScoreboardRef.current.offsetWidth);
+      if (mobileScoreboardRef.current?.offsetWidth) widths.push(mobileScoreboardRef.current.offsetWidth);
+      const containerWidth = widths.length ? Math.max(...widths) : 720;
+      
+      // Wider scale range so fonts actually change noticeably (0.7 to 1.4 = 2x range)
+      const scale = clampSize(containerWidth / 720, 0.7, 1.4);
+      
+      // Calculate base sizes - records and standings use the SAME size as team names
+      const teamNameSize = clampSize(24 * scale, 18, 42);
+
+      setFontSizes({
+        title: `${clampSize(28 * scale, 20, 48)}px`,
+        teamName: `${teamNameSize}px`,
+        record: `${teamNameSize}px`,
+        standing: `${teamNameSize}px`,
+        timer: `${clampSize(22 * scale, 18, 36)}px`,
+        quarter: `${clampSize(26 * scale, 20, 44)}px`,
+      });
+    };
+
+    updateFonts();
+    const t1 = setTimeout(updateFonts, 50);
+    const t2 = setTimeout(updateFonts, 200);
+
+    window.addEventListener('resize', updateFonts);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (window.ResizeObserver) {
+      resizeObserver = new ResizeObserver(updateFonts);
+      if (desktopScoreboardRef.current) resizeObserver.observe(desktopScoreboardRef.current);
+      if (mobileScoreboardRef.current) resizeObserver.observe(mobileScoreboardRef.current);
+    }
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener('resize', updateFonts);
+      if (resizeObserver) resizeObserver.disconnect();
+    };
+  }, [expandedStats]);
 
   // Redirect if no game and reset confetti when game changes
   useEffect(() => {
@@ -783,24 +842,26 @@ export function GamePage() {
   };
 
   const renderScoreboard = () => (
-    <div className="w-full min-w-0 flex flex-col">
+    <div ref={mobileScoreboardRef} className="w-full min-w-0 flex flex-col">
       {/* Game Title Input */}
       {settings.scoreboardConfig.showTitle && (
         <div className="flex justify-center px-1 xs:px-2 sm:px-2 pb-1 xs:pb-1.5 sm:pb-2 shrink-0">
           <input
             type="text"
+            data-scoreboard-input
             placeholder="Game Title (e.g. Game 4 of Season)"
             value={currentGame.title || ''}
             onChange={(e) => updateCurrentGame({ title: e.target.value })}
             className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-2 xs:px-2.5 sm:px-3 md:px-4 py-1 xs:py-1 sm:py-1.5 w-full max-w-[280px] xs:max-w-[320px] sm:max-w-md transition-colors focus:outline-none placeholder-white/20 font-bold"
-            style={{
-              color: '#ffffff',
-              fontFamily: currentTheme.headerFont,
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-              fontSize: 'clamp(1.25rem, 3.5vw + 1rem, 2.25rem)',
-              lineHeight: '1.2'
-            }}
+                          style={{
+                            color: '#ffffff',
+                            fontFamily: currentTheme.headerFont,
+                            letterSpacing: '0.05em',
+                            textTransform: 'uppercase',
+                            fontSize: fontSizes.title,
+                            lineHeight: '1.1',
+                            '--dynamic-font-size': fontSizes.title,
+                          } as React.CSSProperties & { '--dynamic-font-size'?: string }}
           />
         </div>
       )}
@@ -813,18 +874,20 @@ export function GamePage() {
             <div className="flex flex-col items-center gap-0.5 xs:gap-1 sm:gap-1 md:gap-0.5 lg:gap-1 w-full shrink-0">
               <input
                 type="text"
+                data-scoreboard-input
                 value={homeTeam.displayName || homeTeam.teamName}
                 onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
                 placeholder={homeTeam.teamName}
-                className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
-                style={{ 
+                className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors leading-none"
+                style={{
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
                   textAlign: 'center',
                   '--tw-ring-color': currentTheme.accentColor + '50',
-                  fontSize: 'clamp(2.5rem, 7vw + 2rem, 5rem)',
-                  lineHeight: '1.2'
-                } as React.CSSProperties & { '--tw-ring-color'?: string }}
+                  fontSize: fontSizes.teamName,
+                  lineHeight: '1.05',
+                  '--dynamic-font-size': fontSizes.teamName,
+                } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
                 title={`Full name: ${homeTeam.teamName}`}
               />
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
@@ -832,33 +895,37 @@ export function GamePage() {
                   {settings.scoreboardConfig.showRecord && (
                     <input
                       type="text"
+                      data-scoreboard-input
                       placeholder="R"
                       value={homeTeam.record || ''}
                       onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                      className="w-full max-w-[80px] xs:max-w-[90px] sm:max-w-[100px] md:max-w-[85px] lg:max-w-[95px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[120px] xs:max-w-[140px] sm:max-w-[160px] md:max-w-[130px] lg:max-w-[150px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
                         textAlign: 'center',
-                        fontSize: 'clamp(1.5rem, 4vw + 1rem, 2.5rem)',
-                        lineHeight: '1.2'
-                      }}
+                        fontSize: fontSizes.record,
+                        lineHeight: '1.05',
+                        '--dynamic-font-size': fontSizes.record,
+                      } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                     />
                   )}
                   {settings.scoreboardConfig.showStanding && (
                     <input
                       type="text"
+                      data-scoreboard-input
                       placeholder="S"
                       value={homeTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                      className="w-full max-w-[100px] xs:max-w-[110px] sm:max-w-[120px] md:max-w-[105px] lg:max-w-[115px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[140px] xs:max-w-[160px] sm:max-w-[180px] md:max-w-[150px] lg:max-w-[170px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
                         textAlign: 'center',
-                        fontSize: 'clamp(1.5rem, 4vw + 1rem, 2.5rem)',
-                        lineHeight: '1.2'
-                      }}
+                        fontSize: fontSizes.standing,
+                        lineHeight: '1.05',
+                        '--dynamic-font-size': fontSizes.standing,
+                      } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                     />
                   )}
                 </div>
@@ -866,7 +933,7 @@ export function GamePage() {
             </div>
             <div
               ref={homeScoreBoxRef}
-              className="w-[65px] xs:w-[75px] sm:w-[90px] md:w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+              className="w-[60px] xs:w-[68px] sm:w-[76px] md:w-[78px] lg:w-[84px] xl:w-[88px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
               style={{ backgroundColor: homeTeam.primaryColor }}
             >
               <span
@@ -898,8 +965,8 @@ export function GamePage() {
                     <span className="text-[10px] xs:text-xs sm:text-sm md:text-xs lg:text-sm">◀</span>
                   </button>
                   <span
-                    className="text-base xs:text-lg sm:text-xl md:text-lg lg:text-xl xl:text-2xl font-black px-1 xs:px-1.5 sm:px-2 md:px-1 lg:px-1.5 min-w-[2ch]"
-                    style={{ fontFamily: currentTheme.numberFont }}
+                    className="font-black px-1 xs:px-1.5 sm:px-2 md:px-1 lg:px-1.5 min-w-[2ch]"
+                    style={{ fontFamily: currentTheme.numberFont, fontSize: fontSizes.quarter, lineHeight: '1' }}
                   >
                     Q{quarter}
                   </span>
@@ -918,13 +985,25 @@ export function GamePage() {
               {settings.scoreboardConfig.showTimer && (
                   <input
                   type="text"
+                  data-scoreboard-input
                   value={timeRemaining}
                   onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                  className="w-[70px] xs:w-[80px] sm:w-[90px] md:w-[75px] lg:w-[85px] text-center bg-transparent border-b-2 text-lg xs:text-xl sm:text-2xl md:text-lg lg:text-xl xl:text-2xl font-mono focus:outline-none font-bold py-0.5"
+                  className="text-center bg-transparent border-b-2 font-mono focus:outline-none font-bold py-0.5 leading-none"
                   style={{
                     borderColor: currentTheme.accentColor,
                     color: currentTheme.textColor,
-                  }}
+                    fontSize: fontSizes.timer,
+                    '--dynamic-font-size': fontSizes.timer,
+                    width: 'fit-content',
+                    minWidth: '3.5ch',
+                    maxWidth: '5ch',
+                  } as React.CSSProperties & { '--dynamic-font-size'?: string }}
+                  style={{
+                    borderColor: currentTheme.accentColor,
+                    color: currentTheme.textColor,
+                    fontSize: fontSizes.timer,
+                    '--dynamic-font-size': fontSizes.timer,
+                  } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                 />
               )}
             </div>
@@ -939,48 +1018,53 @@ export function GamePage() {
                 onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
                 placeholder={awayTeam.teamName}
                 className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
-                style={{ 
+                style={{
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
                   textAlign: 'center',
                   '--tw-ring-color': currentTheme.accentColor + '50',
-                  fontSize: 'clamp(2.5rem, 7vw + 2rem, 5rem)',
-                  lineHeight: '1.2'
-                } as React.CSSProperties & { '--tw-ring-color'?: string }}
+                  fontSize: fontSizes.teamName,
+                  lineHeight: '1.05',
+                  '--dynamic-font-size': fontSizes.teamName,
+                } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
                 title={`Full name: ${awayTeam.teamName}`}
               />
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                <div className="flex flex-col gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-sm xs:text-base sm:text-lg md:text-sm lg:text-base w-full">
+                <div className="flex flex-col gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center w-full">
                   {settings.scoreboardConfig.showRecord && (
                     <input
                       type="text"
+                      data-scoreboard-input
                       placeholder="R"
                       value={awayTeam.record || ''}
                       onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                      className="w-full max-w-[80px] xs:max-w-[90px] sm:max-w-[100px] md:max-w-[85px] lg:max-w-[95px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[120px] xs:max-w-[140px] sm:max-w-[160px] md:max-w-[130px] lg:max-w-[150px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
                         textAlign: 'center',
-                        fontSize: 'clamp(1.5rem, 4vw + 1rem, 2.5rem)',
-                        lineHeight: '1.2'
-                      }}
+                        fontSize: fontSizes.record,
+                        lineHeight: '1.05',
+                        '--dynamic-font-size': fontSizes.record,
+                      } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                     />
                   )}
                   {settings.scoreboardConfig.showStanding && (
                     <input
                       type="text"
+                      data-scoreboard-input
                       placeholder="S"
                       value={awayTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                      className="w-full max-w-[100px] xs:max-w-[110px] sm:max-w-[120px] md:max-w-[105px] lg:max-w-[115px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[140px] xs:max-w-[160px] sm:max-w-[180px] md:max-w-[150px] lg:max-w-[170px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
                         textAlign: 'center',
-                        fontSize: 'clamp(1.5rem, 4vw + 1rem, 2.5rem)',
-                        lineHeight: '1.2'
-                      }}
+                        fontSize: fontSizes.standing,
+                        lineHeight: '1.05',
+                        '--dynamic-font-size': fontSizes.standing,
+                      } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                     />
                   )}
                 </div>
@@ -988,7 +1072,7 @@ export function GamePage() {
             </div>
             <div
               ref={awayScoreBoxRef}
-              className="w-[65px] xs:w-[75px] sm:w-[90px] md:w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+              className="w-[60px] xs:w-[68px] sm:w-[76px] md:w-[78px] lg:w-[84px] xl:w-[88px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
               style={{ backgroundColor: awayTeam.primaryColor }}
             >
               <span
@@ -1187,18 +1271,19 @@ export function GamePage() {
                   minWidth: '260px'
                 }}>
                 <div 
-                  className={`rounded-lg shadow-xl w-full flex flex-col transition-all ${
-                    !expandedStats.home && !expandedStats.away
-                      ? 'p-3 lg:p-4 xl:p-5'
-                      : 'p-2 lg:p-3'
-                  }`}
-                  style={{ backgroundColor: currentTheme.secondaryBackground }}
+                  ref={desktopScoreboardRef}
+                  className="rounded-lg shadow-xl w-full flex flex-col transition-all"
+                  style={{ 
+                    backgroundColor: currentTheme.secondaryBackground,
+                    padding: 'clamp(12px, 2vw, 20px)',
+                  }}
                 >
                   {/* Game Title Input */}
                   {settings.scoreboardConfig.showTitle && (
                     <div className="flex justify-center mb-2 lg:mb-2.5 shrink-0">
                       <input
                         type="text"
+                        data-scoreboard-input
                         placeholder="Game Title"
                         value={currentGame.title || ''}
                         onChange={(e) => updateCurrentGame({ title: e.target.value })}
@@ -1208,11 +1293,10 @@ export function GamePage() {
                           fontFamily: currentTheme.headerFont,
                           letterSpacing: '0.05em',
                           textTransform: 'uppercase',
-                          fontSize: !expandedStats.home && !expandedStats.away
-                            ? 'clamp(1.5rem, 4vw + 1.25rem, 2.75rem)'
-                            : 'clamp(1.25rem, 3.5vw + 1rem, 2.25rem)',
-                          lineHeight: '1.2'
-                        }}
+                          fontSize: fontSizes.title,
+                          lineHeight: '1.1',
+                          '--dynamic-font-size': fontSizes.title,
+                        } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                       />
                     </div>
                   )}
@@ -1222,7 +1306,7 @@ export function GamePage() {
                     !expandedStats.home && !expandedStats.away
                       ? 'gap-3 lg:gap-4 xl:gap-5'
                       : 'gap-2 lg:gap-2.5'
-                  }`}>
+                  }`} style={{ paddingLeft: 'clamp(8px, 2vw, 16px)', paddingRight: 'clamp(8px, 2vw, 16px)' }}>
                     {/* Home Team Score - Left Side */}
                     <div className={`flex flex-col items-center flex-1 min-w-0 transition-all ${
                       !expandedStats.home && !expandedStats.away
@@ -1236,20 +1320,20 @@ export function GamePage() {
                       }`}>
                         <input
                           type="text"
+                          data-scoreboard-input
                           value={homeTeam.displayName || homeTeam.teamName}
                           onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
                           placeholder={homeTeam.teamName}
                           className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all"
-                          style={{ 
-                            fontFamily: currentTheme.headerFont,
-                            color: currentTheme.textColor,
-                            textAlign: 'center',
-                            '--tw-ring-color': currentTheme.accentColor + '50',
-                            fontSize: !expandedStats.home && !expandedStats.away
-                              ? 'clamp(3rem, 8vw + 2.5rem, 6rem)'
-                              : 'clamp(2.5rem, 7vw + 2rem, 5rem)',
-                            lineHeight: '1.2'
-                          } as React.CSSProperties & { '--tw-ring-color'?: string }}
+                style={{
+                  fontFamily: currentTheme.headerFont,
+                  color: currentTheme.textColor,
+                  textAlign: 'center',
+                  '--tw-ring-color': currentTheme.accentColor + '50',
+                  fontSize: fontSizes.teamName,
+                  lineHeight: '1.05',
+                  '--dynamic-font-size': fontSizes.teamName,
+                } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
                           title={`Full name: ${homeTeam.teamName}`}
                         />
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
@@ -1257,45 +1341,45 @@ export function GamePage() {
                             {settings.scoreboardConfig.showRecord && (
                               <input
                                 type="text"
+                                data-scoreboard-input
                                 placeholder="R"
                                 value={homeTeam.record || ''}
                                 onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
                                 className={`w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
                                   !expandedStats.home && !expandedStats.away
-                                    ? 'max-w-[90px] lg:max-w-[105px] xl:max-w-[115px]'
-                                    : 'max-w-[80px] lg:max-w-[95px]'
+                                    ? 'max-w-[130px] lg:max-w-[150px] xl:max-w-[170px]'
+                                    : 'max-w-[120px] lg:max-w-[140px]'
                                 }`}
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
                                   textAlign: 'center',
-                                  fontSize: !expandedStats.home && !expandedStats.away
-                                    ? 'clamp(1.75rem, 4.5vw + 1.25rem, 3rem)'
-                                    : 'clamp(1.5rem, 4vw + 1rem, 2.5rem)',
-                                  lineHeight: '1.2'
-                                }}
+                                  fontSize: fontSizes.record,
+                                  lineHeight: '1.05',
+                                  '--dynamic-font-size': fontSizes.record,
+                                } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                               />
                             )}
                             {settings.scoreboardConfig.showStanding && (
                               <input
                                 type="text"
+                                data-scoreboard-input
                                 placeholder="S"
                                 value={homeTeam.standing || ''}
                                 onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
                                 className={`w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
                                   !expandedStats.home && !expandedStats.away
-                                    ? 'max-w-[110px] lg:max-w-[125px] xl:max-w-[135px]'
-                                    : 'max-w-[100px] lg:max-w-[115px]'
+                                    ? 'max-w-[150px] lg:max-w-[170px] xl:max-w-[190px]'
+                                    : 'max-w-[140px] lg:max-w-[160px]'
                                 }`}
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
                                   textAlign: 'center',
-                                  fontSize: !expandedStats.home && !expandedStats.away
-                                    ? 'clamp(1.75rem, 4.5vw + 1.25rem, 3rem)'
-                                    : 'clamp(1.5rem, 4vw + 1rem, 2.5rem)',
-                                  lineHeight: '1.2'
-                                }}
+                                  fontSize: fontSizes.standing,
+                                  lineHeight: '1.05',
+                                  '--dynamic-font-size': fontSizes.standing,
+                                } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                               />
                             )}
                           </div>
@@ -1305,8 +1389,8 @@ export function GamePage() {
                         ref={homeScoreBoxRef}
                         className={`aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0 transition-all ${
                           !expandedStats.home && !expandedStats.away
-                            ? 'w-[110px] lg:w-[130px] xl:w-[150px]'
-                            : 'w-[90px] lg:w-[100px] xl:w-[110px]'
+                            ? 'w-[88px] lg:w-[96px] xl:w-[104px]'
+                            : 'w-[76px] lg:w-[84px] xl:w-[92px]'
                         }`}
                         style={{ backgroundColor: homeTeam.primaryColor }}
                       >
@@ -1346,12 +1430,8 @@ export function GamePage() {
                             <span className={!expandedStats.home && !expandedStats.away ? 'text-sm lg:text-base xl:text-lg' : 'text-xs lg:text-sm'}>◀</span>
                           </button>
                           <span
-                            className={`font-black px-1 lg:px-1.5 min-w-[2.5ch] transition-all ${
-                              !expandedStats.home && !expandedStats.away
-                                ? 'text-xl lg:text-2xl xl:text-3xl'
-                                : 'text-lg lg:text-xl xl:text-2xl'
-                            }`}
-                            style={{ fontFamily: currentTheme.numberFont }}
+                            className="font-black px-1 lg:px-1.5 min-w-[2.5ch] transition-all"
+                            style={{ fontFamily: currentTheme.numberFont, fontSize: fontSizes.quarter, lineHeight: '1' }}
                           >
                             Q{quarter}
                           </span>
@@ -1374,17 +1454,19 @@ export function GamePage() {
                       {settings.scoreboardConfig.showTimer && (
                         <input
                           type="text"
+                          data-scoreboard-input
                           value={timeRemaining}
                           onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                          className={`text-center bg-transparent border-b-2 font-mono focus:outline-none font-bold transition-all py-0.5 ${
-                            !expandedStats.home && !expandedStats.away
-                              ? 'w-[85px] lg:w-[95px] xl:w-[105px] text-2xl lg:text-3xl xl:text-4xl'
-                              : 'w-[75px] lg:w-[85px] text-xl lg:text-2xl xl:text-3xl'
-                          }`}
+                          className="text-center bg-transparent border-b-2 font-mono focus:outline-none font-bold transition-all py-0.5 leading-none"
                           style={{
                             borderColor: currentTheme.accentColor,
                             color: currentTheme.textColor,
-                          }}
+                            fontSize: fontSizes.timer,
+                            '--dynamic-font-size': fontSizes.timer,
+                            width: 'fit-content',
+                            minWidth: '3.5ch',
+                            maxWidth: '5ch',
+                          } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                         />
                       )}
                     </div>
@@ -1402,20 +1484,20 @@ export function GamePage() {
                       }`}>
                         <input
                           type="text"
+                          data-scoreboard-input
                           value={awayTeam.displayName || awayTeam.teamName}
                           onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
                           placeholder={awayTeam.teamName}
                           className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all"
-                          style={{ 
-                            fontFamily: currentTheme.headerFont,
-                            color: currentTheme.textColor,
-                            textAlign: 'center',
-                            '--tw-ring-color': currentTheme.accentColor + '50',
-                            fontSize: !expandedStats.home && !expandedStats.away
-                              ? 'clamp(3rem, 8vw + 2.5rem, 6rem)'
-                              : 'clamp(2.5rem, 7vw + 2rem, 5rem)',
-                            lineHeight: '1.2'
-                          } as React.CSSProperties & { '--tw-ring-color'?: string }}
+                style={{
+                  fontFamily: currentTheme.headerFont,
+                  color: currentTheme.textColor,
+                  textAlign: 'center',
+                  '--tw-ring-color': currentTheme.accentColor + '50',
+                  fontSize: fontSizes.teamName,
+                  lineHeight: '1.05',
+                  '--dynamic-font-size': fontSizes.teamName,
+                } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
                           title={`Full name: ${awayTeam.teamName}`}
                         />
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
@@ -1427,45 +1509,45 @@ export function GamePage() {
                             {settings.scoreboardConfig.showRecord && (
                               <input
                                 type="text"
+                                data-scoreboard-input
                                 placeholder="R"
                                 value={awayTeam.record || ''}
                                 onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
                                 className={`w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
                                   !expandedStats.home && !expandedStats.away
-                                    ? 'max-w-[90px] lg:max-w-[105px] xl:max-w-[115px]'
-                                    : 'max-w-[80px] lg:max-w-[95px]'
+                                    ? 'max-w-[130px] lg:max-w-[150px] xl:max-w-[170px]'
+                                    : 'max-w-[120px] lg:max-w-[140px]'
                                 }`}
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
                                   textAlign: 'center',
-                                  fontSize: !expandedStats.home && !expandedStats.away
-                                    ? 'clamp(1.75rem, 4.5vw + 1.25rem, 3rem)'
-                                    : 'clamp(1.5rem, 4vw + 1rem, 2.5rem)',
-                                  lineHeight: '1.2'
-                                }}
+                                  fontSize: fontSizes.record,
+                                  lineHeight: '1.05',
+                                  '--dynamic-font-size': fontSizes.record,
+                                } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                               />
                             )}
                             {settings.scoreboardConfig.showStanding && (
                               <input
                                 type="text"
+                                data-scoreboard-input
                                 placeholder="S"
                                 value={awayTeam.standing || ''}
                                 onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
                                 className={`w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
                                   !expandedStats.home && !expandedStats.away
-                                    ? 'max-w-[110px] lg:max-w-[125px] xl:max-w-[135px]'
-                                    : 'max-w-[100px] lg:max-w-[115px]'
+                                    ? 'max-w-[150px] lg:max-w-[170px] xl:max-w-[190px]'
+                                    : 'max-w-[140px] lg:max-w-[160px]'
                                 }`}
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
                                   textAlign: 'center',
-                                  fontSize: !expandedStats.home && !expandedStats.away
-                                    ? 'clamp(1.75rem, 4.5vw + 1.25rem, 3rem)'
-                                    : 'clamp(1.5rem, 4vw + 1rem, 2.5rem)',
-                                  lineHeight: '1.2'
-                                }}
+                                  fontSize: fontSizes.standing,
+                                  lineHeight: '1.05',
+                                  '--dynamic-font-size': fontSizes.standing,
+                                } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                               />
                             )}
                           </div>
@@ -1475,8 +1557,8 @@ export function GamePage() {
                         ref={awayScoreBoxRef}
                         className={`aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0 transition-all ${
                           !expandedStats.home && !expandedStats.away
-                            ? 'w-[110px] lg:w-[130px] xl:w-[150px]'
-                            : 'w-[90px] lg:w-[100px] xl:w-[110px]'
+                            ? 'w-[88px] lg:w-[96px] xl:w-[104px]'
+                            : 'w-[76px] lg:w-[84px] xl:w-[92px]'
                         }`}
                         style={{ backgroundColor: awayTeam.primaryColor }}
                       >

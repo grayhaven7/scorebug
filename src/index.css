@@ -76,6 +76,16 @@ select {
   -ms-user-select: text !important;
 }
 
+/* Allow scoreboard inputs to scale dynamically - override the 16px !important rule */
+input[data-scoreboard-input] {
+  font-size: var(--dynamic-font-size, inherit) !important;
+}
+
+input[data-scoreboard-input]::placeholder {
+  font-size: var(--dynamic-font-size, inherit) !important;
+  opacity: 0.5;
+}
+
 /* Color picker custom styling */
 input[type="color"] {
   -webkit-appearance: none;
