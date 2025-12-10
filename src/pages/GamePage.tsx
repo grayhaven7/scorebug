@@ -454,8 +454,8 @@ export function GamePage() {
       </div>
 
       {/* Stats Table */}
-      <div className="overflow-x-auto overflow-y-auto flex-1 min-h-0">
-        <table className="w-full min-w-max">
+      <div className="overflow-y-auto flex-1 min-h-0">
+        <table style={{ width: 'max-content', minWidth: '100%', tableLayout: 'auto', whiteSpace: 'nowrap' }}>
           <thead>
             <tr style={{ backgroundColor: currentTheme.backgroundColor }}>
               <th
@@ -472,7 +472,7 @@ export function GamePage() {
                 #
               </th>
               <th
-                className="text-left font-medium min-w-[100px] sm:min-w-[120px] md:min-w-[140px] lg:min-w-[160px]"
+                className="text-left font-medium"
                 style={{ 
                   color: currentTheme.textSecondary,
                   fontSize: 'clamp(0.5rem, 1.2vw + 0.3rem, 0.875rem)',
@@ -513,7 +513,10 @@ export function GamePage() {
                     paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
                     paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
                     paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                    paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
+                    paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                    minWidth: stat === 'points' && settings.scoreboardConfig.showQuickPoints 
+                      ? 'clamp(5rem, 8vw + 3rem, 7.5rem)'
+                      : 'clamp(2.5rem, 4vw + 1.5rem, 3.5rem)'
                   }}
                 >
                   {statLabels[stat].slice(0, 3)}
@@ -555,7 +558,7 @@ export function GamePage() {
                   </span>
                 </td>
                 <td 
-                  className="font-medium truncate max-w-[120px] sm:max-w-[140px] md:max-w-[160px] lg:max-w-[180px]"
+                  className="font-medium"
                   style={{
                     fontSize: settings.scoreboardConfig.showQuickPoints 
                       ? 'clamp(0.5rem, 0.9vw + 0.3rem, 0.875rem)'
@@ -563,7 +566,8 @@ export function GamePage() {
                     paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
                     paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
                     paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                    paddingRight: 'clamp(0.25rem, 0.8vw + 0.2rem, 0.625rem)'
+                    paddingRight: 'clamp(0.25rem, 0.8vw + 0.2rem, 0.625rem)',
+                    whiteSpace: 'nowrap'
                   }}
                 >
                   {player.playerName}
@@ -1127,24 +1131,24 @@ export function GamePage() {
             </div>
           </div>
 
-          <div className="max-w-full mx-auto px-2 sm:px-3 md:px-3 lg:px-4 py-2 md:py-2 lg:py-3 w-full overflow-x-hidden">
+          <div className="max-w-full mx-auto px-2 sm:px-3 md:px-3 lg:px-4 py-2 md:py-2 lg:py-3 w-full">
             {renderActionBar()}
 
             {/* Desktop: Wrapper for Tables and Target Bar */}
             <div className="hidden md:flex md:flex-col" style={{ height: showTargetBar && currentGame.targetScore ? 'calc(100vh - 120px)' : 'calc(100vh - 80px)', minHeight: 0 }}>
               {/* Desktop: Three Column Layout - Home Stats | Scoreboard | Away Stats */}
-              <div className="grid grid-cols-[1fr_auto_1fr] gap-2 lg:gap-3 items-start flex-1 min-h-0">
+              <div className="grid gap-2 lg:gap-3 items-start flex-1 min-h-0" style={{ gridTemplateColumns: 'auto minmax(260px, auto) auto', width: '100%' }}>
                 {/* Home Team Stats */}
-                <div className="min-h-0 overflow-x-auto overflow-y-auto flex flex-col h-full">
+                <div className="min-h-0 overflow-y-auto flex flex-col h-full" style={{ minWidth: 0, width: 'max-content', maxWidth: '100%' }}>
                   {renderTeamStats(homeTeam, 'home', true)}
                 </div>
 
                 {/* Scoreboard Section - Middle */}
-                <div className={`flex flex-col items-center justify-center sticky top-4 self-start h-full shrink-0 transition-all duration-300 ${
+                <div className={`flex flex-col items-center justify-center sticky top-4 self-start h-full transition-all duration-300 ${
                   !expandedStats.home && !expandedStats.away
                     ? 'w-[380px] md:w-[420px] lg:w-[480px] xl:w-[540px]'
                     : 'w-[280px] md:w-[280px] lg:w-[320px] xl:w-[360px]'
-                }`}>
+                }`} style={{ minWidth: '260px', flexShrink: 1 }}>
                 <div 
                   className={`rounded-lg shadow-xl w-full flex flex-col transition-all ${
                     !expandedStats.home && !expandedStats.away
@@ -1444,7 +1448,7 @@ export function GamePage() {
               </div>
 
                 {/* Away Team Stats */}
-                <div className="min-h-0 overflow-x-auto overflow-y-auto flex flex-col h-full">
+                <div className="min-h-0 overflow-y-auto flex flex-col h-full" style={{ minWidth: 0, width: 'max-content', maxWidth: '100%' }}>
                   {renderTeamStats(awayTeam, 'away', false)}
                 </div>
               </div>
