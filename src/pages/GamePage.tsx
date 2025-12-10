@@ -93,7 +93,7 @@ export function GamePage() {
       const scale = clampSize(containerWidth / 720, 0.7, 1.4);
       
       // Calculate base sizes - records and standings use the SAME size as team names
-      const teamNameSize = clampSize(24 * scale, 18, 42);
+      const teamNameSize = clampSize(32 * scale, 24, 56);
 
       setFontSizes({
         title: `${clampSize(28 * scale, 20, 48)}px`,
