@@ -295,6 +295,31 @@ export function GamePage() {
     });
   };
 
+  // Handle foul dot click
+  const handleFoulDotClick = (
+    teamType: 'home' | 'away',
+    playerId: string,
+    dotIndex: number
+  ) => {
+    if (!currentGame) return;
+    
+    // dotIndex is 0-based (0-4), clicking dot N sets fouls to N+1
+    // If clicking a dot that's already the current count, reduce by 1
+    const player = teamType === 'home' 
+      ? currentGame.homeTeam.players.find(p => p.playerId === playerId)
+      : currentGame.awayTeam.players.find(p => p.playerId === playerId);
+    
+    if (!player) return;
+    
+    const currentFouls = typeof player.fouls === 'number' ? Math.max(0, Math.min(5, player.fouls)) : 0;
+    const targetFouls = dotIndex + 1;
+    
+    // If clicking the dot that represents the current count, reduce by 1
+    // Otherwise, set to the target count
+    const newFouls = currentFouls === targetFouls ? Math.max(0, currentFouls - 1) : targetFouls;
+    updatePlayerStat(teamType, playerId, 'fouls', newFouls - currentFouls);
+  };
+
   // Render player stat table
   const renderTeamStats = (
     team: typeof homeTeam,
@@ -303,8 +328,9 @@ export function GamePage() {
   ) => {
     const isExpanded = expandedStats[teamType];
     const visibleStats = isExpanded 
-      ? enabledStats 
+      ? enabledStats.filter(stat => stat !== 'fouls') // Exclude fouls from stats loop
       : enabledStats.filter(stat => stat === 'points');
+    const showFouls = enabledStats.includes('fouls');
     
     return (
     <div
@@ -458,6 +484,24 @@ export function GamePage() {
               >
                 PLAYER
               </th>
+              {showFouls && (
+                <th
+                  className="text-center font-medium"
+                  style={{ 
+                    color: currentTheme.textSecondary,
+                    fontSize: 'clamp(0.5rem, 1.2vw + 0.3rem, 0.875rem)',
+                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                    paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                    width: 'clamp(3rem, 5vw + 2rem, 4.5rem)',
+                    minWidth: 'clamp(3rem, 5vw + 2rem, 4.5rem)',
+                    maxWidth: 'clamp(3rem, 5vw + 2rem, 4.5rem)'
+                  }}
+                >
+                  PF
+                </th>
+              )}
               {visibleStats.map(stat => (
                 <th
                   key={stat}
@@ -524,6 +568,42 @@ export function GamePage() {
                 >
                   {player.playerName}
                 </td>
+                {showFouls && (
+                  <td 
+                    className="text-center"
+                    style={{
+                      paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                      paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                      paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                      paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
+                    }}
+                  >
+                    <div className="flex items-center justify-center gap-0.5" style={{ gap: 'clamp(0.125rem, 0.3vw + 0.1rem, 0.375rem)' }}>
+                      {Array.from({ length: 5 }, (_, i) => {
+                        const foulCount = typeof player.fouls === 'number' ? Math.max(0, player.fouls) : 0;
+                        const isLit = i < foulCount;
+                        const isFifthFoul = i === 4;
+                        return (
+                          <button
+                            key={i}
+                            onClick={() => handleFoulDotClick(teamType, player.playerId, i)}
+                            className="transition-all hover:scale-110 cursor-pointer"
+                            style={{
+                              color: isLit 
+                                ? (isFifthFoul ? team.primaryColor : currentTheme.accentColor)
+                                : currentTheme.textSecondary + '40',
+                              fontSize: 'clamp(0.5rem, 1vw + 0.3rem, 0.875rem)',
+                              opacity: isLit ? 1 : 0.3,
+                            }}
+                            title={`Foul ${i + 1}`}
+                          >
+                            •
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </td>
+                )}
                 {visibleStats.map(stat => {
                   const value = player[stat as keyof PlayerGameStats];
                   return (
@@ -551,23 +631,7 @@ export function GamePage() {
                           }}
                           title="Click to add, Shift+Click to subtract"
                         >
-                          {stat === 'fouls' 
-                            ? (() => {
-                                const foulCount = typeof value === 'number' ? Math.max(0, value) : 0;
-                                return Array.from({ length: Math.min(5, foulCount) }, (_, i) => (
-                                  <span
-                                    key={i}
-                                    style={{
-                                      color: i === 4 ? team.primaryColor : currentTheme.accentColor,
-                                      fontSize: 'clamp(0.6rem, 1.2vw + 0.3rem, 1rem)',
-                                    }}
-                                  >
-                                    •
-                                  </span>
-                                ));
-                              })()
-                            : (typeof value === 'number' ? value : 0)
-                          }
+                          {typeof value === 'number' ? value : 0}
                         </button>
                       </td>
                       {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
@@ -635,6 +699,32 @@ export function GamePage() {
               >
                 TOTAL
               </td>
+              {showFouls && (
+                <td 
+                  className="text-center"
+                  style={{
+                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                    paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
+                  }}
+                >
+                  <span
+                    className="inline-block rounded font-bold flex items-center justify-center gap-0.5"
+                    style={{
+                      backgroundColor: team.primaryColor,
+                      color: team.secondaryColor,
+                      borderRadius: currentTheme.borderRadius,
+                      fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
+                      height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                      lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                      padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
+                    }}
+                  >
+                    {calculateTotal(team.players, 'fouls' as keyof PlayerGameStats)}
+                  </span>
+                </td>
+              )}
               {visibleStats.map(stat => (
                 <td 
                   key={stat} 
@@ -659,12 +749,7 @@ export function GamePage() {
                       padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
                     }}
                   >
-                    {stat === 'fouls'
-                      ? calculateTotal(team.players, stat as keyof PlayerGameStats)
-                      : stat === 'points'
-                      ? calculateTotal(team.players, stat as keyof PlayerGameStats)
-                      : calculateTotal(team.players, stat as keyof PlayerGameStats)
-                    }
+                    {calculateTotal(team.players, stat as keyof PlayerGameStats)}
                   </span>
                 </td>
               ))}
@@ -708,7 +793,7 @@ export function GamePage() {
                 value={homeTeam.displayName || homeTeam.teamName}
                 onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
                 placeholder={homeTeam.teamName}
-                className="text-base xs:text-lg sm:text-xl md:text-lg lg:text-xl font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
+                className="text-lg xs:text-xl sm:text-2xl md:text-xl lg:text-2xl font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
@@ -718,7 +803,7 @@ export function GamePage() {
                 title={`Full name: ${homeTeam.teamName}`}
               />
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                <div className="flex flex-col gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-[9px] xs:text-[10px] sm:text-xs md:text-[9px] lg:text-[10px] w-full">
+                <div className="flex flex-col gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-xs xs:text-sm sm:text-base md:text-xs lg:text-sm w-full">
                   {settings.scoreboardConfig.showRecord && (
                     <input
                       type="text"
@@ -824,7 +909,7 @@ export function GamePage() {
                 value={awayTeam.displayName || awayTeam.teamName}
                 onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
                 placeholder={awayTeam.teamName}
-                className="text-base xs:text-lg sm:text-xl md:text-lg lg:text-xl font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
+                className="text-lg xs:text-xl sm:text-2xl md:text-xl lg:text-2xl font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
@@ -834,7 +919,7 @@ export function GamePage() {
                 title={`Full name: ${awayTeam.teamName}`}
               />
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                <div className="flex flex-col gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-[9px] xs:text-[10px] sm:text-xs md:text-[9px] lg:text-[10px] w-full">
+                <div className="flex flex-col gap-0.5 xs:gap-0.5 sm:gap-1 md:gap-0.5 lg:gap-1 items-center justify-center text-xs xs:text-sm sm:text-base md:text-xs lg:text-sm w-full">
                   {settings.scoreboardConfig.showRecord && (
                     <input
                       type="text"
@@ -1115,8 +1200,8 @@ export function GamePage() {
                           placeholder={homeTeam.teamName}
                           className={`font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all ${
                             !expandedStats.home && !expandedStats.away
-                              ? 'text-xl lg:text-2xl'
-                              : 'text-lg lg:text-xl'
+                              ? 'text-2xl lg:text-3xl xl:text-4xl'
+                              : 'text-xl lg:text-2xl xl:text-3xl'
                           }`}
                           style={{ 
                             fontFamily: currentTheme.headerFont,
@@ -1129,8 +1214,8 @@ export function GamePage() {
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
                           <div className={`flex flex-col gap-0.5 lg:gap-1 items-center justify-center w-full transition-all ${
                             !expandedStats.home && !expandedStats.away
-                              ? 'text-[9px] lg:text-[10px] xl:text-xs'
-                              : 'text-[8px] lg:text-[9px]'
+                              ? 'text-sm lg:text-base xl:text-lg'
+                              : 'text-xs lg:text-sm xl:text-base'
                           }`}>
                             {settings.scoreboardConfig.showRecord && (
                               <input
@@ -1277,8 +1362,8 @@ export function GamePage() {
                           placeholder={awayTeam.teamName}
                           className={`font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all ${
                             !expandedStats.home && !expandedStats.away
-                              ? 'text-xl lg:text-2xl'
-                              : 'text-lg lg:text-xl'
+                              ? 'text-2xl lg:text-3xl xl:text-4xl'
+                              : 'text-xl lg:text-2xl xl:text-3xl'
                           }`}
                           style={{ 
                             fontFamily: currentTheme.headerFont,
@@ -1291,8 +1376,8 @@ export function GamePage() {
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
                           <div className={`flex flex-col gap-0.5 lg:gap-1 items-center justify-center w-full transition-all ${
                             !expandedStats.home && !expandedStats.away
-                              ? 'text-xs lg:text-sm'
-                              : 'text-[10px] lg:text-xs'
+                              ? 'text-sm lg:text-base xl:text-lg'
+                              : 'text-xs lg:text-sm xl:text-base'
                           }`}>
                             {settings.scoreboardConfig.showRecord && (
                               <input
