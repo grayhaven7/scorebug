@@ -907,7 +907,7 @@ export function GamePage() {
             </div>
             <div
               ref={homeScoreBoxRef}
-              className="w-[60px] xs:w-[68px] sm:w-[76px] md:w-[78px] lg:w-[84px] xl:w-[88px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+              className="w-[80px] xs:w-[90px] sm:w-[100px] md:w-[100px] lg:w-[110px] xl:w-[120px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
               style={{ backgroundColor: homeTeam.primaryColor }}
             >
               <span
@@ -924,7 +924,7 @@ export function GamePage() {
           </div>
 
           {/* Center - Quarter & Time */}
-          {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer || showFouls) && (
+          {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) && (
             <div className="text-center flex flex-col items-center justify-center mx-1 xs:mx-1.5 sm:mx-2 md:mx-2 lg:mx-2.5 shrink-0 min-w-[70px] xs:min-w-[85px] sm:min-w-[100px] md:min-w-[70px] lg:min-w-[80px]">
               {settings.scoreboardConfig.showQuarter && (
                 <div className="flex items-center gap-1 xs:gap-1 sm:gap-1.5 md:gap-1.5 lg:gap-2 mb-0.5 xs:mb-0.5 sm:mb-0.5 md:mb-0.5 lg:mb-1">
@@ -962,7 +962,7 @@ export function GamePage() {
                   data-scoreboard-input
                   value={timeRemaining}
                   onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                  className={`text-center bg-transparent border-b-2 font-mono focus:outline-none font-bold py-0.5 leading-none ${showFouls ? 'mb-0.5 xs:mb-0.5 sm:mb-1 md:mb-0.5 lg:mb-1' : ''}`}
+                  className="text-center bg-transparent border-b-2 font-mono focus:outline-none font-bold py-0.5 leading-none"
                   style={{
                     borderColor: currentTheme.accentColor,
                     color: currentTheme.textColor,
@@ -973,40 +973,6 @@ export function GamePage() {
                     maxWidth: '5ch',
                   } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                 />
-              )}
-              {showFouls && (
-                <div className="flex items-center justify-center gap-1.5 xs:gap-2 sm:gap-2.5 md:gap-2 lg:gap-2.5 mt-1 xs:mt-1.5 sm:mt-2 md:mt-1 lg:mt-1.5">
-                  <span
-                    className="font-bold px-2 xs:px-2.5 sm:px-3 md:px-2 lg:px-2.5 py-0.5 xs:py-0.5 sm:py-1 md:py-0.5 lg:py-0.5 rounded min-w-[2ch] text-center"
-                    style={{
-                      backgroundColor: homeTeam.primaryColor,
-                      color: homeTeam.secondaryColor,
-                      fontFamily: currentTheme.numberFont,
-                      fontSize: 'clamp(0.75rem, 1.3vw + 0.3rem, 1.1rem)',
-                      lineHeight: '1.2',
-                    }}
-                  >
-                    {homeFouls}
-                  </span>
-                  <span
-                    className="text-[10px] xs:text-xs sm:text-sm md:text-xs lg:text-sm opacity-60 font-medium px-0.5"
-                    style={{ color: currentTheme.textSecondary }}
-                  >
-                    PF
-                  </span>
-                  <span
-                    className="font-bold px-2 xs:px-2.5 sm:px-3 md:px-2 lg:px-2.5 py-0.5 xs:py-0.5 sm:py-1 md:py-0.5 lg:py-0.5 rounded min-w-[2ch] text-center"
-                    style={{
-                      backgroundColor: awayTeam.primaryColor,
-                      color: awayTeam.secondaryColor,
-                      fontFamily: currentTheme.numberFont,
-                      fontSize: 'clamp(0.75rem, 1.3vw + 0.3rem, 1.1rem)',
-                      lineHeight: '1.2',
-                    }}
-                  >
-                    {awayFouls}
-                  </span>
-                </div>
               )}
             </div>
           )}
@@ -1074,7 +1040,7 @@ export function GamePage() {
             </div>
             <div
               ref={awayScoreBoxRef}
-              className="w-[60px] xs:w-[68px] sm:w-[76px] md:w-[78px] lg:w-[84px] xl:w-[88px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+              className="w-[80px] xs:w-[90px] sm:w-[100px] md:w-[100px] lg:w-[110px] xl:w-[120px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
               style={{ backgroundColor: awayTeam.primaryColor }}
             >
               <span
@@ -1090,6 +1056,52 @@ export function GamePage() {
             </div>
           </div>
         </div>
+        
+        {/* Foul Totals - Below Scores */}
+        {showFouls && (
+          <div className="flex items-center justify-center gap-3 xs:gap-4 sm:gap-5 md:gap-4 lg:gap-5 w-full mt-2 xs:mt-2.5 sm:mt-3 md:mt-2 lg:mt-2.5">
+            <div className="flex flex-col items-center gap-1 xs:gap-1.5 sm:gap-2">
+              <span
+                className="text-[9px] xs:text-[10px] sm:text-xs md:text-[10px] lg:text-xs opacity-70 font-medium uppercase tracking-wide"
+                style={{ color: currentTheme.textSecondary }}
+              >
+                PF
+              </span>
+              <span
+                className="font-black px-4 xs:px-5 sm:px-6 md:px-5 lg:px-6 py-2 xs:py-2.5 sm:py-3 md:py-2.5 lg:py-3 rounded-lg min-w-[3ch] text-center shadow-lg"
+                style={{
+                  backgroundColor: homeTeam.primaryColor,
+                  color: homeTeam.secondaryColor,
+                  fontFamily: currentTheme.numberFont,
+                  fontSize: 'clamp(1.25rem, 3vw + 0.5rem, 2rem)',
+                  lineHeight: '1.2',
+                }}
+              >
+                {homeFouls}
+              </span>
+            </div>
+            <div className="flex flex-col items-center gap-1 xs:gap-1.5 sm:gap-2">
+              <span
+                className="text-[9px] xs:text-[10px] sm:text-xs md:text-[10px] lg:text-xs opacity-70 font-medium uppercase tracking-wide"
+                style={{ color: currentTheme.textSecondary }}
+              >
+                PF
+              </span>
+              <span
+                className="font-black px-4 xs:px-5 sm:px-6 md:px-5 lg:px-6 py-2 xs:py-2.5 sm:py-3 md:py-2.5 lg:py-3 rounded-lg min-w-[3ch] text-center shadow-lg"
+                style={{
+                  backgroundColor: awayTeam.primaryColor,
+                  color: awayTeam.secondaryColor,
+                  fontFamily: currentTheme.numberFont,
+                  fontSize: 'clamp(1.25rem, 3vw + 0.5rem, 2rem)',
+                  lineHeight: '1.2',
+                }}
+              >
+                {awayFouls}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1391,8 +1403,8 @@ export function GamePage() {
                         ref={homeScoreBoxRef}
                         className={`aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0 transition-all ${
                           !expandedStats.home && !expandedStats.away
-                            ? 'w-[88px] lg:w-[96px] xl:w-[104px]'
-                            : 'w-[76px] lg:w-[84px] xl:w-[92px]'
+                            ? 'w-[120px] lg:w-[130px] xl:w-[140px]'
+                            : 'w-[100px] lg:w-[110px] xl:w-[120px]'
                         }`}
                         style={{ backgroundColor: homeTeam.primaryColor }}
                       >
@@ -1470,46 +1482,6 @@ export function GamePage() {
                             maxWidth: '5ch',
                           } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                         />
-                      )}
-                      {showFouls && (
-                        <div className="flex items-center gap-1.5 lg:gap-2 mt-1 lg:mt-1.5">
-                          <span
-                            className="font-bold px-1.5 lg:px-2 rounded transition-all"
-                            style={{
-                              backgroundColor: homeTeam.primaryColor,
-                              color: homeTeam.secondaryColor,
-                              fontFamily: currentTheme.numberFont,
-                              fontSize: !expandedStats.home && !expandedStats.away 
-                                ? 'clamp(0.75rem, 1.2vw + 0.3rem, 1.1rem)' 
-                                : 'clamp(0.7rem, 1vw + 0.3rem, 1rem)',
-                            }}
-                          >
-                            {homeFouls}
-                          </span>
-                          <span
-                            className={`opacity-60 transition-all ${
-                              !expandedStats.home && !expandedStats.away
-                                ? 'text-xs lg:text-sm'
-                                : 'text-[10px] lg:text-xs'
-                            }`}
-                            style={{ color: currentTheme.textSecondary }}
-                          >
-                            PF
-                          </span>
-                          <span
-                            className="font-bold px-1.5 lg:px-2 rounded transition-all"
-                            style={{
-                              backgroundColor: awayTeam.primaryColor,
-                              color: awayTeam.secondaryColor,
-                              fontFamily: currentTheme.numberFont,
-                              fontSize: !expandedStats.home && !expandedStats.away 
-                                ? 'clamp(0.75rem, 1.2vw + 0.3rem, 1.1rem)' 
-                                : 'clamp(0.7rem, 1vw + 0.3rem, 1rem)',
-                            }}
-                          >
-                            {awayFouls}
-                          </span>
-                        </div>
                       )}
                     </div>
 
@@ -1599,8 +1571,8 @@ export function GamePage() {
                         ref={awayScoreBoxRef}
                         className={`aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0 transition-all ${
                           !expandedStats.home && !expandedStats.away
-                            ? 'w-[88px] lg:w-[96px] xl:w-[104px]'
-                            : 'w-[76px] lg:w-[84px] xl:w-[92px]'
+                            ? 'w-[120px] lg:w-[130px] xl:w-[140px]'
+                            : 'w-[100px] lg:w-[110px] xl:w-[120px]'
                         }`}
                         style={{ backgroundColor: awayTeam.primaryColor }}
                       >
@@ -1617,6 +1589,56 @@ export function GamePage() {
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Foul Totals - Below Score Boxes */}
+                  {showFouls && (
+                    <div className="flex items-center justify-center gap-4 lg:gap-5 xl:gap-6 w-full mt-3 lg:mt-3.5 xl:mt-4">
+                      <div className="flex flex-col items-center gap-1 lg:gap-1.5">
+                        <span
+                          className="text-[10px] lg:text-xs xl:text-sm opacity-70 font-medium uppercase tracking-wide transition-all"
+                          style={{ color: currentTheme.textSecondary }}
+                        >
+                          PF
+                        </span>
+                        <span
+                          className="font-black px-5 lg:px-6 xl:px-7 py-2.5 lg:py-3 xl:py-3.5 rounded-lg min-w-[3ch] text-center shadow-lg transition-all"
+                          style={{
+                            backgroundColor: homeTeam.primaryColor,
+                            color: homeTeam.secondaryColor,
+                            fontFamily: currentTheme.numberFont,
+                            fontSize: !expandedStats.home && !expandedStats.away 
+                              ? 'clamp(1.5rem, 2.5vw + 0.5rem, 2.5rem)' 
+                              : 'clamp(1.25rem, 2vw + 0.5rem, 2rem)',
+                            lineHeight: '1.2',
+                          }}
+                        >
+                          {homeFouls}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-center gap-1 lg:gap-1.5">
+                        <span
+                          className="text-[10px] lg:text-xs xl:text-sm opacity-70 font-medium uppercase tracking-wide transition-all"
+                          style={{ color: currentTheme.textSecondary }}
+                        >
+                          PF
+                        </span>
+                        <span
+                          className="font-black px-5 lg:px-6 xl:px-7 py-2.5 lg:py-3 xl:py-3.5 rounded-lg min-w-[3ch] text-center shadow-lg transition-all"
+                          style={{
+                            backgroundColor: awayTeam.primaryColor,
+                            color: awayTeam.secondaryColor,
+                            fontFamily: currentTheme.numberFont,
+                            fontSize: !expandedStats.home && !expandedStats.away 
+                              ? 'clamp(1.5rem, 2.5vw + 0.5rem, 2.5rem)' 
+                              : 'clamp(1.25rem, 2vw + 0.5rem, 2rem)',
+                            lineHeight: '1.2',
+                          }}
+                        >
+                          {awayFouls}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
