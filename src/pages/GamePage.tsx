@@ -1115,7 +1115,7 @@ export function GamePage() {
                           placeholder={homeTeam.teamName}
                           className={`font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all ${
                             !expandedStats.home && !expandedStats.away
-                              ? 'text-xl lg:text-2xl xl:text-3xl'
+                              ? 'text-xl lg:text-2xl'
                               : 'text-lg lg:text-xl'
                           }`}
                           style={{ 
