@@ -1061,7 +1061,11 @@ export function GamePage() {
                     : 'w-[280px] md:w-[280px] lg:w-[320px] xl:w-[360px]'
                 }`}>
                 <div 
-                  className="rounded-lg p-2 lg:p-3 shadow-xl w-full flex flex-col"
+                  className={`rounded-lg shadow-xl w-full flex flex-col transition-all ${
+                    !expandedStats.home && !expandedStats.away
+                      ? 'p-3 lg:p-4 xl:p-5'
+                      : 'p-2 lg:p-3'
+                  }`}
                   style={{ backgroundColor: currentTheme.secondaryBackground }}
                 >
                   {/* Game Title Input */}
@@ -1072,7 +1076,11 @@ export function GamePage() {
                         placeholder="Game Title"
                         value={currentGame.title || ''}
                         onChange={(e) => updateCurrentGame({ title: e.target.value })}
-                        className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-2 lg:px-2.5 py-0.5 lg:py-1 w-full max-w-full transition-colors focus:outline-none placeholder-white/20 font-bold text-[10px] lg:text-xs"
+                        className={`text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-2 lg:px-2.5 py-0.5 lg:py-1 w-full max-w-full transition-all focus:outline-none placeholder-white/20 font-bold ${
+                          !expandedStats.home && !expandedStats.away
+                            ? 'text-sm lg:text-base'
+                            : 'text-xs lg:text-sm'
+                        }`}
                         style={{
                           color: '#ffffff',
                           fontFamily: currentTheme.headerFont,
@@ -1084,16 +1092,32 @@ export function GamePage() {
                   )}
 
                   {/* Desktop Scoreboard Layout - Horizontal */}
-                  <div className="flex items-center justify-center gap-2 lg:gap-2.5 shrink-0">
+                  <div className={`flex items-center justify-center shrink-0 transition-all ${
+                    !expandedStats.home && !expandedStats.away
+                      ? 'gap-3 lg:gap-4 xl:gap-5'
+                      : 'gap-2 lg:gap-2.5'
+                  }`}>
                     {/* Home Team Score - Left Side */}
-                    <div className="flex flex-col items-center gap-1 lg:gap-1.5 flex-1 min-w-0">
-                      <div className="flex flex-col items-center gap-0.5 lg:gap-1 w-full shrink-0">
+                    <div className={`flex flex-col items-center flex-1 min-w-0 transition-all ${
+                      !expandedStats.home && !expandedStats.away
+                        ? 'gap-1.5 lg:gap-2 xl:gap-2.5'
+                        : 'gap-1 lg:gap-1.5'
+                    }`}>
+                      <div className={`flex flex-col items-center w-full shrink-0 transition-all ${
+                        !expandedStats.home && !expandedStats.away
+                          ? 'gap-1 lg:gap-1.5'
+                          : 'gap-0.5 lg:gap-1'
+                      }`}>
                         <input
                           type="text"
                           value={homeTeam.displayName || homeTeam.teamName}
                           onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
                           placeholder={homeTeam.teamName}
-                          className="text-lg lg:text-xl font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
+                          className={`font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all ${
+                            !expandedStats.home && !expandedStats.away
+                              ? 'text-xl lg:text-2xl xl:text-3xl'
+                              : 'text-lg lg:text-xl'
+                          }`}
                           style={{ 
                             fontFamily: currentTheme.headerFont,
                             color: currentTheme.textColor,
@@ -1103,14 +1127,22 @@ export function GamePage() {
                           title={`Full name: ${homeTeam.teamName}`}
                         />
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                          <div className="flex flex-col gap-0.5 lg:gap-1 items-center justify-center text-[8px] lg:text-[9px] w-full">
+                          <div className={`flex flex-col gap-0.5 lg:gap-1 items-center justify-center w-full transition-all ${
+                            !expandedStats.home && !expandedStats.away
+                              ? 'text-[9px] lg:text-[10px] xl:text-xs'
+                              : 'text-[8px] lg:text-[9px]'
+                          }`}>
                             {settings.scoreboardConfig.showRecord && (
                               <input
                                 type="text"
                                 placeholder="R"
                                 value={homeTeam.record || ''}
                                 onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                                className="w-full max-w-[60px] lg:max-w-[75px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                                className={`w-full px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
+                                  !expandedStats.home && !expandedStats.away
+                                    ? 'max-w-[70px] lg:max-w-[85px] xl:max-w-[95px]'
+                                    : 'max-w-[60px] lg:max-w-[75px]'
+                                }`}
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
@@ -1124,7 +1156,11 @@ export function GamePage() {
                                 placeholder="S"
                                 value={homeTeam.standing || ''}
                                 onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                                className="w-full max-w-[80px] lg:max-w-[95px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                                className={`w-full px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
+                                  !expandedStats.home && !expandedStats.away
+                                    ? 'max-w-[90px] lg:max-w-[105px] xl:max-w-[115px]'
+                                    : 'max-w-[80px] lg:max-w-[95px]'
+                                }`}
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
@@ -1137,7 +1173,11 @@ export function GamePage() {
                       </div>
                       <div
                         ref={homeScoreBoxRef}
-                        className="w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+                        className={`aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0 transition-all ${
+                          !expandedStats.home && !expandedStats.away
+                            ? 'w-[110px] lg:w-[130px] xl:w-[150px]'
+                            : 'w-[90px] lg:w-[100px] xl:w-[110px]'
+                        }`}
                         style={{ backgroundColor: homeTeam.primaryColor }}
                       >
                         <span
@@ -1154,34 +1194,50 @@ export function GamePage() {
                     </div>
 
                     {/* Center - Quarter, Timer, Target */}
-                    <div className="flex flex-col items-center gap-1 lg:gap-1.5 shrink-0">
+                    <div className={`flex flex-col items-center shrink-0 transition-all ${
+                      !expandedStats.home && !expandedStats.away
+                        ? 'gap-1.5 lg:gap-2 xl:gap-2.5'
+                        : 'gap-1 lg:gap-1.5'
+                    }`}>
                       {settings.scoreboardConfig.showQuarter && (
                         <div className="flex items-center gap-1 lg:gap-1.5">
                           <button
                             onClick={() => handleQuarterChange(-1)}
-                            className="w-5 h-5 lg:w-6 lg:h-6 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95 shrink-0"
+                            className={`rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95 shrink-0 ${
+                              !expandedStats.home && !expandedStats.away
+                                ? 'w-6 h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8'
+                                : 'w-5 h-5 lg:w-6 lg:h-6'
+                            }`}
                             style={{
                               color: currentTheme.accentColor,
                             }}
                             disabled={quarter <= 1}
                           >
-                            <span className="text-xs lg:text-sm">◀</span>
+                            <span className={!expandedStats.home && !expandedStats.away ? 'text-sm lg:text-base xl:text-lg' : 'text-xs lg:text-sm'}>◀</span>
                           </button>
                           <span
-                            className="text-sm lg:text-base xl:text-lg font-black px-1 lg:px-1.5 min-w-[2.5ch]"
+                            className={`font-black px-1 lg:px-1.5 min-w-[2.5ch] transition-all ${
+                              !expandedStats.home && !expandedStats.away
+                                ? 'text-lg lg:text-xl'
+                                : 'text-base lg:text-lg'
+                            }`}
                             style={{ fontFamily: currentTheme.numberFont }}
                           >
                             Q{quarter}
                           </span>
                           <button
                             onClick={() => handleQuarterChange(1)}
-                            className="w-5 h-5 lg:w-6 lg:h-6 rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95 shrink-0"
+                            className={`rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95 shrink-0 ${
+                              !expandedStats.home && !expandedStats.away
+                                ? 'w-6 h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8'
+                                : 'w-5 h-5 lg:w-6 lg:h-6'
+                            }`}
                             style={{
                               color: currentTheme.accentColor,
                             }}
                             disabled={quarter >= 4}
                           >
-                            <span className="text-xs lg:text-sm">▶</span>
+                            <span className={!expandedStats.home && !expandedStats.away ? 'text-sm lg:text-base xl:text-lg' : 'text-xs lg:text-sm'}>▶</span>
                           </button>
                         </div>
                       )}
@@ -1190,7 +1246,11 @@ export function GamePage() {
                           type="text"
                           value={timeRemaining}
                           onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                          className="w-[60px] lg:w-[70px] text-center bg-transparent border-b-2 text-sm lg:text-base xl:text-lg font-mono focus:outline-none font-bold"
+                          className={`text-center bg-transparent border-b-2 font-mono focus:outline-none font-bold transition-all ${
+                            !expandedStats.home && !expandedStats.away
+                              ? 'w-[70px] lg:w-[80px] xl:w-[90px] text-lg lg:text-xl'
+                              : 'w-[60px] lg:w-[70px] text-base lg:text-lg'
+                          }`}
                           style={{
                             borderColor: currentTheme.accentColor,
                             color: currentTheme.textColor,
@@ -1200,14 +1260,26 @@ export function GamePage() {
                     </div>
 
                     {/* Away Team Score - Right Side */}
-                    <div className="flex flex-col items-center gap-1 lg:gap-1.5 flex-1 min-w-0">
-                      <div className="flex flex-col items-center gap-0.5 lg:gap-1 w-full shrink-0">
+                    <div className={`flex flex-col items-center flex-1 min-w-0 transition-all ${
+                      !expandedStats.home && !expandedStats.away
+                        ? 'gap-1.5 lg:gap-2 xl:gap-2.5'
+                        : 'gap-1 lg:gap-1.5'
+                    }`}>
+                      <div className={`flex flex-col items-center w-full shrink-0 transition-all ${
+                        !expandedStats.home && !expandedStats.away
+                          ? 'gap-1 lg:gap-1.5'
+                          : 'gap-0.5 lg:gap-1'
+                      }`}>
                         <input
                           type="text"
                           value={awayTeam.displayName || awayTeam.teamName}
                           onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
                           placeholder={awayTeam.teamName}
-                          className="text-lg lg:text-xl font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
+                          className={`font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all ${
+                            !expandedStats.home && !expandedStats.away
+                              ? 'text-xl lg:text-2xl'
+                              : 'text-lg lg:text-xl'
+                          }`}
                           style={{ 
                             fontFamily: currentTheme.headerFont,
                             color: currentTheme.textColor,
@@ -1217,14 +1289,22 @@ export function GamePage() {
                           title={`Full name: ${awayTeam.teamName}`}
                         />
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                          <div className="flex flex-col gap-0.5 lg:gap-1 items-center justify-center text-[8px] lg:text-[9px] w-full">
+                          <div className={`flex flex-col gap-0.5 lg:gap-1 items-center justify-center w-full transition-all ${
+                            !expandedStats.home && !expandedStats.away
+                              ? 'text-xs lg:text-sm'
+                              : 'text-[10px] lg:text-xs'
+                          }`}>
                             {settings.scoreboardConfig.showRecord && (
                               <input
                                 type="text"
                                 placeholder="R"
                                 value={awayTeam.record || ''}
                                 onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                                className="w-full max-w-[60px] lg:max-w-[75px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                                className={`w-full px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
+                                  !expandedStats.home && !expandedStats.away
+                                    ? 'max-w-[70px] lg:max-w-[85px] xl:max-w-[95px]'
+                                    : 'max-w-[60px] lg:max-w-[75px]'
+                                }`}
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
@@ -1238,7 +1318,11 @@ export function GamePage() {
                                 placeholder="S"
                                 value={awayTeam.standing || ''}
                                 onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                                className="w-full max-w-[80px] lg:max-w-[95px] px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                                className={`w-full px-0.5 py-0 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
+                                  !expandedStats.home && !expandedStats.away
+                                    ? 'max-w-[90px] lg:max-w-[105px] xl:max-w-[115px]'
+                                    : 'max-w-[80px] lg:max-w-[95px]'
+                                }`}
                                 style={{ 
                                   color: currentTheme.textSecondary,
                                   fontFamily: currentTheme.headerFont,
@@ -1251,7 +1335,11 @@ export function GamePage() {
                       </div>
                       <div
                         ref={awayScoreBoxRef}
-                        className="w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+                        className={`aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0 transition-all ${
+                          !expandedStats.home && !expandedStats.away
+                            ? 'w-[110px] lg:w-[130px] xl:w-[150px]'
+                            : 'w-[90px] lg:w-[100px] xl:w-[110px]'
+                        }`}
                         style={{ backgroundColor: awayTeam.primaryColor }}
                       >
                         <span
