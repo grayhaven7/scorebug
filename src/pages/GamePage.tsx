@@ -286,12 +286,15 @@ export function GamePage() {
 
   const homeScore = calculateTotal(homeTeam.players, 'points');
   const awayScore = calculateTotal(awayTeam.players, 'points');
+  const homeFouls = calculateTotal(homeTeam.players, 'fouls');
+  const awayFouls = calculateTotal(awayTeam.players, 'fouls');
 
   // Get enabled stats
   const enabledStats = Object.entries(settings.statsConfig)
     .filter(([, enabled]) => enabled)
     .map(([stat]) => stat as StatType);
 
+  const showFouls = enabledStats.includes('fouls');
   const showTargetBar = !!(currentGame.targetScore && settings.scoreboardConfig.showTargetBar);
 
   // Handle stat click
@@ -354,16 +357,13 @@ export function GamePage() {
     });
   };
 
-  // Handle foul dot click
+  // Handle foul dot click - increments foul count (cycles 0->1->2->3->4->5->0)
   const handleFoulDotClick = (
     teamType: 'home' | 'away',
-    playerId: string,
-    dotIndex: number
+    playerId: string
   ) => {
     if (!currentGame) return;
     
-    // dotIndex is 0-based (0-4), clicking dot N sets fouls to N+1
-    // If clicking a dot that's already the current count, reduce by 1
     const player = teamType === 'home' 
       ? currentGame.homeTeam.players.find(p => p.playerId === playerId)
       : currentGame.awayTeam.players.find(p => p.playerId === playerId);
@@ -371,11 +371,8 @@ export function GamePage() {
     if (!player) return;
     
     const currentFouls = typeof player.fouls === 'number' ? Math.max(0, Math.min(5, player.fouls)) : 0;
-    const targetFouls = dotIndex + 1;
-    
-    // If clicking the dot that represents the current count, reduce by 1
-    // Otherwise, set to the target count
-    const newFouls = currentFouls === targetFouls ? Math.max(0, currentFouls - 1) : targetFouls;
+    // Cycle: 0->1->2->3->4->5->0
+    const newFouls = currentFouls >= 5 ? 0 : currentFouls + 1;
     updatePlayerStat(teamType, playerId, 'fouls', newFouls - currentFouls);
   };
 
@@ -658,30 +655,33 @@ export function GamePage() {
                       paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
                     }}
                   >
-                    <div className="flex items-center justify-center gap-0.5" style={{ gap: 'clamp(0.125rem, 0.3vw + 0.1rem, 0.375rem)' }}>
+                    <button
+                      onClick={() => handleFoulDotClick(teamType, player.playerId)}
+                      className="flex items-center justify-center gap-0.5 transition-all hover:scale-110 cursor-pointer"
+                      style={{ gap: 'clamp(0.125rem, 0.3vw + 0.1rem, 0.375rem)' }}
+                      title="Click to increment fouls"
+                    >
                       {Array.from({ length: 5 }, (_, i) => {
                         const foulCount = typeof player.fouls === 'number' ? Math.max(0, player.fouls) : 0;
                         const isLit = i < foulCount;
                         const isFifthFoul = i === 4;
                         return (
-                          <button
+                          <span
                             key={i}
-                            onClick={() => handleFoulDotClick(teamType, player.playerId, i)}
-                            className="transition-all hover:scale-110 cursor-pointer"
                             style={{
                               color: isLit 
                                 ? (isFifthFoul ? team.primaryColor : currentTheme.accentColor)
                                 : currentTheme.textSecondary + '40',
-                              fontSize: 'clamp(0.5rem, 1vw + 0.3rem, 0.875rem)',
+                              fontSize: 'clamp(1rem, 2vw + 0.5rem, 1.75rem)',
                               opacity: isLit ? 1 : 0.3,
+                              fontWeight: 'bold',
                             }}
-                            title={`Foul ${i + 1}`}
                           >
                             •
-                          </button>
+                          </span>
                         );
                       })}
-                    </div>
+                    </button>
                   </td>
                 )}
                 {visibleStats.map(stat => {
@@ -779,32 +779,6 @@ export function GamePage() {
               >
                 TOTAL
               </td>
-              {showFouls && (
-                <td 
-                  className="text-center"
-                  style={{
-                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                    paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
-                  }}
-                >
-                  <span
-                    className="inline-block rounded font-bold flex items-center justify-center gap-0.5"
-                    style={{
-                      backgroundColor: team.primaryColor,
-                      color: team.secondaryColor,
-                      borderRadius: currentTheme.borderRadius,
-                      fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
-                      height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                      lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                      padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
-                    }}
-                  >
-                    {calculateTotal(team.players, 'fouls' as keyof PlayerGameStats)}
-                  </span>
-                </td>
-              )}
               {visibleStats.map(stat => (
                 <td 
                   key={stat} 
@@ -950,8 +924,8 @@ export function GamePage() {
           </div>
 
           {/* Center - Quarter & Time */}
-          {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer) && (
-            <div className="text-center flex flex-col items-center mx-0.5 xs:mx-1 sm:mx-1.5 md:mx-2 lg:mx-2.5 shrink-0 min-w-[70px] xs:min-w-[85px] sm:min-w-[100px] md:min-w-[70px] lg:min-w-[80px]">
+          {(settings.scoreboardConfig.showQuarter || settings.scoreboardConfig.showTimer || showFouls) && (
+            <div className="text-center flex flex-col items-center justify-center mx-1 xs:mx-1.5 sm:mx-2 md:mx-2 lg:mx-2.5 shrink-0 min-w-[70px] xs:min-w-[85px] sm:min-w-[100px] md:min-w-[70px] lg:min-w-[80px]">
               {settings.scoreboardConfig.showQuarter && (
                 <div className="flex items-center gap-1 xs:gap-1 sm:gap-1.5 md:gap-1.5 lg:gap-2 mb-0.5 xs:mb-0.5 sm:mb-0.5 md:mb-0.5 lg:mb-1">
                   <button
@@ -988,7 +962,7 @@ export function GamePage() {
                   data-scoreboard-input
                   value={timeRemaining}
                   onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                  className="text-center bg-transparent border-b-2 font-mono focus:outline-none font-bold py-0.5 leading-none"
+                  className={`text-center bg-transparent border-b-2 font-mono focus:outline-none font-bold py-0.5 leading-none ${showFouls ? 'mb-0.5 xs:mb-0.5 sm:mb-1 md:mb-0.5 lg:mb-1' : ''}`}
                   style={{
                     borderColor: currentTheme.accentColor,
                     color: currentTheme.textColor,
@@ -999,6 +973,40 @@ export function GamePage() {
                     maxWidth: '5ch',
                   } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                 />
+              )}
+              {showFouls && (
+                <div className="flex items-center justify-center gap-1.5 xs:gap-2 sm:gap-2.5 md:gap-2 lg:gap-2.5 mt-1 xs:mt-1.5 sm:mt-2 md:mt-1 lg:mt-1.5">
+                  <span
+                    className="font-bold px-2 xs:px-2.5 sm:px-3 md:px-2 lg:px-2.5 py-0.5 xs:py-0.5 sm:py-1 md:py-0.5 lg:py-0.5 rounded min-w-[2ch] text-center"
+                    style={{
+                      backgroundColor: homeTeam.primaryColor,
+                      color: homeTeam.secondaryColor,
+                      fontFamily: currentTheme.numberFont,
+                      fontSize: 'clamp(0.75rem, 1.3vw + 0.3rem, 1.1rem)',
+                      lineHeight: '1.2',
+                    }}
+                  >
+                    {homeFouls}
+                  </span>
+                  <span
+                    className="text-[10px] xs:text-xs sm:text-sm md:text-xs lg:text-sm opacity-60 font-medium px-0.5"
+                    style={{ color: currentTheme.textSecondary }}
+                  >
+                    PF
+                  </span>
+                  <span
+                    className="font-bold px-2 xs:px-2.5 sm:px-3 md:px-2 lg:px-2.5 py-0.5 xs:py-0.5 sm:py-1 md:py-0.5 lg:py-0.5 rounded min-w-[2ch] text-center"
+                    style={{
+                      backgroundColor: awayTeam.primaryColor,
+                      color: awayTeam.secondaryColor,
+                      fontFamily: currentTheme.numberFont,
+                      fontSize: 'clamp(0.75rem, 1.3vw + 0.3rem, 1.1rem)',
+                      lineHeight: '1.2',
+                    }}
+                  >
+                    {awayFouls}
+                  </span>
+                </div>
               )}
             </div>
           )}
@@ -1462,6 +1470,46 @@ export function GamePage() {
                             maxWidth: '5ch',
                           } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                         />
+                      )}
+                      {showFouls && (
+                        <div className="flex items-center gap-1.5 lg:gap-2 mt-1 lg:mt-1.5">
+                          <span
+                            className="font-bold px-1.5 lg:px-2 rounded transition-all"
+                            style={{
+                              backgroundColor: homeTeam.primaryColor,
+                              color: homeTeam.secondaryColor,
+                              fontFamily: currentTheme.numberFont,
+                              fontSize: !expandedStats.home && !expandedStats.away 
+                                ? 'clamp(0.75rem, 1.2vw + 0.3rem, 1.1rem)' 
+                                : 'clamp(0.7rem, 1vw + 0.3rem, 1rem)',
+                            }}
+                          >
+                            {homeFouls}
+                          </span>
+                          <span
+                            className={`opacity-60 transition-all ${
+                              !expandedStats.home && !expandedStats.away
+                                ? 'text-xs lg:text-sm'
+                                : 'text-[10px] lg:text-xs'
+                            }`}
+                            style={{ color: currentTheme.textSecondary }}
+                          >
+                            PF
+                          </span>
+                          <span
+                            className="font-bold px-1.5 lg:px-2 rounded transition-all"
+                            style={{
+                              backgroundColor: awayTeam.primaryColor,
+                              color: awayTeam.secondaryColor,
+                              fontFamily: currentTheme.numberFont,
+                              fontSize: !expandedStats.home && !expandedStats.away 
+                                ? 'clamp(0.75rem, 1.2vw + 0.3rem, 1.1rem)' 
+                                : 'clamp(0.7rem, 1vw + 0.3rem, 1rem)',
+                            }}
+                          >
+                            {awayFouls}
+                          </span>
+                        </div>
                       )}
                     </div>
 
