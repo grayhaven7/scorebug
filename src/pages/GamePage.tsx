@@ -456,21 +456,26 @@ export function GamePage() {
       {/* Stats Table */}
       <div className="flex-1 min-h-0" style={{ 
         width: '100%', 
-        overflowX: isExpanded ? 'auto' : 'visible',
+        overflowX: isExpanded ? 'auto' : 'hidden',
         overflowY: 'auto'
       }}>
-        <table style={{ width: 'max-content', tableLayout: 'auto', whiteSpace: 'nowrap' }}>
+        <table style={{ 
+          width: '100%', 
+          tableLayout: isExpanded ? 'auto' : 'fixed',
+          whiteSpace: 'nowrap' 
+        }}>
           <thead>
             <tr style={{ backgroundColor: currentTheme.backgroundColor }}>
               <th
-                className="text-left font-medium w-10 sm:w-12 md:w-12 lg:w-14"
+                className="text-left font-medium"
                 style={{ 
                   color: currentTheme.textSecondary,
                   fontSize: 'clamp(0.5rem, 1.2vw + 0.3rem, 0.875rem)',
                   paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
                   paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
                   paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
+                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                  width: isExpanded ? 'auto' : '60px'
                 }}
               >
                 #
@@ -483,7 +488,8 @@ export function GamePage() {
                   paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
                   paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
                   paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
+                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
+                  width: isExpanded ? 'auto' : 'auto'
                 }}
               >
                 PLAYER
@@ -498,9 +504,7 @@ export function GamePage() {
                     paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
                     paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
                     paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                    width: 'clamp(3rem, 5vw + 2rem, 4.5rem)',
-                    minWidth: 'clamp(3rem, 5vw + 2rem, 4.5rem)',
-                    maxWidth: 'clamp(3rem, 5vw + 2rem, 4.5rem)'
+                    width: isExpanded ? 'auto' : '80px'
                   }}
                 >
                   PF
@@ -518,9 +522,9 @@ export function GamePage() {
                     paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
                     paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
                     paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                    minWidth: stat === 'points' && settings.scoreboardConfig.showQuickPoints 
-                      ? 'clamp(5rem, 8vw + 3rem, 7.5rem)'
-                      : 'clamp(2.5rem, 4vw + 1.5rem, 3.5rem)'
+                    width: isExpanded ? 'auto' : (stat === 'points' && settings.scoreboardConfig.showQuickPoints 
+                      ? '200px'
+                      : '80px')
                   }}
                 >
                   {statLabels[stat].slice(0, 3)}
@@ -1141,9 +1145,9 @@ export function GamePage() {
             {/* Desktop: Wrapper for Tables and Target Bar */}
             <div className="hidden md:flex md:flex-col" style={{ height: showTargetBar && currentGame.targetScore ? 'calc(100vh - 120px)' : 'calc(100vh - 80px)', minHeight: 0 }}>
               {/* Desktop: Three Column Layout - Home Stats | Scoreboard | Away Stats */}
-              <div className="grid gap-2 lg:gap-3 items-start flex-1 min-h-0" style={{ gridTemplateColumns: '1fr minmax(260px, auto) 1fr', width: '100%', minWidth: 0, overflow: 'hidden' }}>
+              <div className="grid gap-2 lg:gap-3 items-start flex-1 min-h-0" style={{ gridTemplateColumns: 'minmax(400px, 1fr) minmax(260px, auto) minmax(400px, 1fr)', width: '100%', minWidth: 0, overflow: 'hidden' }}>
                 {/* Home Team Stats */}
-                <div className="min-h-0 flex flex-col h-full" style={{ minWidth: 0, overflow: 'auto', maxWidth: '100%' }}>
+                <div className="min-h-0 flex flex-col h-full" style={{ minWidth: 0, overflow: 'auto' }}>
                   {renderTeamStats(homeTeam, 'home', true)}
                 </div>
 
@@ -1458,7 +1462,7 @@ export function GamePage() {
               </div>
 
                 {/* Away Team Stats */}
-                <div className="min-h-0 flex flex-col h-full" style={{ minWidth: 0, overflow: 'auto', maxWidth: '100%' }}>
+                <div className="min-h-0 flex flex-col h-full" style={{ minWidth: 0, overflow: 'auto' }}>
                   {renderTeamStats(awayTeam, 'away', false)}
                 </div>
               </div>
