@@ -434,7 +434,7 @@ export function GamePage() {
                 className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
-                  fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 1rem)'
+                  fontSize: 'clamp(0.875rem, 1.2vw + 0.5rem, 1.5rem)'
                 }}
               >
                 {team.teamName}
@@ -471,7 +471,7 @@ export function GamePage() {
                     className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
                     style={{ 
                       fontFamily: currentTheme.headerFont,
-                      fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 1rem)'
+                      fontSize: 'clamp(0.875rem, 1.2vw + 0.5rem, 1.5rem)'
                     }}
                   >
                     {team.teamName}
@@ -489,7 +489,7 @@ export function GamePage() {
                     className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
                     style={{ 
                       fontFamily: currentTheme.headerFont,
-                      fontSize: 'clamp(0.625rem, 1vw + 0.4rem, 1rem)'
+                      fontSize: 'clamp(0.875rem, 1.2vw + 0.5rem, 1.5rem)'
                     }}
                   >
                     {team.teamName}
