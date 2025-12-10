@@ -540,7 +540,7 @@ export function GamePage() {
                       >
                         <button
                           onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
-                          className="rounded font-bold transition-all hover:scale-110 cursor-pointer"
+                          className="rounded font-bold transition-all hover:scale-110 cursor-pointer flex items-center justify-center gap-0.5"
                           style={{
                             backgroundColor: currentTheme.accentColor + '20',
                             color: currentTheme.accentColor,
@@ -551,7 +551,23 @@ export function GamePage() {
                           }}
                           title="Click to add, Shift+Click to subtract"
                         >
-                          {typeof value === 'number' ? value : 0}
+                          {stat === 'fouls' 
+                            ? (() => {
+                                const foulCount = typeof value === 'number' ? Math.max(0, value) : 0;
+                                return Array.from({ length: Math.min(5, foulCount) }, (_, i) => (
+                                  <span
+                                    key={i}
+                                    style={{
+                                      color: i === 4 ? team.primaryColor : currentTheme.accentColor,
+                                      fontSize: 'clamp(0.6rem, 1.2vw + 0.3rem, 1rem)',
+                                    }}
+                                  >
+                                    •
+                                  </span>
+                                ));
+                              })()
+                            : (typeof value === 'number' ? value : 0)
+                          }
                         </button>
                       </td>
                       {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
@@ -632,7 +648,7 @@ export function GamePage() {
                   }}
                 >
                   <span
-                    className="inline-block rounded font-bold"
+                    className="inline-block rounded font-bold flex items-center justify-center gap-0.5"
                     style={{
                       backgroundColor: team.primaryColor,
                       color: team.secondaryColor,
@@ -643,7 +659,12 @@ export function GamePage() {
                       padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
                     }}
                   >
-                    {calculateTotal(team.players, stat as keyof PlayerGameStats)}
+                    {stat === 'fouls'
+                      ? calculateTotal(team.players, stat as keyof PlayerGameStats)
+                      : stat === 'points'
+                      ? `/${calculateTotal(team.players, stat as keyof PlayerGameStats)}`
+                      : calculateTotal(team.players, stat as keyof PlayerGameStats)
+                    }
                   </span>
                 </td>
               ))}
@@ -687,7 +708,7 @@ export function GamePage() {
                 value={homeTeam.displayName || homeTeam.teamName}
                 onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
                 placeholder={homeTeam.teamName}
-                className="text-sm xs:text-base sm:text-base md:text-sm lg:text-base font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
+                className="text-base xs:text-lg sm:text-xl md:text-lg lg:text-xl font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
@@ -803,7 +824,7 @@ export function GamePage() {
                 value={awayTeam.displayName || awayTeam.teamName}
                 onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
                 placeholder={awayTeam.teamName}
-                className="text-sm xs:text-base sm:text-base md:text-sm lg:text-base font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
+                className="text-base xs:text-lg sm:text-xl md:text-lg lg:text-xl font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
@@ -982,6 +1003,10 @@ export function GamePage() {
         backgroundColor: currentTheme.backgroundColor,
         color: currentTheme.textColor,
         fontSize: `${currentTheme.baseScale || 1}em`, // Font scaling
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none',
       }}
     >
       {/* Standard Layout */}
@@ -1030,7 +1055,11 @@ export function GamePage() {
                 </div>
 
                 {/* Scoreboard Section - Middle */}
-                <div className="flex flex-col items-center justify-center sticky top-4 self-start w-[280px] md:w-[280px] lg:w-[320px] xl:w-[360px] h-full shrink-0">
+                <div className={`flex flex-col items-center justify-center sticky top-4 self-start h-full shrink-0 transition-all duration-300 ${
+                  !expandedStats.home && !expandedStats.away
+                    ? 'w-[380px] md:w-[420px] lg:w-[480px] xl:w-[540px]'
+                    : 'w-[280px] md:w-[280px] lg:w-[320px] xl:w-[360px]'
+                }`}>
                 <div 
                   className="rounded-lg p-2 lg:p-3 shadow-xl w-full flex flex-col"
                   style={{ backgroundColor: currentTheme.secondaryBackground }}
@@ -1064,7 +1093,7 @@ export function GamePage() {
                           value={homeTeam.displayName || homeTeam.teamName}
                           onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
                           placeholder={homeTeam.teamName}
-                          className="text-sm lg:text-base font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
+                          className="text-lg lg:text-xl font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
                           style={{ 
                             fontFamily: currentTheme.headerFont,
                             color: currentTheme.textColor,
@@ -1178,7 +1207,7 @@ export function GamePage() {
                           value={awayTeam.displayName || awayTeam.teamName}
                           onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
                           placeholder={awayTeam.teamName}
-                          className="text-sm lg:text-base font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
+                          className="text-lg lg:text-xl font-bold text-center w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-colors"
                           style={{ 
                             fontFamily: currentTheme.headerFont,
                             color: currentTheme.textColor,

@@ -126,7 +126,7 @@ export function HistoryPage() {
                         {formatDate(game.createdAt)}
                       </p>
                       <p className="text-xs" style={{ color: currentTheme.textSecondary }}>
-                        Final • Q{game.quarter}
+                        Final{settings.scoreboardConfig.showQuarter ? ` • Q${game.quarter}` : ''}
                       </p>
                     </div>
                     <button

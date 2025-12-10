@@ -81,8 +81,10 @@ export function generateTestData() {
 
   // Helper to create player stats
   const createStats = (players: Player[], pointsBase: number): PlayerGameStats[] => {
-    return players.map(p => {
+    return players.map((p, index) => {
       const pts = Math.floor(Math.random() * pointsBase);
+      // Make first player have 5 fouls to demonstrate the colored dot
+      const fouls = index === 0 ? 5 : Math.floor(Math.random() * 5);
       return {
         playerId: p.id,
         playerName: p.name,
@@ -92,7 +94,7 @@ export function generateTestData() {
         assists: Math.floor(Math.random() * 8),
         steals: Math.floor(Math.random() * 3),
         blocks: Math.floor(Math.random() * 2),
-        fouls: Math.floor(Math.random() * 4),
+        fouls: fouls,
         turnovers: Math.floor(Math.random() * 3),
         threePointers: Math.floor(pts / 3),
       };
