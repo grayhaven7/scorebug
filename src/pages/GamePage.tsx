@@ -998,12 +998,6 @@ export function GamePage() {
                     minWidth: '3.5ch',
                     maxWidth: '5ch',
                   } as React.CSSProperties & { '--dynamic-font-size'?: string }}
-                  style={{
-                    borderColor: currentTheme.accentColor,
-                    color: currentTheme.textColor,
-                    fontSize: fontSizes.timer,
-                    '--dynamic-font-size': fontSizes.timer,
-                  } as React.CSSProperties & { '--dynamic-font-size'?: string }}
                 />
               )}
             </div>
