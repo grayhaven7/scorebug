@@ -662,7 +662,7 @@ export function GamePage() {
                     {stat === 'fouls'
                       ? calculateTotal(team.players, stat as keyof PlayerGameStats)
                       : stat === 'points'
-                      ? `/${calculateTotal(team.players, stat as keyof PlayerGameStats)}`
+                      ? calculateTotal(team.players, stat as keyof PlayerGameStats)
                       : calculateTotal(team.players, stat as keyof PlayerGameStats)
                     }
                   </span>
