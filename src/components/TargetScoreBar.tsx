@@ -90,8 +90,11 @@ export function TargetScoreBar({
       <div ref={barContainerRef} className="flex-1 relative flex items-center justify-center min-w-0">
         {/* Background Bar */}
         <div 
-          className="absolute inset-x-0 h-5 sm:h-5 md:h-6 lg:h-6 rounded-full overflow-hidden flex flex-row shadow-inner"
-          style={{ backgroundColor: theme.backgroundColor }}
+          className="absolute inset-x-0 h-5 sm:h-5 md:h-6 lg:h-6 rounded-full overflow-hidden flex flex-row shadow-inner border-2"
+          style={{ 
+            backgroundColor: theme.backgroundColor,
+            borderColor: `color-mix(in srgb, ${theme.secondaryBackground} 75%, white)`
+          }}
         >
           {/* Left Half (Home) */}
           <div 
