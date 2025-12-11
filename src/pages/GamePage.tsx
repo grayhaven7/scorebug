@@ -780,34 +780,83 @@ export function GamePage() {
               >
                 TOTAL
               </td>
-              {visibleStats.map(stat => (
-                <td 
-                  key={stat} 
-                  colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} 
-                  className="text-center"
-                  style={{
-                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                    paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
-                  }}
-                >
-                  <span
-                    className="inline-block rounded font-bold flex items-center justify-center gap-0.5"
+              {visibleStats.map(stat => {
+                const totalValue = calculateTotal(team.players, stat as keyof PlayerGameStats);
+
+                if (stat === 'points' && settings.scoreboardConfig.showQuickPoints) {
+                  return (
+                    <>
+                      <td 
+                        key={`${stat}-total`} 
+                        className="text-center"
+                        style={{
+                          paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                          paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                          paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                          paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
+                        }}
+                      >
+                        <span
+                          className="inline-block rounded font-bold flex items-center justify-center gap-0.5"
+                          style={{
+                            backgroundColor: team.primaryColor,
+                            color: team.secondaryColor,
+                            borderRadius: currentTheme.borderRadius,
+                            fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
+                            height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                            lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                            padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
+                          }}
+                        >
+                          {totalValue}
+                        </span>
+                      </td>
+                      {/* Keep grid aligned with quick points column */}
+                      <td
+                        key={`${stat}-quick-total-placeholder`}
+                        aria-hidden="true"
+                        className="text-center"
+                        style={{
+                          paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                          paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                          paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                          paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                          minWidth: 'clamp(5rem, 8vw + 3rem, 7.5rem)'
+                        }}
+                      />
+                    </>
+                  );
+                }
+
+                return (
+                  <td 
+                    key={stat} 
+                    colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} 
+                    className="text-center"
                     style={{
-                      backgroundColor: team.primaryColor,
-                      color: team.secondaryColor,
-                      borderRadius: currentTheme.borderRadius,
-                      fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
-                      height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                      lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                      padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
+                      paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                      paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                      paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                      paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
                     }}
                   >
-                    {calculateTotal(team.players, stat as keyof PlayerGameStats)}
-                  </span>
-                </td>
-              ))}
+                    <span
+                      className="inline-block rounded font-bold flex items-center justify-center gap-0.5"
+                      style={{
+                        backgroundColor: team.primaryColor,
+                        color: team.secondaryColor,
+                        borderRadius: currentTheme.borderRadius,
+                        fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
+                        height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                        lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                        padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
+                      }}
+                    >
+                      {totalValue}
+                    </span>
+                  </td>
+                );
+              })}
             </tr>
           </tbody>
         </table>
