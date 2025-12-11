@@ -16,10 +16,10 @@ function useScaledFontSize(boxRef: React.RefObject<HTMLDivElement | null>) {
         const width = boxRef.current.offsetWidth;
         const height = boxRef.current.offsetHeight;
         // Use the smaller dimension to ensure text fits, but prefer height for vertical layout
-        // Scale font to be approximately 50% of the smaller dimension for good visibility
+        // Scale font to be approximately 65% of the smaller dimension for good visibility
         const dimension = Math.min(width, height);
-        const calculatedSize = dimension * 0.5;
-        setFontSize(`${Math.max(24, Math.min(calculatedSize, 120))}px`);
+        const calculatedSize = dimension * 0.65;
+        setFontSize(`${Math.max(32, Math.min(calculatedSize, 120))}px`);
       }
     };
 
@@ -93,16 +93,17 @@ export function GamePage() {
       const scale = clampSize(containerWidth / 720, 0.7, 1.4);
       
       // Calculate base sizes - records and standings are smaller than team names
-      const teamNameSize = clampSize(32 * scale, 24, 56);
-      const recordStandingSize = clampSize(24 * scale, 18, 42);
+      // Increased base sizes to match larger score boxes
+      const teamNameSize = clampSize(42 * scale, 32, 72);
+      const recordStandingSize = clampSize(32 * scale, 24, 54);
 
       setFontSizes({
-        title: `${clampSize(28 * scale, 20, 48)}px`,
+        title: `${clampSize(36 * scale, 26, 60)}px`,
         teamName: `${teamNameSize}px`,
         record: `${recordStandingSize}px`,
         standing: `${recordStandingSize}px`,
-        timer: `${clampSize(22 * scale, 18, 36)}px`,
-        quarter: `${clampSize(26 * scale, 20, 44)}px`,
+        timer: `${clampSize(28 * scale, 22, 44)}px`,
+        quarter: `${clampSize(34 * scale, 26, 56)}px`,
       });
     };
 
@@ -673,7 +674,7 @@ export function GamePage() {
                               color: isLit 
                                 ? (isFifthFoul ? team.primaryColor : currentTheme.accentColor)
                                 : currentTheme.textSecondary + '40',
-                              fontSize: 'clamp(1rem, 2vw + 0.5rem, 1.75rem)',
+                              fontSize: 'clamp(1.75rem, 3.5vw + 1rem, 3rem)',
                               opacity: isLit ? 1 : 0.3,
                               fontWeight: 'bold',
                             }}
@@ -701,14 +702,12 @@ export function GamePage() {
                       >
                         <button
                           onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
-                          className="rounded font-bold transition-all hover:scale-110 cursor-pointer flex items-center justify-center gap-0.5"
+                          className="font-bold transition-all hover:scale-110 cursor-pointer flex items-center justify-center"
                           style={{
-                            backgroundColor: currentTheme.accentColor + '20',
                             color: currentTheme.accentColor,
-                            borderRadius: currentTheme.borderRadius,
-                            fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
-                            width: 'clamp(1.75rem, 3vw + 1rem, 3rem)',
-                            height: 'clamp(1.75rem, 3vw + 1rem, 3rem)',
+                            fontSize: 'clamp(1.25rem, 2.5vw + 0.6rem, 2rem)',
+                            minWidth: 'clamp(2rem, 3.5vw + 1rem, 3.5rem)',
+                            height: 'clamp(2rem, 3.5vw + 1rem, 3.5rem)',
                           }}
                           title="Click to add, Shift+Click to subtract"
                         >
@@ -984,8 +983,7 @@ export function GamePage() {
               )}
             </div>
             <div
-              ref={homeScoreBoxRef}
-              className="w-[80px] xs:w-[90px] sm:w-[100px] md:w-[100px] lg:w-[110px] xl:w-[120px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+              className="w-[100px] xs:w-[115px] sm:w-[130px] md:w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
               style={{ backgroundColor: homeTeam.primaryColor }}
             >
               <span
@@ -993,7 +991,7 @@ export function GamePage() {
                 style={{
                   color: homeTeam.secondaryColor,
                   fontFamily: currentTheme.numberFont,
-                  fontSize: homeFontSize,
+                  fontSize: 'clamp(3rem, 12vw, 5rem)',
                 }}
               >
                 {homeScore}
@@ -1119,8 +1117,7 @@ export function GamePage() {
               )}
             </div>
             <div
-              ref={awayScoreBoxRef}
-              className="w-[80px] xs:w-[90px] sm:w-[100px] md:w-[100px] lg:w-[110px] xl:w-[120px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
+              className="w-[100px] xs:w-[115px] sm:w-[130px] md:w-[90px] lg:w-[100px] xl:w-[110px] aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0"
               style={{ backgroundColor: awayTeam.primaryColor }}
             >
               <span
@@ -1128,7 +1125,7 @@ export function GamePage() {
                 style={{
                   color: awayTeam.secondaryColor,
                   fontFamily: currentTheme.numberFont,
-                  fontSize: awayFontSize,
+                  fontSize: 'clamp(3rem, 12vw, 5rem)',
                 }}
               >
                 {awayScore}
@@ -1484,8 +1481,8 @@ export function GamePage() {
                         ref={homeScoreBoxRef}
                         className={`aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0 transition-all ${
                           !expandedStats.home && !expandedStats.away
-                            ? 'w-[120px] lg:w-[130px] xl:w-[140px]'
-                            : 'w-[100px] lg:w-[110px] xl:w-[120px]'
+                            ? 'w-[105px] lg:w-[115px] xl:w-[125px]'
+                            : 'w-[90px] lg:w-[100px] xl:w-[110px]'
                         }`}
                         style={{ backgroundColor: homeTeam.primaryColor }}
                       >
@@ -1653,8 +1650,8 @@ export function GamePage() {
                         ref={awayScoreBoxRef}
                         className={`aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0 transition-all ${
                           !expandedStats.home && !expandedStats.away
-                            ? 'w-[120px] lg:w-[130px] xl:w-[140px]'
-                            : 'w-[100px] lg:w-[110px] xl:w-[120px]'
+                            ? 'w-[105px] lg:w-[115px] xl:w-[125px]'
+                            : 'w-[90px] lg:w-[100px] xl:w-[110px]'
                         }`}
                         style={{ backgroundColor: awayTeam.primaryColor }}
                       >
