@@ -1342,16 +1342,16 @@ export function GamePage() {
                           onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
                           placeholder={homeTeam.teamName}
                           className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all"
-                          style={{ minWidth: '120px' }}
-                style={{
-                  fontFamily: currentTheme.headerFont,
-                  color: currentTheme.textColor,
-                  textAlign: 'center',
-                  '--tw-ring-color': currentTheme.accentColor + '50',
-                  fontSize: fontSizes.teamName,
-                  lineHeight: '1.05',
-                  '--dynamic-font-size': fontSizes.teamName,
-                } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
+                          style={{
+                            minWidth: '120px',
+                            fontFamily: currentTheme.headerFont,
+                            color: currentTheme.textColor,
+                            textAlign: 'center',
+                            '--tw-ring-color': currentTheme.accentColor + '50',
+                            fontSize: fontSizes.teamName,
+                            lineHeight: '1.05',
+                            '--dynamic-font-size': fontSizes.teamName,
+                          } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
                           title={`Full name: ${homeTeam.teamName}`}
                         />
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
@@ -1507,16 +1507,16 @@ export function GamePage() {
                           onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
                           placeholder={awayTeam.teamName}
                           className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all"
-                          style={{ minWidth: '120px' }}
-                style={{
-                  fontFamily: currentTheme.headerFont,
-                  color: currentTheme.textColor,
-                  textAlign: 'center',
-                  '--tw-ring-color': currentTheme.accentColor + '50',
-                  fontSize: fontSizes.teamName,
-                  lineHeight: '1.05',
-                  '--dynamic-font-size': fontSizes.teamName,
-                } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
+                          style={{
+                            minWidth: '120px',
+                            fontFamily: currentTheme.headerFont,
+                            color: currentTheme.textColor,
+                            textAlign: 'center',
+                            '--tw-ring-color': currentTheme.accentColor + '50',
+                            fontSize: fontSizes.teamName,
+                            lineHeight: '1.05',
+                            '--dynamic-font-size': fontSizes.teamName,
+                          } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
                           title={`Full name: ${awayTeam.teamName}`}
                         />
                         {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
