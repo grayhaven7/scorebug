@@ -92,14 +92,15 @@ export function GamePage() {
       // Wider scale range so fonts actually change noticeably (0.7 to 1.4 = 2x range)
       const scale = clampSize(containerWidth / 720, 0.7, 1.4);
       
-      // Calculate base sizes - records and standings use the SAME size as team names
+      // Calculate base sizes - records and standings are smaller than team names
       const teamNameSize = clampSize(32 * scale, 24, 56);
+      const recordStandingSize = clampSize(24 * scale, 18, 42);
 
       setFontSizes({
         title: `${clampSize(28 * scale, 20, 48)}px`,
         teamName: `${teamNameSize}px`,
-        record: `${teamNameSize}px`,
-        standing: `${teamNameSize}px`,
+        record: `${recordStandingSize}px`,
+        standing: `${recordStandingSize}px`,
         timer: `${clampSize(22 * scale, 18, 36)}px`,
         quarter: `${clampSize(26 * scale, 20, 44)}px`,
       });
@@ -845,7 +846,7 @@ export function GamePage() {
         <div className="flex items-center justify-center w-full gap-0.5 xs:gap-1 sm:gap-1.5 md:gap-2 lg:gap-2.5 px-1 xs:px-1.5 sm:px-2 md:px-2 lg:px-2.5 min-w-0 shrink-0">
           {/* Home Team Score */}
           <div className="flex flex-col items-center gap-1 xs:gap-1.5 sm:gap-2 md:gap-1 lg:gap-1.5">
-            <div className="flex flex-col items-center gap-0.5 xs:gap-1 sm:gap-1 md:gap-0.5 lg:gap-1 w-full shrink-0">
+            <div className="flex flex-col items-center gap-0.5 xs:gap-1 sm:gap-1 md:gap-0.5 lg:gap-1 w-full shrink-0" style={{ minWidth: '120px' }}>
               <input
                 type="text"
                 data-scoreboard-input
@@ -861,6 +862,7 @@ export function GamePage() {
                   fontSize: fontSizes.teamName,
                   lineHeight: '1.05',
                   '--dynamic-font-size': fontSizes.teamName,
+                  minWidth: '120px',
                 } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
                 title={`Full name: ${homeTeam.teamName}`}
               />
@@ -873,7 +875,7 @@ export function GamePage() {
                       placeholder="R"
                       value={homeTeam.record || ''}
                       onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                      className="w-full max-w-[120px] xs:max-w-[140px] sm:max-w-[160px] md:max-w-[130px] lg:max-w-[150px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[200px] xs:max-w-[220px] sm:max-w-[240px] md:max-w-[220px] lg:max-w-[240px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -891,7 +893,7 @@ export function GamePage() {
                       placeholder="S"
                       value={homeTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                      className="w-full max-w-[140px] xs:max-w-[160px] sm:max-w-[180px] md:max-w-[150px] lg:max-w-[170px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[220px] xs:max-w-[240px] sm:max-w-[260px] md:max-w-[240px] lg:max-w-[260px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -979,7 +981,7 @@ export function GamePage() {
 
           {/* Away Team Score */}
           <div className="flex flex-col items-center gap-1 xs:gap-1.5 sm:gap-2 md:gap-1 lg:gap-1.5">
-            <div className="flex flex-col items-center gap-0.5 xs:gap-1 sm:gap-1 md:gap-0.5 lg:gap-1 w-full shrink-0">
+            <div className="flex flex-col items-center gap-0.5 xs:gap-1 sm:gap-1 md:gap-0.5 lg:gap-1 w-full shrink-0" style={{ minWidth: '120px' }}>
               <input
                 type="text"
                 value={awayTeam.displayName || awayTeam.teamName}
@@ -994,6 +996,7 @@ export function GamePage() {
                   fontSize: fontSizes.teamName,
                   lineHeight: '1.05',
                   '--dynamic-font-size': fontSizes.teamName,
+                  minWidth: '120px',
                 } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
                 title={`Full name: ${awayTeam.teamName}`}
               />
@@ -1006,7 +1009,7 @@ export function GamePage() {
                       placeholder="R"
                       value={awayTeam.record || ''}
                       onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                      className="w-full max-w-[120px] xs:max-w-[140px] sm:max-w-[160px] md:max-w-[130px] lg:max-w-[150px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[200px] xs:max-w-[220px] sm:max-w-[240px] md:max-w-[220px] lg:max-w-[240px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -1024,7 +1027,7 @@ export function GamePage() {
                       placeholder="S"
                       value={awayTeam.standing || ''}
                       onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                      className="w-full max-w-[140px] xs:max-w-[160px] sm:max-w-[180px] md:max-w-[150px] lg:max-w-[170px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
+                      className="w-full max-w-[220px] xs:max-w-[240px] sm:max-w-[260px] md:max-w-[240px] lg:max-w-[260px] px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold"
                       style={{ 
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
@@ -1276,11 +1279,11 @@ export function GamePage() {
                 <div className={`flex flex-col items-center justify-center sticky top-4 self-start h-full transition-all duration-300 ${
                   !expandedStats.home && !expandedStats.away
                     ? 'max-w-[380px] md:max-w-[420px] lg:max-w-[480px] xl:max-w-[540px]'
-                    : 'max-w-[280px] md:max-w-[280px] lg:max-w-[320px] xl:max-w-[360px]'
+                    : 'max-w-[360px] md:max-w-[400px] lg:max-w-[440px] xl:max-w-[480px]'
                 }`} style={{ 
                   width: !expandedStats.home && !expandedStats.away
                     ? 'clamp(260px, 100%, 540px)'
-                    : 'clamp(260px, 100%, 360px)',
+                    : 'clamp(300px, 100%, 480px)',
                   flexShrink: 1,
                   minWidth: '260px'
                 }}>
@@ -1322,16 +1325,16 @@ export function GamePage() {
                       : 'gap-2 lg:gap-2.5'
                   }`} style={{ paddingLeft: 'clamp(8px, 2vw, 16px)', paddingRight: 'clamp(8px, 2vw, 16px)' }}>
                     {/* Home Team Score - Left Side */}
-                    <div className={`flex flex-col items-center flex-1 min-w-0 transition-all ${
+                    <div className={`flex flex-col items-center flex-1 transition-all ${
                       !expandedStats.home && !expandedStats.away
                         ? 'gap-1.5 lg:gap-2 xl:gap-2.5'
                         : 'gap-1 lg:gap-1.5'
-                    }`}>
+                    }`} style={{ minWidth: '140px' }}>
                       <div className={`flex flex-col items-center w-full shrink-0 transition-all ${
                         !expandedStats.home && !expandedStats.away
                           ? 'gap-1 lg:gap-1.5'
                           : 'gap-0.5 lg:gap-1'
-                      }`}>
+                      }`} style={{ minWidth: '120px' }}>
                         <input
                           type="text"
                           data-scoreboard-input
@@ -1339,6 +1342,7 @@ export function GamePage() {
                           onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
                           placeholder={homeTeam.teamName}
                           className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all"
+                          style={{ minWidth: '120px' }}
                 style={{
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
@@ -1383,8 +1387,8 @@ export function GamePage() {
                                 onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
                                 className={`w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
                                   !expandedStats.home && !expandedStats.away
-                                    ? 'max-w-[150px] lg:max-w-[170px] xl:max-w-[190px]'
-                                    : 'max-w-[140px] lg:max-w-[160px]'
+                                    ? 'max-w-[240px] lg:max-w-[260px] xl:max-w-[280px]'
+                                    : 'max-w-[220px] lg:max-w-[240px]'
                                 }`}
                                 style={{ 
                                   color: currentTheme.textSecondary,
@@ -1486,16 +1490,16 @@ export function GamePage() {
                     </div>
 
                     {/* Away Team Score - Right Side */}
-                    <div className={`flex flex-col items-center flex-1 min-w-0 transition-all ${
+                    <div className={`flex flex-col items-center flex-1 transition-all ${
                       !expandedStats.home && !expandedStats.away
                         ? 'gap-1.5 lg:gap-2 xl:gap-2.5'
                         : 'gap-1 lg:gap-1.5'
-                    }`}>
+                    }`} style={{ minWidth: '140px' }}>
                       <div className={`flex flex-col items-center w-full shrink-0 transition-all ${
                         !expandedStats.home && !expandedStats.away
                           ? 'gap-1 lg:gap-1.5'
                           : 'gap-0.5 lg:gap-1'
-                      }`}>
+                      }`} style={{ minWidth: '120px' }}>
                         <input
                           type="text"
                           data-scoreboard-input
@@ -1503,6 +1507,7 @@ export function GamePage() {
                           onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
                           placeholder={awayTeam.teamName}
                           className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all"
+                          style={{ minWidth: '120px' }}
                 style={{
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
@@ -1551,8 +1556,8 @@ export function GamePage() {
                                 onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
                                 className={`w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
                                   !expandedStats.home && !expandedStats.away
-                                    ? 'max-w-[150px] lg:max-w-[170px] xl:max-w-[190px]'
-                                    : 'max-w-[140px] lg:max-w-[160px]'
+                                    ? 'max-w-[240px] lg:max-w-[260px] xl:max-w-[280px]'
+                                    : 'max-w-[220px] lg:max-w-[240px]'
                                 }`}
                                 style={{ 
                                   color: currentTheme.textSecondary,
