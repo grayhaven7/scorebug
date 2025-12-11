@@ -984,6 +984,7 @@ export function GamePage() {
             <div className="flex flex-col items-center gap-0.5 xs:gap-1 sm:gap-1 md:gap-0.5 lg:gap-1 w-full shrink-0" style={{ minWidth: '120px' }}>
               <input
                 type="text"
+                data-scoreboard-input
                 value={awayTeam.displayName || awayTeam.teamName}
                 onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
                 placeholder={awayTeam.teamName}
