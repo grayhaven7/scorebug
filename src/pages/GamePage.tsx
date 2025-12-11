@@ -780,6 +780,33 @@ export function GamePage() {
               >
                 TOTAL
               </td>
+              {showFouls && (
+                <td 
+                  className="text-center"
+                  style={{
+                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
+                    paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                    paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
+                    width: showFouls ? 'auto' : '80px'
+                  }}
+                >
+                  <span
+                    className="inline-block rounded font-bold flex items-center justify-center gap-0.5"
+                    style={{
+                      backgroundColor: team.primaryColor,
+                      color: team.secondaryColor,
+                      borderRadius: currentTheme.borderRadius,
+                      fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
+                      height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                      lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
+                      padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
+                    }}
+                  >
+                    {calculateTotal(team.players, 'fouls')}
+                  </span>
+                </td>
+              )}
               {visibleStats.map(stat => {
                 const totalValue = calculateTotal(team.players, stat as keyof PlayerGameStats);
 
