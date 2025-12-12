@@ -6,55 +6,6 @@ import type { PlayerGameStats, StatType } from '../types';
 import { statLabels } from '../types';
 import confetti from 'canvas-confetti';
 
-// Hook to calculate font size based on container dimensions (width and height)
-function useScaledFontSize(boxRef: React.RefObject<HTMLDivElement | null>) {
-  const [fontSize, setFontSize] = useState('clamp(1.25rem, 8vw, 5.5rem)');
-
-  useEffect(() => {
-    const updateFontSize = () => {
-      if (boxRef.current) {
-        const width = boxRef.current.offsetWidth;
-        const height = boxRef.current.offsetHeight;
-        // Use the smaller dimension to ensure text fits, but prefer height for vertical layout
-        // Scale font to be approximately 65% of the smaller dimension for good visibility
-        const dimension = Math.min(width, height);
-        const calculatedSize = dimension * 0.65;
-        setFontSize(`${Math.max(32, Math.min(calculatedSize, 120))}px`);
-      }
-    };
-
-    updateFontSize();
-    window.addEventListener('resize', updateFontSize);
-    // Use ResizeObserver for more accurate updates
-    let resizeObserver: ResizeObserver | null = null;
-    if (boxRef.current && window.ResizeObserver) {
-      resizeObserver = new ResizeObserver(updateFontSize);
-      resizeObserver.observe(boxRef.current);
-    }
-    return () => {
-      window.removeEventListener('resize', updateFontSize);
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
-    };
-  }, [boxRef]);
-
-  return fontSize;
-}
-
-// Hook to calculate table scaling based on available height and number of players
-interface TableScales {
-  rowHeight: number;
-  fontSize: number;
-  jerseySize: number;
-  foulDotSize: number;
-  pointsSize: number;
-  quickBtnSize: number;
-  headerSize: number;
-  totalRowHeight: number;
-  padding: number;
-}
-
 // Hook to calculate scoreboard scaling based on container dimensions
 interface ScoreboardScales {
   scoreBoxSize: number;
@@ -137,102 +88,6 @@ function useScoreboardScaling(
   return scales;
 }
 
-function useTableScaling(
-  containerRef: React.RefObject<HTMLDivElement | null>,
-  playerCount: number,
-  isExpanded: boolean,
-  showFouls: boolean,
-  showQuickPoints: boolean
-): TableScales {
-  const [scales, setScales] = useState<TableScales>({
-    rowHeight: 48,
-    fontSize: 14,
-    jerseySize: 28,
-    foulDotSize: 24,
-    pointsSize: 24,
-    quickBtnSize: 24,
-    headerSize: 12,
-    totalRowHeight: 48,
-    padding: 8,
-  });
-
-  useEffect(() => {
-    const calculateScales = () => {
-      if (!containerRef.current || isExpanded) {
-        setScales({
-          rowHeight: 48,
-          fontSize: 14,
-          jerseySize: 28,
-          foulDotSize: 24,
-          pointsSize: 24,
-          quickBtnSize: 24,
-          headerSize: 12,
-          totalRowHeight: 48,
-          padding: 8,
-        });
-        return;
-      }
-
-      const containerHeight = containerRef.current.offsetHeight;
-      
-      // Total rows = header + players + total row
-      const totalRows = playerCount + 2;
-      
-      // Team header bar takes ~35px
-      const teamHeaderHeight = 35;
-      const availableHeight = containerHeight - teamHeaderHeight;
-      
-      // Row height fills ALL available space
-      const rowHeight = Math.floor(availableHeight / totalRows);
-      
-      // ALL sizes scale directly from row height - MAXIMIZE everything
-      const jerseySize = Math.floor(rowHeight * 0.65);
-      const fontSize = Math.floor(rowHeight * 0.5); // Player names - HUGE
-      const foulDotSize = Math.floor(rowHeight * 0.45);
-      const pointsSize = Math.floor(rowHeight * 0.7); // Points - HUGE
-      const quickBtnSize = Math.floor(rowHeight * 0.5);
-      const headerSize = Math.floor(rowHeight * 0.2);
-      const padding = 4;
-
-      setScales({
-        rowHeight,
-        fontSize,
-        jerseySize,
-        foulDotSize,
-        pointsSize,
-        quickBtnSize,
-        headerSize,
-        totalRowHeight: rowHeight,
-        padding,
-      });
-    };
-
-    calculateScales();
-    
-    let timeoutId: ReturnType<typeof setTimeout>;
-    const debouncedUpdate = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(calculateScales, 30);
-    };
-
-    window.addEventListener('resize', debouncedUpdate);
-    
-    let resizeObserver: ResizeObserver | null = null;
-    if (containerRef.current && window.ResizeObserver) {
-      resizeObserver = new ResizeObserver(debouncedUpdate);
-      resizeObserver.observe(containerRef.current);
-    }
-
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('resize', debouncedUpdate);
-      resizeObserver?.disconnect();
-    };
-  }, [containerRef, playerCount, isExpanded, showFouls, showQuickPoints]);
-
-  return scales;
-}
-
 
 export function GamePage() {
   const navigate = useNavigate();
@@ -267,24 +122,6 @@ export function GamePage() {
     .filter(([, enabled]) => enabled)
     .map(([stat]) => stat as StatType);
   const showFoulsForScaling = enabledStatsForScaling.includes('fouls');
-  
-  // Use table scaling hooks for each team
-  const homePlayerCount = currentGame?.homeTeam?.players?.length || 5;
-  const awayPlayerCount = currentGame?.awayTeam?.players?.length || 5;
-  const homeTableScales = useTableScaling(
-    homeTableRef,
-    homePlayerCount,
-    expandedStats.home,
-    showFoulsForScaling,
-    settings.scoreboardConfig.showQuickPoints
-  );
-  const awayTableScales = useTableScaling(
-    awayTableRef,
-    awayPlayerCount,
-    expandedStats.away,
-    showFoulsForScaling,
-    settings.scoreboardConfig.showQuickPoints
-  );
   
   // Scoreboard scaling
   const scoreboardScales = useScoreboardScaling(
