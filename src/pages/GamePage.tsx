@@ -786,7 +786,7 @@ export function GamePage() {
                   <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'left', paddingLeft: '4px', minWidth: isExpanded ? 100 : undefined }}>PLAYER</th>
                   {showFouls && <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? 'auto' : '22%', minWidth: isExpanded ? 80 : undefined, padding: '0 4px' }}>PF</th>}
                   {visibleStats.map(stat => (
-                    <th key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? 'auto' : (stat === 'points' && settings.scoreboardConfig.showQuickPoints ? '20%' : '14%'), minWidth: isExpanded ? 50 : undefined, padding: '0 4px' }}>
+                    <th key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? 'auto' : (stat === 'points' && settings.scoreboardConfig.showQuickPoints ? '20%' : '16%'), minWidth: isExpanded ? 50 : undefined, paddingLeft: isExpanded ? 4 : 12, paddingRight: isExpanded ? 4 : 16 }}>
                       {statLabels[stat].slice(0, isExpanded ? 3 : 3)}
                     </th>
                   ))}
@@ -820,13 +820,13 @@ export function GamePage() {
                       const needsBox = stat === 'rebounds' || stat === 'assists';
                       return (
                         <React.Fragment key={stat}>
-                          <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                            <button 
-                              onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)} 
+                          <td style={{ textAlign: 'center', verticalAlign: 'middle', paddingLeft: isExpanded ? 2 : 12, paddingRight: isExpanded ? 2 : 16 }}>
+                            <button
+                              onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
                               className={needsBox ? "cursor-pointer inline-flex items-center justify-center rounded" : "cursor-pointer"}
-                              style={{ 
-                                color: currentTheme.accentColor, 
-                                fontSize: `${pointsVh}vh`, 
+                              style={{
+                                color: currentTheme.accentColor,
+                                fontSize: `${pointsVh}vh`,
                                 fontWeight: 900,
                                 ...(needsBox && {
                                   backgroundColor: currentTheme.accentColor + '25',
@@ -834,7 +834,7 @@ export function GamePage() {
                                   height: `${pointsVh * 1.2}vh`,
                                   padding: '4px 10px'
                                 })
-                              }} 
+                              }}
                               title="Click +1, Shift+Click -1"
                             >
                               {typeof value === 'number' ? value : 0}
@@ -871,7 +871,7 @@ export function GamePage() {
                     const total = calculateTotal(team.players, stat as keyof PlayerGameStats);
                     return (
                       <React.Fragment key={stat}>
-                        <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                        <td style={{ textAlign: 'center', verticalAlign: 'middle', paddingLeft: isExpanded ? 2 : 12, paddingRight: isExpanded ? 2 : 16 }}>
                           <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${fontVh * 1.1}vh`, height: `${jerseyVh * 0.85}vh`, minHeight: 24, padding: '0 0.8vh' }}>
                             {total}
                           </span>
