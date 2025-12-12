@@ -1098,13 +1098,13 @@ export function GamePage() {
             </div>
           </div>
 
-          <div className="max-w-full mx-auto px-2 sm:px-3 md:px-3 lg:px-4 py-2 md:py-2 lg:py-3 w-full" style={{ overflowX: 'hidden' }}>
+          <div className="max-w-full mx-auto px-2 sm:px-3 md:px-3 lg:px-4 py-2 md:py-2 lg:py-3 w-full flex-1 flex flex-col" style={{ overflowX: 'hidden', minHeight: 0 }}>
             {renderActionBar()}
 
             {/* Desktop: Wrapper for Tables and Target Bar */}
-            <div className="hidden md:block" style={{ height: showTargetBar && currentGame.targetScore ? 'calc(100vh - 140px)' : 'calc(100vh - 100px)' }}>
+            <div className="hidden md:flex flex-col flex-1" style={{ minHeight: 0 }}>
               {/* Desktop: Three Column Layout - Home Stats | Scoreboard | Away Stats */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '12px', height: '100%', width: '100%' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '12px', flex: 1, width: '100%', minHeight: 0 }}>
                 {/* Home Team Stats */}
                 <div style={{ height: '100%', minHeight: 0 }}>
                   {renderTeamStats(homeTeam, 'home', true)}
