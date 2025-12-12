@@ -99,7 +99,7 @@ function useScoreboardScaling(
       const expandedScale = isExpanded ? 0.7 : 1;
       
       // Scale based on viewport height
-      const scoreBoxSize = Math.max(80, Math.floor(14 * vh * expandedScale));
+      const scoreBoxSize = Math.max(100, Math.floor(18 * vh * expandedScale));
       const teamNameSize = Math.max(24, Math.floor(5 * vh * expandedScale));
       const recordSize = Math.max(16, Math.floor(3.5 * vh * expandedScale));
       const quarterSize = Math.max(24, Math.floor(4.5 * vh * expandedScale));
@@ -786,7 +786,7 @@ export function GamePage() {
                   <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'left', paddingLeft: '4px', minWidth: isExpanded ? 100 : undefined }}>PLAYER</th>
                   {showFouls && <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? 'auto' : '22%', minWidth: isExpanded ? 80 : undefined, padding: '0 4px' }}>PF</th>}
                   {visibleStats.map(stat => (
-                    <th key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? 'auto' : (stat === 'points' && settings.scoreboardConfig.showQuickPoints ? '20%' : '16%'), minWidth: isExpanded ? 50 : undefined, paddingLeft: isExpanded ? 4 : 12, paddingRight: isExpanded ? 4 : 16 }}>
+                    <th key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? 'auto' : (stat === 'points' && settings.scoreboardConfig.showQuickPoints ? '22%' : '18%'), minWidth: isExpanded ? 50 : 60, padding: isExpanded ? '0 4px' : '0 12px' }}>
                       {statLabels[stat].slice(0, isExpanded ? 3 : 3)}
                     </th>
                   ))}
@@ -820,7 +820,7 @@ export function GamePage() {
                       const needsBox = stat === 'rebounds' || stat === 'assists';
                       return (
                         <React.Fragment key={stat}>
-                          <td style={{ textAlign: 'center', verticalAlign: 'middle', paddingLeft: isExpanded ? 2 : 12, paddingRight: isExpanded ? 2 : 16 }}>
+                          <td style={{ textAlign: 'center', verticalAlign: 'middle', padding: isExpanded ? '0 4px' : '0 12px' }}>
                             <button
                               onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
                               className={needsBox ? "cursor-pointer inline-flex items-center justify-center rounded" : "cursor-pointer"}
@@ -828,11 +828,15 @@ export function GamePage() {
                                 color: currentTheme.accentColor,
                                 fontSize: `${pointsVh}vh`,
                                 fontWeight: 900,
+                                display: 'block',
+                                width: '100%',
+                                textAlign: 'center',
                                 ...(needsBox && {
                                   backgroundColor: currentTheme.accentColor + '25',
                                   minWidth: `${pointsVh * 1.5}vh`,
                                   height: `${pointsVh * 1.2}vh`,
-                                  padding: '4px 10px'
+                                  padding: '4px 10px',
+                                  display: 'inline-flex'
                                 })
                               }}
                               title="Click +1, Shift+Click -1"
@@ -871,8 +875,8 @@ export function GamePage() {
                     const total = calculateTotal(team.players, stat as keyof PlayerGameStats);
                     return (
                       <React.Fragment key={stat}>
-                        <td style={{ textAlign: 'center', verticalAlign: 'middle', paddingLeft: isExpanded ? 2 : 12, paddingRight: isExpanded ? 2 : 16 }}>
-                          <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${fontVh * 1.1}vh`, height: `${jerseyVh * 0.85}vh`, minHeight: 24, padding: '0 0.8vh' }}>
+                        <td style={{ textAlign: 'center', verticalAlign: 'middle', padding: isExpanded ? '0 4px' : '0 12px' }}>
+                          <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${fontVh * 1.1}vh`, height: `${jerseyVh * 0.85}vh`, minHeight: 24, padding: '0 0.8vh', margin: '0 auto' }}>
                             {total}
                           </span>
                         </td>
@@ -1350,10 +1354,10 @@ export function GamePage() {
                     height: '100%',
                     padding: '0 8px',
                   }}>
-                <div 
+                <div
                   ref={desktopScoreboardRef}
                   className="rounded-lg shadow-xl w-full flex flex-col"
-                  style={{ backgroundColor: currentTheme.secondaryBackground, padding: 16 }}
+                  style={{ backgroundColor: currentTheme.secondaryBackground, padding: `${scoreboardScales.padding * 1.5}px ${scoreboardScales.padding * 0.4}px` }}
                 >
                   {/* Game Title Input - SCALES WITH SCOREBOARD */}
                   {settings.scoreboardConfig.showTitle && (
@@ -1370,7 +1374,7 @@ export function GamePage() {
                           fontFamily: currentTheme.headerFont,
                           letterSpacing: '0.05em',
                           textTransform: 'uppercase',
-                          fontSize: scoreboardScales.titleSize,
+                          fontSize: scoreboardScales.teamNameSize,
                           lineHeight: '1.1',
                           padding: `${scoreboardScales.padding / 3}px ${scoreboardScales.padding / 2}px`,
                           whiteSpace: 'nowrap',
@@ -1382,7 +1386,7 @@ export function GamePage() {
                   )}
 
                   {/* Desktop Scoreboard Layout - Horizontal */}
-                  <div className="flex items-center justify-center shrink-0" style={{ gap: scoreboardScales.gap, padding: `0 ${scoreboardScales.padding / 2}px` }}>
+                  <div className="flex items-center justify-center shrink-0" style={{ gap: scoreboardScales.gap, padding: `0 ${scoreboardScales.padding / 2}px`, marginTop: scoreboardScales.gap / 2 }}>
                     {/* Home Team Score - Left Side */}
                     <div className="flex flex-col items-center" style={{ gap: scoreboardScales.gap / 3, minWidth: scoreboardScales.scoreBoxSize }}>
                       <div className="flex flex-col items-center w-full shrink-0" style={{ gap: 2 }}>
@@ -1442,10 +1446,25 @@ export function GamePage() {
                       </div>
                       <div
                         ref={homeScoreBoxRef}
-                        className="aspect-square rounded-lg flex items-center justify-center shadow-lg shrink-0"
-                        style={{ backgroundColor: homeTeam.primaryColor, width: scoreboardScales.scoreBoxSize, height: scoreboardScales.scoreBoxSize }}
+                        className="aspect-square rounded-lg shadow-lg shrink-0"
+                        style={{ 
+                          backgroundColor: homeTeam.primaryColor, 
+                          width: scoreboardScales.scoreBoxSize,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingTop: '6%',
+                          marginTop: scoreboardScales.gap / 2
+                        }}
                       >
-                        <span className="font-black leading-none" style={{ color: homeTeam.secondaryColor, fontFamily: currentTheme.numberFont, fontSize: scoreboardScales.scoreBoxSize * 0.6 }}>
+                        <span style={{ 
+                          color: homeTeam.secondaryColor, 
+                          fontFamily: currentTheme.numberFont, 
+                          fontSize: scoreboardScales.scoreBoxSize * 0.75,
+                          fontWeight: 900,
+                          lineHeight: 1,
+                          textAlign: 'center'
+                        }}>
                           {homeScore}
                         </span>
                       </div>
@@ -1537,10 +1556,25 @@ export function GamePage() {
                       </div>
                       <div
                         ref={awayScoreBoxRef}
-                        className="aspect-square rounded-lg flex items-center justify-center shadow-lg shrink-0"
-                        style={{ backgroundColor: awayTeam.primaryColor, width: scoreboardScales.scoreBoxSize, height: scoreboardScales.scoreBoxSize }}
+                        className="aspect-square rounded-lg shadow-lg shrink-0"
+                        style={{ 
+                          backgroundColor: awayTeam.primaryColor, 
+                          width: scoreboardScales.scoreBoxSize,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingTop: '6%',
+                          marginTop: scoreboardScales.gap / 2
+                        }}
                       >
-                        <span className="font-black leading-none" style={{ color: awayTeam.secondaryColor, fontFamily: currentTheme.numberFont, fontSize: scoreboardScales.scoreBoxSize * 0.6 }}>
+                        <span style={{ 
+                          color: awayTeam.secondaryColor, 
+                          fontFamily: currentTheme.numberFont, 
+                          fontSize: scoreboardScales.scoreBoxSize * 0.75,
+                          fontWeight: 900,
+                          lineHeight: 1,
+                          textAlign: 'center'
+                        }}>
                           {awayScore}
                         </span>
                       </div>
