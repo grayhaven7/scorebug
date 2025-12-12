@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { TargetScoreBar } from '../components/TargetScoreBar';
@@ -42,6 +42,198 @@ function useScaledFontSize(boxRef: React.RefObject<HTMLDivElement | null>) {
   return fontSize;
 }
 
+// Hook to calculate table scaling based on available height and number of players
+interface TableScales {
+  rowHeight: number;
+  fontSize: number;
+  jerseySize: number;
+  foulDotSize: number;
+  pointsSize: number;
+  quickBtnSize: number;
+  headerSize: number;
+  totalRowHeight: number;
+  padding: number;
+}
+
+// Hook to calculate scoreboard scaling based on container dimensions
+interface ScoreboardScales {
+  scoreBoxSize: number;
+  teamNameSize: number;
+  recordSize: number;
+  quarterSize: number;
+  timerSize: number;
+  titleSize: number;
+  foulBoxSize: number;
+  foulFontSize: number;
+  gap: number;
+  padding: number;
+}
+
+function useScoreboardScaling(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  showTitle: boolean,
+  showRecord: boolean,
+  showStanding: boolean,
+  showFouls: boolean,
+  isExpanded: boolean
+): ScoreboardScales {
+  const [scales, setScales] = useState<ScoreboardScales>({
+    scoreBoxSize: 140,
+    teamNameSize: 48,
+    recordSize: 32,
+    quarterSize: 44,
+    timerSize: 36,
+    titleSize: 40,
+    foulBoxSize: 60,
+    foulFontSize: 28,
+    gap: 20,
+    padding: 20,
+  });
+
+  useEffect(() => {
+    const calculateScales = () => {
+      // Use viewport height for consistent scaling
+      const vh = window.innerHeight / 100;
+      
+      // Scale down when stats are expanded (less horizontal space)
+      const expandedScale = isExpanded ? 0.7 : 1;
+      
+      // Scale based on viewport height
+      const scoreBoxSize = Math.max(80, Math.floor(14 * vh * expandedScale));
+      const teamNameSize = Math.max(24, Math.floor(5 * vh * expandedScale));
+      const recordSize = Math.max(16, Math.floor(3.5 * vh * expandedScale));
+      const quarterSize = Math.max(24, Math.floor(4.5 * vh * expandedScale));
+      const timerSize = Math.max(20, Math.floor(3.5 * vh * expandedScale));
+      const titleSize = Math.max(20, Math.floor(4 * vh * expandedScale));
+      const foulBoxSize = Math.max(40, Math.floor(7 * vh * expandedScale));
+      const foulFontSize = Math.max(18, Math.floor(3 * vh * expandedScale));
+      const gap = Math.max(12, Math.floor(2 * vh * expandedScale));
+      const padding = Math.max(12, Math.floor(2 * vh * expandedScale));
+
+      setScales({ scoreBoxSize, teamNameSize, recordSize, quarterSize, timerSize, titleSize, foulBoxSize, foulFontSize, gap, padding });
+    };
+
+    calculateScales();
+    
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const debouncedUpdate = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(calculateScales, 30);
+    };
+
+    window.addEventListener('resize', debouncedUpdate);
+    let resizeObserver: ResizeObserver | null = null;
+    if (containerRef.current && window.ResizeObserver) {
+      resizeObserver = new ResizeObserver(debouncedUpdate);
+      resizeObserver.observe(containerRef.current);
+    }
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', debouncedUpdate);
+      resizeObserver?.disconnect();
+    };
+  }, [containerRef, showTitle, showRecord, showStanding, showFouls, isExpanded]);
+
+  return scales;
+}
+
+function useTableScaling(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  playerCount: number,
+  isExpanded: boolean,
+  showFouls: boolean,
+  showQuickPoints: boolean
+): TableScales {
+  const [scales, setScales] = useState<TableScales>({
+    rowHeight: 48,
+    fontSize: 14,
+    jerseySize: 28,
+    foulDotSize: 24,
+    pointsSize: 24,
+    quickBtnSize: 24,
+    headerSize: 12,
+    totalRowHeight: 48,
+    padding: 8,
+  });
+
+  useEffect(() => {
+    const calculateScales = () => {
+      if (!containerRef.current || isExpanded) {
+        setScales({
+          rowHeight: 48,
+          fontSize: 14,
+          jerseySize: 28,
+          foulDotSize: 24,
+          pointsSize: 24,
+          quickBtnSize: 24,
+          headerSize: 12,
+          totalRowHeight: 48,
+          padding: 8,
+        });
+        return;
+      }
+
+      const containerHeight = containerRef.current.offsetHeight;
+      const containerWidth = containerRef.current.offsetWidth;
+      
+      // Total rows = header + players + total row
+      const totalRows = playerCount + 2;
+      
+      // Team header bar takes ~35px
+      const teamHeaderHeight = 35;
+      const availableHeight = containerHeight - teamHeaderHeight;
+      
+      // Row height fills ALL available space
+      const rowHeight = Math.floor(availableHeight / totalRows);
+      
+      // ALL sizes scale directly from row height - MAXIMIZE everything
+      const jerseySize = Math.floor(rowHeight * 0.65);
+      const fontSize = Math.floor(rowHeight * 0.5); // Player names - HUGE
+      const foulDotSize = Math.floor(rowHeight * 0.45);
+      const pointsSize = Math.floor(rowHeight * 0.7); // Points - HUGE
+      const quickBtnSize = Math.floor(rowHeight * 0.5);
+      const headerSize = Math.floor(rowHeight * 0.2);
+      const padding = 4;
+
+      setScales({
+        rowHeight,
+        fontSize,
+        jerseySize,
+        foulDotSize,
+        pointsSize,
+        quickBtnSize,
+        headerSize,
+        totalRowHeight: rowHeight,
+        padding,
+      });
+    };
+
+    calculateScales();
+    
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const debouncedUpdate = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(calculateScales, 30);
+    };
+
+    window.addEventListener('resize', debouncedUpdate);
+    
+    let resizeObserver: ResizeObserver | null = null;
+    if (containerRef.current && window.ResizeObserver) {
+      resizeObserver = new ResizeObserver(debouncedUpdate);
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', debouncedUpdate);
+      resizeObserver?.disconnect();
+    };
+  }, [containerRef, playerCount, isExpanded, showFouls, showQuickPoints]);
+
+  return scales;
+}
+
 
 export function GamePage() {
   const navigate = useNavigate();
@@ -67,9 +259,46 @@ export function GamePage() {
   const awayScoreBoxRef = useRef<HTMLDivElement>(null);
   const mobileScoreboardRef = useRef<HTMLDivElement>(null);
   const desktopScoreboardRef = useRef<HTMLDivElement>(null);
+  const homeTableRef = useRef<HTMLDivElement>(null);
+  const awayTableRef = useRef<HTMLDivElement>(null);
 
   const homeFontSize = useScaledFontSize(homeScoreBoxRef);
   const awayFontSize = useScaledFontSize(awayScoreBoxRef);
+  
+  // Get enabled stats for scaling calculation
+  const enabledStatsForScaling = Object.entries(settings.statsConfig)
+    .filter(([, enabled]) => enabled)
+    .map(([stat]) => stat as StatType);
+  const showFoulsForScaling = enabledStatsForScaling.includes('fouls');
+  
+  // Use table scaling hooks for each team
+  const homePlayerCount = currentGame?.homeTeam?.players?.length || 5;
+  const awayPlayerCount = currentGame?.awayTeam?.players?.length || 5;
+  const homeTableScales = useTableScaling(
+    homeTableRef,
+    homePlayerCount,
+    expandedStats.home,
+    showFoulsForScaling,
+    settings.scoreboardConfig.showQuickPoints
+  );
+  const awayTableScales = useTableScaling(
+    awayTableRef,
+    awayPlayerCount,
+    expandedStats.away,
+    showFoulsForScaling,
+    settings.scoreboardConfig.showQuickPoints
+  );
+  
+  // Scoreboard scaling
+  const scoreboardScales = useScoreboardScaling(
+    desktopScoreboardRef,
+    settings.scoreboardConfig.showTitle,
+    settings.scoreboardConfig.showRecord,
+    settings.scoreboardConfig.showStanding,
+    showFoulsForScaling,
+    expandedStats.home || expandedStats.away
+  );
+  
   const [fontSizes, setFontSizes] = useState({
     title: '32px',
     teamName: '48px',
@@ -83,27 +312,34 @@ export function GamePage() {
     const clampSize = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
 
     const updateFonts = () => {
-      // Use scoreboard container width to scale everything together
+      // Use viewport height for consistent scaling across the page
+      const vh = window.innerHeight / 100;
+      
+      // Use scoreboard container width as secondary factor
       const widths: number[] = [];
       if (desktopScoreboardRef.current?.offsetWidth) widths.push(desktopScoreboardRef.current.offsetWidth);
       if (mobileScoreboardRef.current?.offsetWidth) widths.push(mobileScoreboardRef.current.offsetWidth);
       const containerWidth = widths.length ? Math.max(...widths) : 720;
-      
-      // Wider scale range so fonts actually change noticeably (0.7 to 1.4 = 2x range)
-      const scale = clampSize(containerWidth / 720, 0.7, 1.4);
-      
-      // Calculate base sizes - records and standings are smaller than team names
-      // Increased base sizes to match larger score boxes
-      const teamNameSize = clampSize(42 * scale, 32, 72);
-      const recordStandingSize = clampSize(32 * scale, 24, 54);
+
+      // Scale based on both viewport height and container width
+      const vhScale = vh / 7; // 1vh = ~7px on 700px viewport
+      const widthScale = clampSize(containerWidth / 500, 0.8, 2.0);
+      const scale = Math.max(vhScale, widthScale);
+
+      // MUCH LARGER base sizes - scale aggressively with viewport
+      const teamNameSize = clampSize(5 * vh, 36, 120); // 5vh
+      const recordStandingSize = clampSize(3.5 * vh, 24, 80); // 3.5vh
+      const titleSize = clampSize(4 * vh, 28, 100); // 4vh
+      const quarterSize = clampSize(4.5 * vh, 32, 100); // 4.5vh
+      const timerSize = clampSize(3.5 * vh, 24, 80); // 3.5vh
 
       setFontSizes({
-        title: `${clampSize(36 * scale, 26, 60)}px`,
-        teamName: `${teamNameSize}px`,
-        record: `${recordStandingSize}px`,
-        standing: `${recordStandingSize}px`,
-        timer: `${clampSize(28 * scale, 22, 44)}px`,
-        quarter: `${clampSize(34 * scale, 26, 56)}px`,
+        title: `${Math.round(titleSize)}px`,
+        teamName: `${Math.round(teamNameSize)}px`,
+        record: `${Math.round(recordStandingSize)}px`,
+        standing: `${Math.round(recordStandingSize)}px`,
+        timer: `${Math.round(timerSize)}px`,
+        quarter: `${Math.round(quarterSize)}px`,
       });
     };
 
@@ -390,30 +626,33 @@ export function GamePage() {
       : enabledStats.filter(stat => stat === 'points');
     const showFouls = enabledStats.includes('fouls');
     
+    // Get the appropriate scales for this team
+    const scales = teamType === 'home' ? homeTableScales : awayTableScales;
+    const tableRef = teamType === 'home' ? homeTableRef : awayTableRef;
+    
     return (
     <div
-      className="rounded-xl overflow-hidden h-full flex flex-col"
-      style={{ backgroundColor: currentTheme.secondaryBackground }}
+      ref={tableRef}
+      className="rounded-xl overflow-hidden"
+      style={{ backgroundColor: currentTheme.secondaryBackground, height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}
     >
-      {/* Team Header */}
+      {/* Team Header - Using vh units for scaling */}
       <div
-        className="px-2 sm:px-3 md:px-2 lg:px-2.5"
         style={{
           backgroundColor: team.primaryColor,
           color: team.secondaryColor,
-          paddingTop: 'clamp(0.25rem, 1vh + 0.2rem, 0.5rem)',
-          paddingBottom: 'clamp(0.25rem, 1vh + 0.2rem, 0.5rem)',
+          padding: 'max(8px, 1.2vh) max(12px, 1.5vh)',
+          flexShrink: 0,
         }}
       >
         <div className="flex items-center" style={{ 
-          gap: 'clamp(0.5rem, 1vw + 0.3rem, 0.75rem)',
-          marginBottom: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.5rem)'
+          gap: 'max(8px, 1vh)',
         }}>
             {/* Mobile: Both teams have [Toggle] [Team Name] [HOME/AWAY] */}
             {/* Desktop: Home team [Toggle] [Team Name] [HOME], Away team [AWAY] [Team Name] [Toggle] */}
             {/* Mobile layout - same for both teams */}
             <div className="flex items-center md:hidden w-full" style={{ 
-              gap: 'clamp(0.5rem, 1vw + 0.3rem, 0.75rem)'
+              gap: 'max(8px, 1vh)'
             }}>
               <button
                 onClick={() => {
@@ -425,8 +664,8 @@ export function GamePage() {
                   backgroundColor: team.secondaryColor + '30',
                   color: team.secondaryColor,
                   borderRadius: currentTheme.borderRadius,
-                  fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)',
-                  padding: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.375rem) clamp(0.375rem, 0.8vw + 0.2rem, 0.5rem)'
+                  fontSize: 'max(16px, 2vh)',
+                  padding: 'max(4px, 0.5vh) max(8px, 1vh)'
                 }}
                 title={isExpanded ? 'Collapse stats' : 'Expand stats'}
               >
@@ -436,19 +675,19 @@ export function GamePage() {
                 className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
                 style={{ 
                   fontFamily: currentTheme.headerFont,
-                  fontSize: 'clamp(0.875rem, 1.2vw + 0.5rem, 1.5rem)'
+                  fontSize: 'max(28px, 4vh)'
                 }}
               >
                 {team.teamName}
               </span>
-              <span className="opacity-80 shrink-0" style={{ fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)' }}>
+              <span className="opacity-80 shrink-0" style={{ fontSize: 'max(14px, 1.8vh)' }}>
                 {isHome ? 'HOME' : 'AWAY'}
               </span>
             </div>
             
             {/* Desktop layout - symmetrical */}
             <div className="hidden md:flex items-center w-full" style={{ 
-              gap: 'clamp(0.5rem, 1vw + 0.3rem, 0.75rem)'
+              gap: 'max(8px, 1vh)'
             }}>
               {isHome ? (
                 <>
@@ -462,8 +701,8 @@ export function GamePage() {
                       backgroundColor: team.secondaryColor + '30',
                       color: team.secondaryColor,
                       borderRadius: currentTheme.borderRadius,
-                      fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)',
-                      padding: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.375rem) clamp(0.375rem, 0.8vw + 0.2rem, 0.5rem)'
+                      fontSize: 'max(16px, 2vh)',
+                      padding: 'max(4px, 0.5vh) max(8px, 1vh)'
                     }}
                     title={isExpanded ? 'Collapse stats' : 'Expand stats'}
                   >
@@ -473,25 +712,25 @@ export function GamePage() {
                     className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
                     style={{ 
                       fontFamily: currentTheme.headerFont,
-                      fontSize: 'clamp(0.875rem, 1.2vw + 0.5rem, 1.5rem)'
+                      fontSize: 'max(26px, 3.8vh)'
                     }}
                   >
                     {team.teamName}
                   </span>
-                  <span className="opacity-80 shrink-0" style={{ fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)' }}>
+                  <span className="opacity-80 shrink-0" style={{ fontSize: 'max(14px, 1.8vh)' }}>
                     HOME
                   </span>
                 </>
               ) : (
                 <>
-                  <span className="opacity-80 shrink-0" style={{ fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)' }}>
+                  <span className="opacity-80 shrink-0" style={{ fontSize: 'max(14px, 1.8vh)' }}>
                     AWAY
                   </span>
                   <span
                     className="font-bold tracking-wide truncate flex-1 min-w-0 text-center"
                     style={{ 
                       fontFamily: currentTheme.headerFont,
-                      fontSize: 'clamp(0.875rem, 1.2vw + 0.5rem, 1.5rem)'
+                      fontSize: 'max(26px, 3.8vh)'
                     }}
                   >
                     {team.teamName}
@@ -506,8 +745,8 @@ export function GamePage() {
                       backgroundColor: team.secondaryColor + '30',
                       color: team.secondaryColor,
                       borderRadius: currentTheme.borderRadius,
-                      fontSize: 'clamp(0.5rem, 0.8vw + 0.3rem, 0.75rem)',
-                      padding: 'clamp(0.125rem, 0.5vh + 0.1rem, 0.375rem) clamp(0.375rem, 0.8vw + 0.2rem, 0.5rem)'
+                      fontSize: 'max(16px, 2vh)',
+                      padding: 'max(4px, 0.5vh) max(8px, 1vh)'
                     }}
                     title={isExpanded ? 'Collapse stats' : 'Expand stats'}
                   >
@@ -520,372 +759,132 @@ export function GamePage() {
         
       </div>
 
-      {/* Stats Table */}
-      <div className="flex-1 min-h-0" style={{ 
-        width: '100%', 
-        overflowX: isExpanded ? 'auto' : 'hidden',
-        overflowY: 'auto'
-      }}>
-        <table style={{ 
-          width: '100%', 
-          tableLayout: isExpanded ? 'auto' : 'fixed',
-          whiteSpace: 'nowrap' 
-        }}>
-          <thead>
-            <tr style={{ backgroundColor: currentTheme.backgroundColor }}>
-              <th
-                className="text-left font-medium"
-                style={{ 
-                  color: currentTheme.textSecondary,
-                  fontSize: 'clamp(0.5rem, 1.2vw + 0.3rem, 0.875rem)',
-                  paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                  paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                  paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                  width: isExpanded ? 'auto' : '60px'
-                }}
-              >
-                #
-              </th>
-              <th
-                className="text-left font-medium"
-                style={{ 
-                  color: currentTheme.textSecondary,
-                  fontSize: 'clamp(0.5rem, 1.2vw + 0.3rem, 0.875rem)',
-                  paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                  paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                  paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                  width: isExpanded ? 'auto' : 'auto'
-                }}
-              >
-                PLAYER
-              </th>
-              {showFouls && (
-                <th
-                  className="text-center font-medium"
-                  style={{ 
-                    color: currentTheme.textSecondary,
-                    fontSize: 'clamp(0.5rem, 1.2vw + 0.3rem, 0.875rem)',
-                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                    paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                    width: isExpanded ? 'auto' : '80px'
-                  }}
-                >
-                  PF
-                </th>
-              )}
-              {visibleStats.map(stat => (
-                <th
-                  key={stat}
-                  colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1}
-                  className="text-center font-medium"
-                  style={{ 
-                    color: currentTheme.textSecondary,
-                    fontSize: 'clamp(0.5rem, 1.2vw + 0.3rem, 0.875rem)',
-                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                    paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                    width: isExpanded ? 'auto' : (stat === 'points' && settings.scoreboardConfig.showQuickPoints 
-                      ? '200px'
-                      : '80px')
-                  }}
-                >
-                  {statLabels[stat].slice(0, 3)}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {team.players.map((player, index) => (
-              <tr
-                key={player.playerId}
-                className="border-t"
-                style={{
-                  borderColor: currentTheme.backgroundColor,
-                  backgroundColor:
-                    index % 2 === 0
-                      ? 'transparent'
-                      : currentTheme.backgroundColor + '40',
-                }}
-              >
-                <td style={{ 
-                  paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                  paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                  paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
-                }}>
-                  <span
-                    className="inline-block rounded text-center font-bold"
-                    style={{
-                      backgroundColor: team.primaryColor,
-                      color: team.secondaryColor,
-                      fontSize: 'clamp(0.6rem, 1.2vw + 0.4rem, 1.125rem)',
-                      width: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                      height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                      lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                    }}
-                  >
-                    {player.jerseyNumber}
-                  </span>
-                </td>
-                <td 
-                  className="font-medium"
-                  style={{
-                    fontSize: settings.scoreboardConfig.showQuickPoints 
-                      ? 'clamp(0.5rem, 0.9vw + 0.3rem, 0.875rem)'
-                      : 'clamp(0.6rem, 1.2vw + 0.4rem, 1.125rem)',
-                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                    paddingRight: 'clamp(0.25rem, 0.8vw + 0.2rem, 0.625rem)',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  {player.playerName}
-                </td>
-                {showFouls && (
-                  <td 
-                    className="text-center"
-                    style={{
-                      paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                      paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                      paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                      paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
-                    }}
-                  >
-                    <button
-                      onClick={() => handleFoulDotClick(teamType, player.playerId)}
-                      className="flex items-center justify-center gap-0.5 transition-all hover:scale-110 cursor-pointer"
-                      style={{ gap: 'clamp(0.125rem, 0.3vw + 0.1rem, 0.375rem)' }}
-                      title="Click to increment fouls"
-                    >
-                      {Array.from({ length: 5 }, (_, i) => {
-                        const foulCount = typeof player.fouls === 'number' ? Math.max(0, player.fouls) : 0;
-                        const isLit = i < foulCount;
-                        const isFifthFoul = i === 4;
-                        return (
-                          <span
-                            key={i}
-                            style={{
-                              color: isLit 
-                                ? (isFifthFoul ? team.primaryColor : currentTheme.accentColor)
-                                : currentTheme.textSecondary + '40',
-                              fontSize: 'clamp(1.75rem, 3.5vw + 1rem, 3rem)',
-                              opacity: isLit ? 1 : 0.3,
-                              fontWeight: 'bold',
-                            }}
-                          >
-                            •
-                          </span>
-                        );
-                      })}
-                    </button>
-                  </td>
-                )}
-                {visibleStats.map(stat => {
-                  const value = player[stat as keyof PlayerGameStats];
-                  return (
-                    <>
-                      <td 
-                        key={stat} 
-                        className="text-center"
-                        style={{
-                          paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                          paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                          paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                          paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
-                        }}
-                      >
-                        <button
-                          onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)}
-                          className="font-bold transition-all hover:scale-110 cursor-pointer flex items-center justify-center"
-                          style={{
-                            color: currentTheme.accentColor,
-                            fontSize: 'clamp(1.25rem, 2.5vw + 0.6rem, 2rem)',
-                            minWidth: 'clamp(2rem, 3.5vw + 1rem, 3.5rem)',
-                            height: 'clamp(2rem, 3.5vw + 1rem, 3.5rem)',
-                          }}
-                          title="Click to add, Shift+Click to subtract"
-                        >
-                          {typeof value === 'number' ? value : 0}
+      {/* Stats Table - Using viewport units for reliable scaling */}
+      <div style={{ flex: 1, width: '100%', overflowX: isExpanded ? 'auto' : 'hidden', overflowY: 'hidden', minHeight: 0 }}>
+        {(() => {
+          // Calculate sizes based on number of rows AND available width
+          const rowCount = team.players.length + 2; // players + header + total
+          const availableVh = showTargetBar ? 55 : 62; // viewport height available
+          const rowVh = availableVh / rowCount;
+          
+          // Use smaller of vh or vw-based scaling to ensure fit
+          const vwScale = 0.8; // Scale factor for width-based sizing
+          
+          // Scale everything based on row height - use smaller values to prevent overflow
+          const jerseyVh = Math.min(rowVh * 0.42, 4);
+          const fontVh = Math.min(rowVh * 0.32, 3);
+          const foulVh = Math.min(rowVh * 0.35, 3);
+          const pointsVh = Math.min(rowVh * 0.4, 4);
+          const quickBtnVh = Math.min(rowVh * 0.28, 3);
+          const headerVh = Math.min(rowVh * 0.42, 3.5);
+          
+          return (
+            <table style={{ width: isExpanded ? 'max-content' : '100%', minWidth: '100%', height: '100%', borderCollapse: 'collapse', tableLayout: isExpanded ? 'auto' : 'fixed' }}>
+              <thead>
+                <tr style={{ backgroundColor: currentTheme.backgroundColor, height: `${rowVh}vh` }}>
+                  <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? 'auto' : '12%', minWidth: isExpanded ? 40 : undefined, padding: '0 2px' }}>#</th>
+                  <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'left', paddingLeft: '4px', minWidth: isExpanded ? 100 : undefined }}>PLAYER</th>
+                  {showFouls && <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? 'auto' : '22%', minWidth: isExpanded ? 80 : undefined, padding: '0 4px' }}>PF</th>}
+                  {visibleStats.map(stat => (
+                    <th key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? 'auto' : (stat === 'points' && settings.scoreboardConfig.showQuickPoints ? '20%' : '14%'), minWidth: isExpanded ? 50 : undefined, padding: '0 4px' }}>
+                      {statLabels[stat].slice(0, isExpanded ? 3 : 3)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {team.players.map((player, index) => (
+                  <tr key={player.playerId} style={{ borderTop: `1px solid ${currentTheme.backgroundColor}`, backgroundColor: index % 2 === 0 ? 'transparent' : currentTheme.backgroundColor + '40', height: `${rowVh}vh` }}>
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${pointsVh}vh`, width: `${pointsVh * 1.3}vh`, height: `${pointsVh * 1.3}vh`, minWidth: 24, minHeight: 24 }}>
+                        {player.jerseyNumber}
+                      </span>
+                    </td>
+                    <td style={{ fontSize: `${fontVh}vh`, fontWeight: 600, verticalAlign: 'middle', paddingLeft: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {player.playerName}
+                    </td>
+                    {showFouls && (
+                      <td style={{ textAlign: 'center', verticalAlign: 'middle', padding: '0 2px' }}>
+                        <button onClick={() => handleFoulDotClick(teamType, player.playerId)} className="flex items-center justify-center mx-auto cursor-pointer w-full" style={{ gap: `${foulVh * 0.12}vh` }} title="Click to increment fouls">
+                          {[0,1,2,3,4].map(i => {
+                            const foulCount = typeof player.fouls === 'number' ? player.fouls : 0;
+                            const isLit = i < foulCount;
+                            return <span key={i} style={{ color: isLit ? (i === 4 ? team.primaryColor : currentTheme.accentColor) : currentTheme.textSecondary + '40', fontSize: `${foulVh}vh`, opacity: isLit ? 1 : 0.3, fontWeight: 'bold', lineHeight: 1 }}>●</span>;
+                          })}
                         </button>
                       </td>
-                      {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
-                        <td 
-                          className="text-center"
-                          style={{
-                            paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                            paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                            paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                            paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                            minWidth: 'clamp(5rem, 8vw + 3rem, 7.5rem)'
-                          }}
-                        >
-                          <div className="flex justify-center" style={{ gap: 'clamp(0.125rem, 0.5vw + 0.15rem, 0.5rem)' }}>
-                            {[1, 2, 3].map(pts => (
-                              <button
-                                key={pts}
-                                onClick={() => updatePlayerStat(teamType, player.playerId, 'points', pts)}
-                                className="rounded font-bold transition-all hover:scale-110 hover:brightness-110 flex items-center justify-center"
-                                style={{
-                                  backgroundColor: team.primaryColor,
-                                  color: team.secondaryColor,
-                                  borderRadius: currentTheme.borderRadius,
-                                  opacity: 0.9,
-                                  fontSize: 'clamp(0.5rem, 0.9vw + 0.3rem, 0.875rem)',
-                                  width: 'clamp(1.5rem, 2vw + 0.8rem, 2.5rem)',
-                                  height: 'clamp(1.75rem, 2.5vw + 1rem, 3rem)',
-                                }}
-                              >
-                                +{pts}
-                              </button>
-                            ))}
-                          </div>
+                    )}
+                    {visibleStats.map(stat => {
+                      const value = player[stat as keyof PlayerGameStats];
+                      const isPoints = stat === 'points';
+                      const needsBox = stat === 'rebounds' || stat === 'assists';
+                      return (
+                        <React.Fragment key={stat}>
+                          <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                            <button 
+                              onClick={e => handleStatClick(teamType, player.playerId, stat as keyof PlayerGameStats, e)} 
+                              className={needsBox ? "cursor-pointer inline-flex items-center justify-center rounded" : "cursor-pointer"}
+                              style={{ 
+                                color: currentTheme.accentColor, 
+                                fontSize: `${pointsVh}vh`, 
+                                fontWeight: 900,
+                                ...(needsBox && {
+                                  backgroundColor: currentTheme.accentColor + '25',
+                                  minWidth: `${pointsVh * 1.5}vh`,
+                                  height: `${pointsVh * 1.2}vh`,
+                                  padding: '4px 10px'
+                                })
+                              }} 
+                              title="Click +1, Shift+Click -1"
+                            >
+                              {typeof value === 'number' ? value : 0}
+                            </button>
+                          </td>
+                          {isPoints && settings.scoreboardConfig.showQuickPoints && (
+                            <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                              <div className="flex justify-center items-center" style={{ gap: `${quickBtnVh * 0.1}vh` }}>
+                                {[1,2,3].map(pts => (
+                                  <button key={pts} onClick={() => updatePlayerStat(teamType, player.playerId, 'points', pts)} className="rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${quickBtnVh * 0.5}vh`, width: `${quickBtnVh}vh`, height: `${quickBtnVh}vh`, minWidth: 18, minHeight: 18, opacity: 0.9 }}>
+                                    +{pts}
+                                  </button>
+                                ))}
+                              </div>
+                            </td>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tr>
+                ))}
+                {/* TOTAL Row - scales with vh */}
+                <tr style={{ borderTop: `2px solid ${team.primaryColor}`, backgroundColor: team.primaryColor + '20', height: `${rowVh}vh` }}>
+                  <td></td>
+                  <td style={{ fontSize: `${fontVh * 1.1}vh`, fontWeight: 800, verticalAlign: 'middle', paddingLeft: '4px', fontFamily: currentTheme.headerFont, whiteSpace: 'nowrap' }}>TOTAL</td>
+                  {showFouls && (
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${fontVh}vh`, height: `${jerseyVh * 0.8}vh`, minHeight: 22, padding: '0 0.8vh' }}>
+                        {calculateTotal(team.players, 'fouls')}
+                      </span>
+                    </td>
+                  )}
+                  {visibleStats.map(stat => {
+                    const total = calculateTotal(team.players, stat as keyof PlayerGameStats);
+                    return (
+                      <React.Fragment key={stat}>
+                        <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                          <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${fontVh * 1.1}vh`, height: `${jerseyVh * 0.85}vh`, minHeight: 24, padding: '0 0.8vh' }}>
+                            {total}
+                          </span>
                         </td>
-                      )}
-                    </>
-                  );
-                })}
-              </tr>
-            ))}
-            {/* Team Totals Row */}
-            <tr
-              className="border-t-2 font-bold"
-              style={{
-                borderColor: team.primaryColor,
-                backgroundColor: team.primaryColor + '20',
-              }}
-            >
-              <td style={{ 
-                paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
-              }}></td>
-              <td 
-                className="font-bold" 
-                style={{ 
-                  fontFamily: currentTheme.headerFont,
-                  fontSize: 'clamp(0.7rem, 1.2vw + 0.4rem, 1.25rem)',
-                  paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                  paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                  paddingLeft: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)',
-                  paddingRight: 'clamp(0.25rem, 1vw + 0.2rem, 1rem)'
-                }}
-              >
-                TOTAL
-              </td>
-              {showFouls && (
-                <td 
-                  className="text-center"
-                  style={{
-                    paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                    paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                    paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                    width: showFouls ? 'auto' : '80px'
-                  }}
-                >
-                  <span
-                    className="inline-block rounded font-bold flex items-center justify-center gap-0.5"
-                    style={{
-                      backgroundColor: team.primaryColor,
-                      color: team.secondaryColor,
-                      borderRadius: currentTheme.borderRadius,
-                      fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
-                      height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                      lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                      padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
-                    }}
-                  >
-                    {calculateTotal(team.players, 'fouls')}
-                  </span>
-                </td>
-              )}
-              {visibleStats.map(stat => {
-                const totalValue = calculateTotal(team.players, stat as keyof PlayerGameStats);
-
-                if (stat === 'points' && settings.scoreboardConfig.showQuickPoints) {
-                  return (
-                    <>
-                      <td 
-                        key={`${stat}-total`} 
-                        className="text-center"
-                        style={{
-                          paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                          paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                          paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                          paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
-                        }}
-                      >
-                        <span
-                          className="inline-block rounded font-bold flex items-center justify-center gap-0.5"
-                          style={{
-                            backgroundColor: team.primaryColor,
-                            color: team.secondaryColor,
-                            borderRadius: currentTheme.borderRadius,
-                            fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
-                            height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                            lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                            padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
-                          }}
-                        >
-                          {totalValue}
-                        </span>
-                      </td>
-                      {/* Keep grid aligned with quick points column */}
-                      <td
-                        key={`${stat}-quick-total-placeholder`}
-                        aria-hidden="true"
-                        className="text-center"
-                        style={{
-                          paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                          paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                          paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                          paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                          minWidth: 'clamp(5rem, 8vw + 3rem, 7.5rem)'
-                        }}
-                      />
-                    </>
-                  );
-                }
-
-                return (
-                  <td 
-                    key={stat} 
-                    colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} 
-                    className="text-center"
-                    style={{
-                      paddingTop: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                      paddingBottom: 'clamp(0.125rem, 0.8vh + 0.1rem, 0.5rem)',
-                      paddingLeft: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)',
-                      paddingRight: 'clamp(0.125rem, 0.6vw + 0.15rem, 0.75rem)'
-                    }}
-                  >
-                    <span
-                      className="inline-block rounded font-bold flex items-center justify-center gap-0.5"
-                      style={{
-                        backgroundColor: team.primaryColor,
-                        color: team.secondaryColor,
-                        borderRadius: currentTheme.borderRadius,
-                        fontSize: 'clamp(0.7rem, 1.5vw + 0.4rem, 1.25rem)',
-                        height: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                        lineHeight: 'clamp(1.5rem, 2.5vw + 0.8rem, 2.5rem)',
-                        padding: '0 clamp(0.375rem, 1vw + 0.2rem, 1.25rem)'
-                      }}
-                    >
-                      {totalValue}
-                    </span>
-                  </td>
-                );
-              })}
-            </tr>
-          </tbody>
-        </table>
+                        {stat === 'points' && settings.scoreboardConfig.showQuickPoints && <td></td>}
+                      </React.Fragment>
+                    );
+                  })}
+                </tr>
+              </tbody>
+            </table>
+          );
+        })()}
       </div>
     </div>
     );
@@ -893,25 +892,27 @@ export function GamePage() {
 
   const renderScoreboard = () => (
     <div ref={mobileScoreboardRef} className="w-full min-w-0 flex flex-col">
-      {/* Game Title Input */}
+      {/* Game Title Input - SAME SIZE AS TEAM NAME */}
       {settings.scoreboardConfig.showTitle && (
-        <div className="flex justify-center px-1 xs:px-2 sm:px-2 pb-1 xs:pb-1.5 sm:pb-2 shrink-0">
+        <div className="flex justify-center w-full px-2 pb-1 xs:pb-1.5 sm:pb-2 shrink-0">
           <input
             type="text"
             data-scoreboard-input
-            placeholder="Game Title (e.g. Game 4 of Season)"
+            placeholder="Game Title"
             value={currentGame.title || ''}
             onChange={(e) => updateCurrentGame({ title: e.target.value })}
-            className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-2 xs:px-2.5 sm:px-3 md:px-4 py-1 xs:py-1 sm:py-1.5 w-full max-w-[280px] xs:max-w-[320px] sm:max-w-md transition-colors focus:outline-none placeholder-white/20 font-bold"
-                          style={{
-                            color: '#ffffff',
-                            fontFamily: currentTheme.headerFont,
-                            letterSpacing: '0.05em',
-                            textTransform: 'uppercase',
-                            fontSize: fontSizes.title,
-                            lineHeight: '1.1',
-                            '--dynamic-font-size': fontSizes.title,
-                          } as React.CSSProperties & { '--dynamic-font-size'?: string }}
+            className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-2 py-1 w-full transition-colors focus:outline-none placeholder-white/20 font-bold"
+            style={{
+              color: '#ffffff',
+              fontFamily: currentTheme.headerFont,
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              fontSize: 'clamp(32px, 5vh, 100px)',
+              lineHeight: '1.1',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
           />
         </div>
       )}
@@ -933,12 +934,10 @@ export function GamePage() {
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
                   textAlign: 'center',
-                  '--tw-ring-color': currentTheme.accentColor + '50',
-                  fontSize: fontSizes.teamName,
+                  fontSize: 'clamp(32px, 5vh, 100px)',
                   lineHeight: '1.05',
-                  '--dynamic-font-size': fontSizes.teamName,
                   minWidth: '120px',
-                } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
+                }}
                 title={`Full name: ${homeTeam.teamName}`}
               />
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
@@ -955,10 +954,9 @@ export function GamePage() {
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
                         textAlign: 'center',
-                        fontSize: fontSizes.record,
+                        fontSize: 'clamp(22px, 3.5vh, 70px)',
                         lineHeight: '1.05',
-                        '--dynamic-font-size': fontSizes.record,
-                      } as React.CSSProperties & { '--dynamic-font-size'?: string }}
+                      }}
                     />
                   )}
                   {settings.scoreboardConfig.showStanding && (
@@ -973,10 +971,9 @@ export function GamePage() {
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
                         textAlign: 'center',
-                        fontSize: fontSizes.standing,
+                        fontSize: 'clamp(22px, 3.5vh, 70px)',
                         lineHeight: '1.05',
-                        '--dynamic-font-size': fontSizes.standing,
-                      } as React.CSSProperties & { '--dynamic-font-size'?: string }}
+                      }}
                     />
                   )}
                 </div>
@@ -1016,7 +1013,7 @@ export function GamePage() {
                   </button>
                   <span
                     className="font-black px-1 xs:px-1.5 sm:px-2 md:px-1 lg:px-1.5 min-w-[2ch]"
-                    style={{ fontFamily: currentTheme.numberFont, fontSize: fontSizes.quarter, lineHeight: '1' }}
+                    style={{ fontFamily: currentTheme.numberFont, fontSize: 'clamp(28px, 4.5vh, 90px)', lineHeight: '1' }}
                   >
                     Q{quarter}
                   </span>
@@ -1042,12 +1039,11 @@ export function GamePage() {
                   style={{
                     borderColor: currentTheme.accentColor,
                     color: currentTheme.textColor,
-                    fontSize: fontSizes.timer,
-                    '--dynamic-font-size': fontSizes.timer,
+                    fontSize: 'clamp(24px, 3.5vh, 70px)',
                     width: 'fit-content',
                     minWidth: '3.5ch',
                     maxWidth: '5ch',
-                  } as React.CSSProperties & { '--dynamic-font-size'?: string }}
+                  }}
                 />
               )}
             </div>
@@ -1067,12 +1063,10 @@ export function GamePage() {
                   fontFamily: currentTheme.headerFont,
                   color: currentTheme.textColor,
                   textAlign: 'center',
-                  '--tw-ring-color': currentTheme.accentColor + '50',
-                  fontSize: fontSizes.teamName,
+                  fontSize: 'clamp(32px, 5vh, 100px)',
                   lineHeight: '1.05',
-                  '--dynamic-font-size': fontSizes.teamName,
                   minWidth: '120px',
-                } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
+                }}
                 title={`Full name: ${awayTeam.teamName}`}
               />
               {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
@@ -1089,10 +1083,9 @@ export function GamePage() {
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
                         textAlign: 'center',
-                        fontSize: fontSizes.record,
+                        fontSize: 'clamp(22px, 3.5vh, 70px)',
                         lineHeight: '1.05',
-                        '--dynamic-font-size': fontSizes.record,
-                      } as React.CSSProperties & { '--dynamic-font-size'?: string }}
+                      }}
                     />
                   )}
                   {settings.scoreboardConfig.showStanding && (
@@ -1107,10 +1100,9 @@ export function GamePage() {
                         color: currentTheme.textSecondary,
                         fontFamily: currentTheme.headerFont,
                         textAlign: 'center',
-                        fontSize: fontSizes.standing,
+                        fontSize: 'clamp(22px, 3.5vh, 70px)',
                         lineHeight: '1.05',
-                        '--dynamic-font-size': fontSizes.standing,
-                      } as React.CSSProperties & { '--dynamic-font-size'?: string }}
+                      }}
                     />
                   )}
                 </div>
@@ -1136,11 +1128,11 @@ export function GamePage() {
         
         {/* Foul Totals - Below Scores */}
         {showFouls && (
-          <div className="flex items-center justify-center gap-3 xs:gap-4 sm:gap-5 md:gap-4 lg:gap-5 w-full mt-2 xs:mt-2.5 sm:mt-3 md:mt-2 lg:mt-2.5">
+          <div className="flex items-center justify-center gap-6 xs:gap-8 sm:gap-10 md:gap-8 lg:gap-10 w-full mt-2 xs:mt-2.5 sm:mt-3 md:mt-2 lg:mt-2.5">
             <div className="flex flex-col items-center gap-1 xs:gap-1.5 sm:gap-2">
               <span
-                className="text-[9px] xs:text-[10px] sm:text-xs md:text-[10px] lg:text-xs opacity-70 font-medium uppercase tracking-wide"
-                style={{ color: currentTheme.textSecondary }}
+                className="font-bold uppercase tracking-wide"
+                style={{ color: currentTheme.textSecondary, fontSize: 'clamp(14px, 2vh, 24px)' }}
               >
                 PF
               </span>
@@ -1159,8 +1151,8 @@ export function GamePage() {
             </div>
             <div className="flex flex-col items-center gap-1 xs:gap-1.5 sm:gap-2">
               <span
-                className="text-[9px] xs:text-[10px] sm:text-xs md:text-[10px] lg:text-xs opacity-70 font-medium uppercase tracking-wide"
-                style={{ color: currentTheme.textSecondary }}
+                className="font-bold uppercase tracking-wide"
+                style={{ color: currentTheme.textSecondary, fontSize: 'clamp(14px, 2vh, 24px)' }}
               >
                 PF
               </span>
@@ -1185,10 +1177,10 @@ export function GamePage() {
 
   const renderActionBar = () => (
     <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between mb-2 md:mb-2 lg:mb-2 gap-3 md:gap-2 lg:gap-3 p-2 sm:p-3 md:p-2 lg:p-2">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap w-full md:w-auto justify-center md:justify-start gap-2 md:gap-1.5 lg:gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap w-full md:w-auto justify-center md:justify-start gap-2 md:gap-2 lg:gap-2.5">
         <button
           onClick={() => setShowExitConfirm(true)}
-          className="px-2 sm:px-3 md:px-1.5 lg:px-2 py-1.5 md:py-1 lg:py-1.5 rounded-lg text-[11px] sm:text-xs md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 whitespace-nowrap"
+          className="px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:opacity-80 whitespace-nowrap"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -1200,7 +1192,7 @@ export function GamePage() {
         </button>
         <button
           onClick={() => setShowTargetModal(true)}
-          className="px-2 sm:px-3 md:px-1.5 lg:px-2 py-1.5 md:py-1 lg:py-1.5 rounded-lg text-[11px] sm:text-xs md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 whitespace-nowrap"
+          className="px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:opacity-80 whitespace-nowrap"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -1212,7 +1204,7 @@ export function GamePage() {
         </button>
         <button
           onClick={() => updateScoreboardConfig({ showQuickPoints: !settings.scoreboardConfig.showQuickPoints })}
-          className="px-2 sm:px-3 md:px-1.5 lg:px-2 py-1.5 md:py-1 lg:py-1.5 rounded-lg text-[11px] sm:text-xs md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 whitespace-nowrap"
+          className="px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:opacity-80 whitespace-nowrap"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -1224,7 +1216,7 @@ export function GamePage() {
         </button>
         <button
           onClick={() => updateScoreboardConfig({ showTitle: !settings.scoreboardConfig.showTitle })}
-          className="px-2 sm:px-3 md:px-1.5 lg:px-2 py-1.5 md:py-1 lg:py-1.5 rounded-lg text-[11px] sm:text-xs md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 whitespace-nowrap"
+          className="px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:opacity-80 whitespace-nowrap"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -1236,7 +1228,7 @@ export function GamePage() {
         </button>
         <button
           onClick={() => updateScoreboardConfig({ showRecord: !settings.scoreboardConfig.showRecord })}
-          className="px-2 sm:px-3 md:px-1.5 lg:px-2 py-1.5 md:py-1 lg:py-1.5 rounded-lg text-[11px] sm:text-xs md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 whitespace-nowrap"
+          className="px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:opacity-80 whitespace-nowrap"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -1248,7 +1240,7 @@ export function GamePage() {
         </button>
         <button
           onClick={() => updateScoreboardConfig({ showStanding: !settings.scoreboardConfig.showStanding })}
-          className="px-2 sm:px-3 md:px-1.5 lg:px-2 py-1.5 md:py-1 lg:py-1.5 rounded-lg text-[11px] sm:text-xs md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 whitespace-nowrap"
+          className="px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:opacity-80 whitespace-nowrap"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -1260,7 +1252,7 @@ export function GamePage() {
         </button>
         <button
           onClick={toggleFullscreen}
-          className="px-2 sm:px-3 md:px-1.5 lg:px-2 py-1.5 md:py-1 lg:py-1.5 rounded-lg text-[11px] sm:text-xs md:text-[10px] lg:text-xs font-medium transition-all hover:opacity-80 whitespace-nowrap"
+          className="px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:opacity-80 whitespace-nowrap"
           style={{
             backgroundColor: currentTheme.backgroundColor,
             border: `1px solid ${currentTheme.textSecondary}40`,
@@ -1278,7 +1270,7 @@ export function GamePage() {
 
       <button
         onClick={() => setShowEndConfirm(true)}
-        className="w-full md:w-auto px-3 md:px-2 lg:px-3 py-2 md:py-1 lg:py-1.5 rounded-lg text-xs md:text-[10px] lg:text-xs font-medium transition-all hover:scale-105"
+        className="w-full md:w-auto px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:scale-105"
         style={{
           backgroundColor: currentTheme.accentColor,
           color: '#fff',
@@ -1341,205 +1333,136 @@ export function GamePage() {
             {renderActionBar()}
 
             {/* Desktop: Wrapper for Tables and Target Bar */}
-            <div className="hidden md:flex md:flex-col" style={{ height: showTargetBar && currentGame.targetScore ? 'calc(100vh - 120px)' : 'calc(100vh - 80px)', minHeight: 0 }}>
+            <div className="hidden md:block" style={{ height: showTargetBar && currentGame.targetScore ? 'calc(100vh - 140px)' : 'calc(100vh - 100px)' }}>
               {/* Desktop: Three Column Layout - Home Stats | Scoreboard | Away Stats */}
-              <div className="grid gap-2 lg:gap-3 items-start flex-1 min-h-0" style={{ gridTemplateColumns: 'minmax(400px, 1fr) minmax(260px, auto) minmax(400px, 1fr)', width: '100%', minWidth: 0, overflow: 'hidden' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '12px', height: '100%', width: '100%' }}>
                 {/* Home Team Stats */}
-                <div className="min-h-0 flex flex-col h-full" style={{ minWidth: 0, overflow: 'auto' }}>
+                <div style={{ height: '100%', minHeight: 0 }}>
                   {renderTeamStats(homeTeam, 'home', true)}
                 </div>
 
                 {/* Scoreboard Section - Middle */}
-                <div className={`flex flex-col items-center justify-center sticky top-4 self-start h-full transition-all duration-300 ${
-                  !expandedStats.home && !expandedStats.away
-                    ? 'max-w-[380px] md:max-w-[420px] lg:max-w-[480px] xl:max-w-[540px]'
-                    : 'max-w-[360px] md:max-w-[400px] lg:max-w-[440px] xl:max-w-[480px]'
-                }`} style={{ 
-                  width: !expandedStats.home && !expandedStats.away
-                    ? 'clamp(260px, 100%, 540px)'
-                    : 'clamp(300px, 100%, 480px)',
-                  flexShrink: 1,
-                  minWidth: '260px'
-                }}>
+                <div className="flex flex-col items-center justify-center"
+                  style={{ 
+                    width: 'auto',
+                    minWidth: '280px',
+                    maxWidth: '550px',
+                    height: '100%',
+                    padding: '0 8px',
+                  }}>
                 <div 
                   ref={desktopScoreboardRef}
-                  className="rounded-lg shadow-xl w-full flex flex-col transition-all"
-                  style={{ 
-                    backgroundColor: currentTheme.secondaryBackground,
-                    padding: 'clamp(12px, 2vw, 20px)',
-                  }}
+                  className="rounded-lg shadow-xl w-full flex flex-col"
+                  style={{ backgroundColor: currentTheme.secondaryBackground, padding: 16 }}
                 >
-                  {/* Game Title Input */}
+                  {/* Game Title Input - SCALES WITH SCOREBOARD */}
                   {settings.scoreboardConfig.showTitle && (
-                    <div className="flex justify-center mb-2 lg:mb-2.5 shrink-0">
+                    <div className="flex justify-center shrink-0" style={{ marginBottom: scoreboardScales.gap / 2 }}>
                       <input
                         type="text"
                         data-scoreboard-input
                         placeholder="Game Title"
                         value={currentGame.title || ''}
                         onChange={(e) => updateCurrentGame({ title: e.target.value })}
-                        className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded px-3 lg:px-4 py-1 lg:py-1.5 w-full max-w-full transition-all focus:outline-none placeholder-white/20 font-bold"
+                        className="text-center bg-transparent border-transparent hover:border-white/10 focus:border-white/20 border rounded w-full max-w-full focus:outline-none placeholder-white/20 font-bold"
                         style={{
                           color: '#ffffff',
                           fontFamily: currentTheme.headerFont,
                           letterSpacing: '0.05em',
                           textTransform: 'uppercase',
-                          fontSize: fontSizes.title,
+                          fontSize: scoreboardScales.titleSize,
                           lineHeight: '1.1',
-                          '--dynamic-font-size': fontSizes.title,
-                        } as React.CSSProperties & { '--dynamic-font-size'?: string }}
+                          padding: `${scoreboardScales.padding / 3}px ${scoreboardScales.padding / 2}px`,
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
                       />
                     </div>
                   )}
 
                   {/* Desktop Scoreboard Layout - Horizontal */}
-                  <div className={`flex items-center justify-center shrink-0 transition-all ${
-                    !expandedStats.home && !expandedStats.away
-                      ? 'gap-3 lg:gap-4 xl:gap-5'
-                      : 'gap-2 lg:gap-2.5'
-                  }`} style={{ paddingLeft: 'clamp(8px, 2vw, 16px)', paddingRight: 'clamp(8px, 2vw, 16px)' }}>
+                  <div className="flex items-center justify-center shrink-0" style={{ gap: scoreboardScales.gap, padding: `0 ${scoreboardScales.padding / 2}px` }}>
                     {/* Home Team Score - Left Side */}
-                    <div className={`flex flex-col items-center flex-1 transition-all ${
-                      !expandedStats.home && !expandedStats.away
-                        ? 'gap-1.5 lg:gap-2 xl:gap-2.5'
-                        : 'gap-1 lg:gap-1.5'
-                    }`} style={{ minWidth: '140px' }}>
-                      <div className={`flex flex-col items-center w-full shrink-0 transition-all ${
-                        !expandedStats.home && !expandedStats.away
-                          ? 'gap-1 lg:gap-1.5'
-                          : 'gap-0.5 lg:gap-1'
-                      }`} style={{ minWidth: '120px' }}>
-                        <input
-                          type="text"
-                          data-scoreboard-input
-                          value={homeTeam.displayName || homeTeam.teamName}
-                          onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
-                          placeholder={homeTeam.teamName}
-                          className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all"
-                          style={{
-                            minWidth: '120px',
-                            fontFamily: currentTheme.headerFont,
-                            color: currentTheme.textColor,
-                            textAlign: 'center',
-                            '--tw-ring-color': currentTheme.accentColor + '50',
-                            fontSize: fontSizes.teamName,
-                            lineHeight: '1.05',
-                            '--dynamic-font-size': fontSizes.teamName,
-                          } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
-                          title={`Full name: ${homeTeam.teamName}`}
-                        />
-                        {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                          <div className="flex flex-col gap-0.5 lg:gap-1 items-center justify-center w-full transition-all">
-                            {settings.scoreboardConfig.showRecord && (
-                              <input
-                                type="text"
-                                data-scoreboard-input
-                                placeholder="R"
-                                value={homeTeam.record || ''}
-                                onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
-                                className={`w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
-                                  !expandedStats.home && !expandedStats.away
-                                    ? 'max-w-[130px] lg:max-w-[150px] xl:max-w-[170px]'
-                                    : 'max-w-[120px] lg:max-w-[140px]'
-                                }`}
-                                style={{ 
-                                  color: currentTheme.textSecondary,
-                                  fontFamily: currentTheme.headerFont,
-                                  textAlign: 'center',
-                                  fontSize: fontSizes.record,
-                                  lineHeight: '1.05',
-                                  '--dynamic-font-size': fontSizes.record,
-                                } as React.CSSProperties & { '--dynamic-font-size'?: string }}
-                              />
-                            )}
-                            {settings.scoreboardConfig.showStanding && (
-                              <input
-                                type="text"
-                                data-scoreboard-input
-                                placeholder="S"
-                                value={homeTeam.standing || ''}
-                                onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
-                                className={`w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
-                                  !expandedStats.home && !expandedStats.away
-                                    ? 'max-w-[240px] lg:max-w-[260px] xl:max-w-[280px]'
-                                    : 'max-w-[220px] lg:max-w-[240px]'
-                                }`}
-                                style={{ 
-                                  color: currentTheme.textSecondary,
-                                  fontFamily: currentTheme.headerFont,
-                                  textAlign: 'center',
-                                  fontSize: fontSizes.standing,
-                                  lineHeight: '1.05',
-                                  '--dynamic-font-size': fontSizes.standing,
-                                } as React.CSSProperties & { '--dynamic-font-size'?: string }}
-                              />
-                            )}
-                          </div>
-                        )}
+                    <div className="flex flex-col items-center" style={{ gap: scoreboardScales.gap / 3, minWidth: scoreboardScales.scoreBoxSize }}>
+                      <div className="flex flex-col items-center w-full shrink-0" style={{ gap: 2 }}>
+                        <div className="flex flex-col items-center w-full" style={{ gap: 0 }}>
+                          <input
+                            type="text"
+                            data-scoreboard-input
+                            value={homeTeam.displayName || homeTeam.teamName}
+                            onChange={(e) => updateTeamDetails('home', 'displayName', e.target.value)}
+                            placeholder={homeTeam.teamName}
+                            className="font-bold text-center w-full px-1 rounded border-0 bg-transparent focus:outline-none hover:bg-black/5"
+                            style={{
+                              fontFamily: currentTheme.headerFont,
+                              color: currentTheme.textColor,
+                              fontSize: scoreboardScales.teamNameSize,
+                              lineHeight: '1.1',
+                            }}
+                            title={`Full name: ${homeTeam.teamName}`}
+                          />
+                          {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
+                            <div className="flex flex-col items-center justify-center w-full" style={{ gap: 1 }}>
+                              {settings.scoreboardConfig.showRecord && (
+                                <input
+                                  type="text"
+                                  data-scoreboard-input
+                                  placeholder="Record"
+                                  value={homeTeam.record || ''}
+                                  onChange={(e) => updateTeamDetails('home', 'record', e.target.value)}
+                                  className="px-1 rounded border-0 bg-transparent focus:outline-none text-center font-bold"
+                                  style={{ 
+                                    color: currentTheme.textSecondary,
+                                    fontFamily: currentTheme.headerFont,
+                                    fontSize: scoreboardScales.recordSize,
+                                    lineHeight: '1.2',
+                                  }}
+                                />
+                              )}
+                              {settings.scoreboardConfig.showStanding && (
+                                <input
+                                  type="text"
+                                  data-scoreboard-input
+                                  placeholder="Standing"
+                                  value={homeTeam.standing || ''}
+                                  onChange={(e) => updateTeamDetails('home', 'standing', e.target.value)}
+                                  className="px-1 rounded border-0 bg-transparent focus:outline-none text-center font-bold"
+                                  style={{ 
+                                    color: currentTheme.textSecondary,
+                                    fontFamily: currentTheme.headerFont,
+                                    fontSize: scoreboardScales.recordSize,
+                                    lineHeight: '1.2',
+                                  }}
+                                />
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div
                         ref={homeScoreBoxRef}
-                        className={`aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0 transition-all ${
-                          !expandedStats.home && !expandedStats.away
-                            ? 'w-[105px] lg:w-[115px] xl:w-[125px]'
-                            : 'w-[90px] lg:w-[100px] xl:w-[110px]'
-                        }`}
-                        style={{ backgroundColor: homeTeam.primaryColor }}
+                        className="aspect-square rounded-lg flex items-center justify-center shadow-lg shrink-0"
+                        style={{ backgroundColor: homeTeam.primaryColor, width: scoreboardScales.scoreBoxSize, height: scoreboardScales.scoreBoxSize }}
                       >
-                        <span
-                          className="font-black relative z-10 leading-none"
-                          style={{
-                            color: homeTeam.secondaryColor,
-                            fontFamily: currentTheme.numberFont,
-                            fontSize: homeFontSize,
-                          }}
-                        >
+                        <span className="font-black leading-none" style={{ color: homeTeam.secondaryColor, fontFamily: currentTheme.numberFont, fontSize: scoreboardScales.scoreBoxSize * 0.6 }}>
                           {homeScore}
                         </span>
                       </div>
                     </div>
 
-                    {/* Center - Quarter, Timer, Target */}
-                    <div className={`flex flex-col items-center shrink-0 transition-all ${
-                      !expandedStats.home && !expandedStats.away
-                        ? 'gap-1.5 lg:gap-2 xl:gap-2.5'
-                        : 'gap-1 lg:gap-1.5'
-                    }`}>
+                    {/* Center - Quarter, Timer */}
+                    <div className="flex flex-col items-center shrink-0" style={{ gap: scoreboardScales.gap / 3 }}>
                       {settings.scoreboardConfig.showQuarter && (
-                        <div className="flex items-center gap-1 lg:gap-1.5">
-                          <button
-                            onClick={() => handleQuarterChange(-1)}
-                            className={`rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95 shrink-0 ${
-                              !expandedStats.home && !expandedStats.away
-                                ? 'w-6 h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8'
-                                : 'w-5 h-5 lg:w-6 lg:h-6'
-                            }`}
-                            style={{
-                              color: currentTheme.accentColor,
-                            }}
-                            disabled={quarter <= 1}
-                          >
-                            <span className={!expandedStats.home && !expandedStats.away ? 'text-sm lg:text-base xl:text-lg' : 'text-xs lg:text-sm'}>◀</span>
+                        <div className="flex items-center" style={{ gap: 4 }}>
+                          <button onClick={() => handleQuarterChange(-1)} className="rounded-full flex items-center justify-center bg-black/5 hover:bg-black/10 shrink-0" style={{ color: currentTheme.accentColor, width: scoreboardScales.quarterSize * 0.7, height: scoreboardScales.quarterSize * 0.7 }} disabled={quarter <= 1}>
+                            <span style={{ fontSize: scoreboardScales.quarterSize * 0.4 }}>◀</span>
                           </button>
-                          <span
-                            className="font-black px-1 lg:px-1.5 min-w-[2.5ch] transition-all"
-                            style={{ fontFamily: currentTheme.numberFont, fontSize: fontSizes.quarter, lineHeight: '1' }}
-                          >
+                          <span className="font-black text-center" style={{ fontFamily: currentTheme.numberFont, fontSize: scoreboardScales.quarterSize, lineHeight: '1', minWidth: '2.5ch' }}>
                             Q{quarter}
                           </span>
-                          <button
-                            onClick={() => handleQuarterChange(1)}
-                            className={`rounded-full transition-all hover:scale-110 flex items-center justify-center bg-black/5 hover:bg-black/10 active:scale-95 shrink-0 ${
-                              !expandedStats.home && !expandedStats.away
-                                ? 'w-6 h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8'
-                                : 'w-5 h-5 lg:w-6 lg:h-6'
-                            }`}
-                            style={{
-                              color: currentTheme.accentColor,
-                            }}
-                            disabled={quarter >= 4}
-                          >
-                            <span className={!expandedStats.home && !expandedStats.away ? 'text-sm lg:text-base xl:text-lg' : 'text-xs lg:text-sm'}>▶</span>
+                          <button onClick={() => handleQuarterChange(1)} className="rounded-full flex items-center justify-center bg-black/5 hover:bg-black/10 shrink-0" style={{ color: currentTheme.accentColor, width: scoreboardScales.quarterSize * 0.7, height: scoreboardScales.quarterSize * 0.7 }} disabled={quarter >= 4}>
+                            <span style={{ fontSize: scoreboardScales.quarterSize * 0.4 }}>▶</span>
                           </button>
                         </div>
                       )}
@@ -1549,120 +1472,75 @@ export function GamePage() {
                           data-scoreboard-input
                           value={timeRemaining}
                           onChange={e => updateCurrentGame({ timeRemaining: e.target.value })}
-                          className="text-center bg-transparent border-b-2 font-mono focus:outline-none font-bold transition-all py-0.5 leading-none"
-                          style={{
-                            borderColor: currentTheme.accentColor,
-                            color: currentTheme.textColor,
-                            fontSize: fontSizes.timer,
-                            '--dynamic-font-size': fontSizes.timer,
-                            width: 'fit-content',
-                            minWidth: '3.5ch',
-                            maxWidth: '5ch',
-                          } as React.CSSProperties & { '--dynamic-font-size'?: string }}
+                          className="text-center bg-transparent border-b-2 font-mono focus:outline-none font-bold leading-none"
+                          style={{ borderColor: currentTheme.accentColor, color: currentTheme.textColor, fontSize: scoreboardScales.timerSize, minWidth: '3.5ch', maxWidth: '5ch' }}
                         />
                       )}
                     </div>
 
                     {/* Away Team Score - Right Side */}
-                    <div className={`flex flex-col items-center flex-1 transition-all ${
-                      !expandedStats.home && !expandedStats.away
-                        ? 'gap-1.5 lg:gap-2 xl:gap-2.5'
-                        : 'gap-1 lg:gap-1.5'
-                    }`} style={{ minWidth: '140px' }}>
-                      <div className={`flex flex-col items-center w-full shrink-0 transition-all ${
-                        !expandedStats.home && !expandedStats.away
-                          ? 'gap-1 lg:gap-1.5'
-                          : 'gap-0.5 lg:gap-1'
-                      }`} style={{ minWidth: '120px' }}>
-                        <input
-                          type="text"
-                          data-scoreboard-input
-                          value={awayTeam.displayName || awayTeam.teamName}
-                          onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
-                          placeholder={awayTeam.teamName}
-                          className="font-bold text-center w-full px-2 py-1 rounded border-0 bg-transparent focus:outline-none focus:ring-1 focus:ring-opacity-50 hover:bg-black/5 transition-all"
-                          style={{
-                            minWidth: '120px',
-                            fontFamily: currentTheme.headerFont,
-                            color: currentTheme.textColor,
-                            textAlign: 'center',
-                            '--tw-ring-color': currentTheme.accentColor + '50',
-                            fontSize: fontSizes.teamName,
-                            lineHeight: '1.05',
-                            '--dynamic-font-size': fontSizes.teamName,
-                          } as React.CSSProperties & { '--tw-ring-color'?: string; '--dynamic-font-size'?: string }}
-                          title={`Full name: ${awayTeam.teamName}`}
-                        />
-                        {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
-                          <div className={`flex flex-col gap-0.5 lg:gap-1 items-center justify-center w-full transition-all ${
-                            !expandedStats.home && !expandedStats.away
-                              ? 'text-base lg:text-lg xl:text-xl'
-                              : 'text-sm lg:text-base xl:text-lg'
-                          }`}>
-                            {settings.scoreboardConfig.showRecord && (
-                              <input
-                                type="text"
-                                data-scoreboard-input
-                                placeholder="R"
-                                value={awayTeam.record || ''}
-                                onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
-                                className={`w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
-                                  !expandedStats.home && !expandedStats.away
-                                    ? 'max-w-[130px] lg:max-w-[150px] xl:max-w-[170px]'
-                                    : 'max-w-[120px] lg:max-w-[140px]'
-                                }`}
-                                style={{ 
-                                  color: currentTheme.textSecondary,
-                                  fontFamily: currentTheme.headerFont,
-                                  textAlign: 'center',
-                                  fontSize: fontSizes.record,
-                                  lineHeight: '1.05',
-                                  '--dynamic-font-size': fontSizes.record,
-                                } as React.CSSProperties & { '--dynamic-font-size'?: string }}
-                              />
-                            )}
-                            {settings.scoreboardConfig.showStanding && (
-                              <input
-                                type="text"
-                                data-scoreboard-input
-                                placeholder="S"
-                                value={awayTeam.standing || ''}
-                                onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
-                                className={`w-full px-1 py-0.5 rounded border-0 bg-transparent focus:outline-none focus:ring-0 text-center font-bold transition-all ${
-                                  !expandedStats.home && !expandedStats.away
-                                    ? 'max-w-[240px] lg:max-w-[260px] xl:max-w-[280px]'
-                                    : 'max-w-[220px] lg:max-w-[240px]'
-                                }`}
-                                style={{ 
-                                  color: currentTheme.textSecondary,
-                                  fontFamily: currentTheme.headerFont,
-                                  textAlign: 'center',
-                                  fontSize: fontSizes.standing,
-                                  lineHeight: '1.05',
-                                  '--dynamic-font-size': fontSizes.standing,
-                                } as React.CSSProperties & { '--dynamic-font-size'?: string }}
-                              />
-                            )}
-                          </div>
-                        )}
+                    <div className="flex flex-col items-center" style={{ gap: scoreboardScales.gap / 3, minWidth: scoreboardScales.scoreBoxSize }}>
+                      <div className="flex flex-col items-center w-full shrink-0" style={{ gap: 2 }}>
+                        <div className="flex flex-col items-center w-full" style={{ gap: 0 }}>
+                          <input
+                            type="text"
+                            data-scoreboard-input
+                            value={awayTeam.displayName || awayTeam.teamName}
+                            onChange={(e) => updateTeamDetails('away', 'displayName', e.target.value)}
+                            placeholder={awayTeam.teamName}
+                            className="font-bold text-center w-full px-1 rounded border-0 bg-transparent focus:outline-none hover:bg-black/5"
+                            style={{
+                              fontFamily: currentTheme.headerFont,
+                              color: currentTheme.textColor,
+                              fontSize: scoreboardScales.teamNameSize,
+                              lineHeight: '1.1',
+                            }}
+                            title={`Full name: ${awayTeam.teamName}`}
+                          />
+                          {(settings.scoreboardConfig.showRecord || settings.scoreboardConfig.showStanding) && (
+                            <div className="flex flex-col items-center justify-center w-full" style={{ gap: 1 }}>
+                              {settings.scoreboardConfig.showRecord && (
+                                <input
+                                  type="text"
+                                  data-scoreboard-input
+                                  placeholder="Record"
+                                  value={awayTeam.record || ''}
+                                  onChange={(e) => updateTeamDetails('away', 'record', e.target.value)}
+                                  className="px-1 rounded border-0 bg-transparent focus:outline-none text-center font-bold"
+                                  style={{ 
+                                    color: currentTheme.textSecondary,
+                                    fontFamily: currentTheme.headerFont,
+                                    fontSize: scoreboardScales.recordSize,
+                                    lineHeight: '1.2',
+                                  }}
+                                />
+                              )}
+                              {settings.scoreboardConfig.showStanding && (
+                                <input
+                                  type="text"
+                                  data-scoreboard-input
+                                  placeholder="Standing"
+                                  value={awayTeam.standing || ''}
+                                  onChange={(e) => updateTeamDetails('away', 'standing', e.target.value)}
+                                  className="px-1 rounded border-0 bg-transparent focus:outline-none text-center font-bold"
+                                  style={{ 
+                                    color: currentTheme.textSecondary,
+                                    fontFamily: currentTheme.headerFont,
+                                    fontSize: scoreboardScales.recordSize,
+                                    lineHeight: '1.2',
+                                  }}
+                                />
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div
                         ref={awayScoreBoxRef}
-                        className={`aspect-square rounded-lg flex flex-col items-center justify-center relative overflow-hidden shadow-lg shrink-0 transition-all ${
-                          !expandedStats.home && !expandedStats.away
-                            ? 'w-[105px] lg:w-[115px] xl:w-[125px]'
-                            : 'w-[90px] lg:w-[100px] xl:w-[110px]'
-                        }`}
-                        style={{ backgroundColor: awayTeam.primaryColor }}
+                        className="aspect-square rounded-lg flex items-center justify-center shadow-lg shrink-0"
+                        style={{ backgroundColor: awayTeam.primaryColor, width: scoreboardScales.scoreBoxSize, height: scoreboardScales.scoreBoxSize }}
                       >
-                        <span
-                          className="font-black relative z-10 leading-none"
-                          style={{
-                            color: awayTeam.secondaryColor,
-                            fontFamily: currentTheme.numberFont,
-                            fontSize: awayFontSize,
-                          }}
-                        >
+                        <span className="font-black leading-none" style={{ color: awayTeam.secondaryColor, fontFamily: currentTheme.numberFont, fontSize: scoreboardScales.scoreBoxSize * 0.6 }}>
                           {awayScore}
                         </span>
                       </div>
@@ -1671,48 +1549,16 @@ export function GamePage() {
                   
                   {/* Foul Totals - Below Score Boxes */}
                   {showFouls && (
-                    <div className="flex items-center justify-center gap-4 lg:gap-5 xl:gap-6 w-full mt-3 lg:mt-3.5 xl:mt-4">
-                      <div className="flex flex-col items-center gap-1 lg:gap-1.5">
-                        <span
-                          className="text-[10px] lg:text-xs xl:text-sm opacity-70 font-medium uppercase tracking-wide transition-all"
-                          style={{ color: currentTheme.textSecondary }}
-                        >
-                          PF
-                        </span>
-                        <span
-                          className="font-black px-5 lg:px-6 xl:px-7 py-2.5 lg:py-3 xl:py-3.5 rounded-lg min-w-[3ch] text-center shadow-lg transition-all"
-                          style={{
-                            backgroundColor: homeTeam.primaryColor,
-                            color: homeTeam.secondaryColor,
-                            fontFamily: currentTheme.numberFont,
-                            fontSize: !expandedStats.home && !expandedStats.away 
-                              ? 'clamp(1.5rem, 2.5vw + 0.5rem, 2.5rem)' 
-                              : 'clamp(1.25rem, 2vw + 0.5rem, 2rem)',
-                            lineHeight: '1.2',
-                          }}
-                        >
+                    <div className="flex items-center justify-center w-full" style={{ gap: scoreboardScales.gap * 3, marginTop: scoreboardScales.gap }}>
+                      <div className="flex flex-col items-center" style={{ gap: scoreboardScales.gap / 4 }}>
+                        <span className="font-bold uppercase" style={{ color: currentTheme.textSecondary, fontSize: scoreboardScales.foulFontSize * 0.7 }}>PF</span>
+                        <span className="font-black rounded-lg text-center shadow-lg inline-flex items-center justify-center" style={{ backgroundColor: homeTeam.primaryColor, color: homeTeam.secondaryColor, fontFamily: currentTheme.numberFont, fontSize: scoreboardScales.foulFontSize, width: scoreboardScales.foulBoxSize, height: scoreboardScales.foulBoxSize * 0.7 }}>
                           {homeFouls}
                         </span>
                       </div>
-                      <div className="flex flex-col items-center gap-1 lg:gap-1.5">
-                        <span
-                          className="text-[10px] lg:text-xs xl:text-sm opacity-70 font-medium uppercase tracking-wide transition-all"
-                          style={{ color: currentTheme.textSecondary }}
-                        >
-                          PF
-                        </span>
-                        <span
-                          className="font-black px-5 lg:px-6 xl:px-7 py-2.5 lg:py-3 xl:py-3.5 rounded-lg min-w-[3ch] text-center shadow-lg transition-all"
-                          style={{
-                            backgroundColor: awayTeam.primaryColor,
-                            color: awayTeam.secondaryColor,
-                            fontFamily: currentTheme.numberFont,
-                            fontSize: !expandedStats.home && !expandedStats.away 
-                              ? 'clamp(1.5rem, 2.5vw + 0.5rem, 2.5rem)' 
-                              : 'clamp(1.25rem, 2vw + 0.5rem, 2rem)',
-                            lineHeight: '1.2',
-                          }}
-                        >
+                      <div className="flex flex-col items-center" style={{ gap: scoreboardScales.gap / 4 }}>
+                        <span className="font-bold uppercase" style={{ color: currentTheme.textSecondary, fontSize: scoreboardScales.foulFontSize * 0.7 }}>PF</span>
+                        <span className="font-black rounded-lg text-center shadow-lg inline-flex items-center justify-center" style={{ backgroundColor: awayTeam.primaryColor, color: awayTeam.secondaryColor, fontFamily: currentTheme.numberFont, fontSize: scoreboardScales.foulFontSize, width: scoreboardScales.foulBoxSize, height: scoreboardScales.foulBoxSize * 0.7 }}>
                           {awayFouls}
                         </span>
                       </div>
@@ -1722,7 +1568,7 @@ export function GamePage() {
               </div>
 
                 {/* Away Team Stats */}
-                <div className="min-h-0 flex flex-col h-full" style={{ minWidth: 0, overflow: 'auto' }}>
+                <div style={{ height: '100%', minHeight: 0 }}>
                   {renderTeamStats(awayTeam, 'away', false)}
                 </div>
               </div>

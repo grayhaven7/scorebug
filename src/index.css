@@ -65,8 +65,8 @@ body {
   background: #5a5a7a;
 }
 
-/* Prevent mobile zoom on input focus */
-input,
+/* Prevent mobile zoom on input focus - but NOT for scoreboard inputs */
+input:not([data-scoreboard-input]),
 textarea,
 select {
   font-size: 16px !important;
@@ -76,13 +76,14 @@ select {
   -ms-user-select: text !important;
 }
 
-/* Allow scoreboard inputs to scale dynamically - override the 16px !important rule */
+/* Scoreboard inputs use dynamic sizing from inline styles */
 input[data-scoreboard-input] {
-  font-size: var(--dynamic-font-size, inherit) !important;
+  font-size: inherit;
+  user-select: text !important;
+  -webkit-user-select: text !important;
 }
 
 input[data-scoreboard-input]::placeholder {
-  font-size: var(--dynamic-font-size, inherit) !important;
   opacity: 0.5;
 }
 

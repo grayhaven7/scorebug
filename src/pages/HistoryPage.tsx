@@ -63,7 +63,7 @@ export function HistoryPage() {
                     {/* Home Team */}
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div
-                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center font-black text-lg sm:text-xl ${
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center font-black text-sm ${
                           homeWon ? 'ring-2 ring-yellow-400' : ''
                         }`}
                         style={{
@@ -106,7 +106,7 @@ export function HistoryPage() {
                         </p>
                       </div>
                       <div
-                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center font-black text-lg sm:text-xl ${
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center font-black text-sm ${
                           !homeWon && awayScore > homeScore ? 'ring-2 ring-yellow-400' : ''
                         }`}
                         style={{
@@ -186,8 +186,13 @@ export function HistoryPage() {
                             </tr>
                           </thead>
                           <tbody>
-                            {game.homeTeam.players.map(player => (
-                              <tr key={player.playerId}>
+                            {game.homeTeam.players.map((player, index) => (
+                              <tr
+                                key={player.playerId}
+                                style={{
+                                  backgroundColor: index % 2 === 0 ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+                                }}
+                              >
                                 <td className="px-2 py-1 font-mono text-xs">{player.jerseyNumber}</td>
                                 <td className="px-2 py-1">{player.playerName}</td>
                                 {enabledStats.map(stat => (
@@ -233,8 +238,13 @@ export function HistoryPage() {
                             </tr>
                           </thead>
                           <tbody>
-                            {game.awayTeam.players.map(player => (
-                              <tr key={player.playerId}>
+                            {game.awayTeam.players.map((player, index) => (
+                              <tr
+                                key={player.playerId}
+                                style={{
+                                  backgroundColor: index % 2 === 0 ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+                                }}
+                              >
                                 <td className="px-2 py-1 font-mono text-xs">{player.jerseyNumber}</td>
                                 <td className="px-2 py-1">{player.playerName}</td>
                                 {enabledStats.map(stat => (
