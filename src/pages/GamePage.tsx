@@ -174,7 +174,6 @@ function useTableScaling(
       }
 
       const containerHeight = containerRef.current.offsetHeight;
-      const containerWidth = containerRef.current.offsetWidth;
       
       // Total rows = header + players + total row
       const totalRows = playerCount + 2;
@@ -262,8 +261,6 @@ export function GamePage() {
   const homeTableRef = useRef<HTMLDivElement>(null);
   const awayTableRef = useRef<HTMLDivElement>(null);
 
-  const homeFontSize = useScaledFontSize(homeScoreBoxRef);
-  const awayFontSize = useScaledFontSize(awayScoreBoxRef);
   
   // Get enabled stats for scaling calculation
   const enabledStatsForScaling = Object.entries(settings.statsConfig)
@@ -299,71 +296,6 @@ export function GamePage() {
     expandedStats.home || expandedStats.away
   );
   
-  const [fontSizes, setFontSizes] = useState({
-    title: '32px',
-    teamName: '48px',
-    record: '26px',
-    standing: '26px',
-    timer: '32px',
-    quarter: '44px',
-  });
-
-  useEffect(() => {
-    const clampSize = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
-
-    const updateFonts = () => {
-      // Use viewport height for consistent scaling across the page
-      const vh = window.innerHeight / 100;
-      
-      // Use scoreboard container width as secondary factor
-      const widths: number[] = [];
-      if (desktopScoreboardRef.current?.offsetWidth) widths.push(desktopScoreboardRef.current.offsetWidth);
-      if (mobileScoreboardRef.current?.offsetWidth) widths.push(mobileScoreboardRef.current.offsetWidth);
-      const containerWidth = widths.length ? Math.max(...widths) : 720;
-
-      // Scale based on both viewport height and container width
-      const vhScale = vh / 7; // 1vh = ~7px on 700px viewport
-      const widthScale = clampSize(containerWidth / 500, 0.8, 2.0);
-      const scale = Math.max(vhScale, widthScale);
-
-      // MUCH LARGER base sizes - scale aggressively with viewport
-      const teamNameSize = clampSize(5 * vh, 36, 120); // 5vh
-      const recordStandingSize = clampSize(3.5 * vh, 24, 80); // 3.5vh
-      const titleSize = clampSize(4 * vh, 28, 100); // 4vh
-      const quarterSize = clampSize(4.5 * vh, 32, 100); // 4.5vh
-      const timerSize = clampSize(3.5 * vh, 24, 80); // 3.5vh
-
-      setFontSizes({
-        title: `${Math.round(titleSize)}px`,
-        teamName: `${Math.round(teamNameSize)}px`,
-        record: `${Math.round(recordStandingSize)}px`,
-        standing: `${Math.round(recordStandingSize)}px`,
-        timer: `${Math.round(timerSize)}px`,
-        quarter: `${Math.round(quarterSize)}px`,
-      });
-    };
-
-    updateFonts();
-    const t1 = setTimeout(updateFonts, 50);
-    const t2 = setTimeout(updateFonts, 200);
-
-    window.addEventListener('resize', updateFonts);
-
-    let resizeObserver: ResizeObserver | null = null;
-    if (window.ResizeObserver) {
-      resizeObserver = new ResizeObserver(updateFonts);
-      if (desktopScoreboardRef.current) resizeObserver.observe(desktopScoreboardRef.current);
-      if (mobileScoreboardRef.current) resizeObserver.observe(mobileScoreboardRef.current);
-    }
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      window.removeEventListener('resize', updateFonts);
-      if (resizeObserver) resizeObserver.disconnect();
-    };
-  }, [expandedStats]);
-
   // Redirect if no game and reset confetti when game changes
   useEffect(() => {
     if (!currentGame) {
@@ -626,8 +558,7 @@ export function GamePage() {
       : enabledStats.filter(stat => stat === 'points');
     const showFouls = enabledStats.includes('fouls');
     
-    // Get the appropriate scales for this team
-    const scales = teamType === 'home' ? homeTableScales : awayTableScales;
+    // Get the appropriate ref for this team
     const tableRef = teamType === 'home' ? homeTableRef : awayTableRef;
     
     return (
@@ -766,9 +697,6 @@ export function GamePage() {
           const rowCount = team.players.length + 2; // players + header + total
           const availableVh = showTargetBar ? 55 : 62; // viewport height available
           const rowVh = availableVh / rowCount;
-          
-          // Use smaller of vh or vw-based scaling to ensure fit
-          const vwScale = 0.8; // Scale factor for width-based sizing
           
           // Scale everything based on row height - use smaller values to prevent overflow
           const jerseyVh = Math.min(rowVh * 0.42, 4);
