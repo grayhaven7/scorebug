@@ -103,6 +103,7 @@ export interface ScoreboardConfig {
   showRecord: boolean;
   showStanding: boolean;
   showTitle: boolean;
+  textScale: number; // Global text scale multiplier (0.5 to 2.0, default 1.0)
 }
 
 // App settings
@@ -135,6 +136,7 @@ export const defaultScoreboardConfig: ScoreboardConfig = {
   showRecord: true,
   showStanding: true,
   showTitle: true,
+  textScale: 1.0,
 };
 
 // Stat display names
