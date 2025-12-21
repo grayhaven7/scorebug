@@ -597,16 +597,23 @@ export function GamePage() {
           const headerVh = Math.min(rowVh * 0.42, 3.5) * globalTextScale;
           
           return (
-            <table className="game-table" style={{ width: '100%', minWidth: isExpanded ? 'max-content' : '100%', height: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', transition: 'min-width 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
+            <table className="game-table" style={{ width: '100%', minWidth: isExpanded || settings.scoreboardConfig.showQuickPoints ? 'max-content' : '100%', height: '100%', borderCollapse: 'collapse', tableLayout: settings.scoreboardConfig.showQuickPoints ? 'auto' : 'fixed', transition: 'min-width 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
               <thead>
                 <tr style={{ backgroundColor: currentTheme.backgroundColor, height: `${rowVh}vh`, transition: 'height 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
                   <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: '10%', minWidth: 40, padding: '0 2px', transition: 'all 250ms ease' }}>#</th>
                   <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'left', paddingLeft: '4px', minWidth: 80, transition: 'all 250ms ease' }}>PLAYER</th>
                   {showFouls && <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? '15%' : '22%', minWidth: 70, padding: '0 4px', transition: 'all 250ms ease' }}>PF</th>}
                   {visibleStats.map(stat => (
-                    <th key={stat} colSpan={stat === 'points' && settings.scoreboardConfig.showQuickPoints ? 2 : 1} style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? '12%' : (stat === 'points' && settings.scoreboardConfig.showQuickPoints ? '22%' : '18%'), minWidth: 50, padding: isExpanded ? '0 6px' : '0 12px', transition: 'all 250ms ease' }}>
-                      {statLabels[stat].slice(0, 3)}
-                    </th>
+                    <React.Fragment key={stat}>
+                      <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? '12%' : '18%', minWidth: 45, padding: isExpanded ? '0 4px' : '0 8px', transition: 'all 250ms ease' }}>
+                        {statLabels[stat].slice(0, 3)}
+                      </th>
+                      {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
+                        <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh * 0.8}vh`, fontWeight: 600, textAlign: 'center', width: isExpanded ? '15%' : '18%', minWidth: 60, padding: '0 2px', transition: 'all 250ms ease' }}>
+                          +PTS
+                        </th>
+                      )}
+                    </React.Fragment>
                   ))}
                 </tr>
               </thead>
@@ -683,10 +690,10 @@ export function GamePage() {
                             </button>
                           </td>
                           {isPoints && settings.scoreboardConfig.showQuickPoints && (
-                            <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                              <div className="flex justify-center items-center" style={{ gap: `${quickBtnVh * 0.1}vh` }}>
+                            <td style={{ textAlign: 'center', verticalAlign: 'middle', padding: '0 4px', whiteSpace: 'nowrap' }}>
+                              <div className="flex justify-center items-center" style={{ gap: `max(2px, ${quickBtnVh * 0.15}vh)` }}>
                                 {[1,2,3].map(pts => (
-                                  <button key={pts} onClick={() => updatePlayerStat(teamType, player.playerId, 'points', pts)} className="rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${quickBtnVh * 0.5}vh`, width: `${quickBtnVh}vh`, height: `${quickBtnVh}vh`, minWidth: 18, minHeight: 18, opacity: 0.9 }}>
+                                  <button key={pts} onClick={() => updatePlayerStat(teamType, player.playerId, 'points', pts)} className="rounded font-bold shrink-0" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${quickBtnVh * 0.55}vh`, width: `max(20px, ${quickBtnVh * 1.1}vh)`, height: `max(20px, ${quickBtnVh * 1.1}vh)`, opacity: 0.9, transition: 'all 250ms ease' }}>
                                     +{pts}
                                   </button>
                                 ))}
@@ -1207,7 +1214,7 @@ export function GamePage() {
 
       <button
         onClick={() => setShowEndConfirm(true)}
-        className="w-full md:w-auto px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:scale-105"
+        className="w-full md:w-auto px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:scale-105 whitespace-nowrap"
         style={{
           backgroundColor: currentTheme.accentColor,
           color: '#fff',
