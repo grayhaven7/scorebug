@@ -1,5 +1,5 @@
 import type { Team, Game, AppSettings } from '../types';
-import { defaultStatsConfig, defaultScoreboardConfig } from '../types';
+import { defaultStatsConfig, defaultScoreboardConfig, defaultKeyboardBindings } from '../types';
 
 const STORAGE_KEYS = {
   TEAMS: 'scorebug_teams',
@@ -61,6 +61,8 @@ const defaultSettings: AppSettings = {
   scoreboardConfig: defaultScoreboardConfig,
   customThemes: [],
   defaultTargetScore: 21,
+  keyboardBindings: defaultKeyboardBindings,
+  keyboardShortcutsEnabled: true,
 };
 
 export function loadSettings(): AppSettings {

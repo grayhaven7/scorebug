@@ -106,6 +106,46 @@ export interface ScoreboardConfig {
   textScale: number; // Global text scale multiplier (0.5 to 2.0, default 1.0)
 }
 
+// Keyboard shortcut bindings
+export interface KeyboardBindings {
+  selectPlayer1: string;
+  selectPlayer2: string;
+  selectPlayer3: string;
+  selectPlayer4: string;
+  selectPlayer5: string;
+  addPoints1: string;
+  addPoints2: string;
+  addPoints3: string;
+  addFoul: string;
+  undo: string;
+  toggleTeam: string;
+}
+
+// Default keyboard bindings
+export const defaultKeyboardBindings: KeyboardBindings = {
+  selectPlayer1: '1',
+  selectPlayer2: '2',
+  selectPlayer3: '3',
+  selectPlayer4: '4',
+  selectPlayer5: '5',
+  addPoints1: 'q',
+  addPoints2: 'w',
+  addPoints3: 'e',
+  addFoul: 'f',
+  undo: 'z',
+  toggleTeam: ' ', // Spacebar
+};
+
+// Action for undo history
+export interface GameAction {
+  id: string;
+  teamType: 'home' | 'away';
+  playerId: string;
+  stat: keyof PlayerGameStats;
+  delta: number;
+  timestamp: number;
+}
+
 // App settings
 export interface AppSettings {
   currentTheme: string;
@@ -113,6 +153,8 @@ export interface AppSettings {
   scoreboardConfig: ScoreboardConfig;
   customThemes: Theme[];
   defaultTargetScore: number | null;
+  keyboardBindings: KeyboardBindings;
+  keyboardShortcutsEnabled: boolean;
 }
 
 // Default stats configuration

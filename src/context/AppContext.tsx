@@ -1,10 +1,12 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import type { Team, Game, AppSettings, Theme, StatsConfig, PlayerGameStats, ScoreboardConfig } from '../types';
-import { defaultStatsConfig, defaultScoreboardConfig } from '../types';
+import type { Team, Game, AppSettings, Theme, StatsConfig, PlayerGameStats, ScoreboardConfig, KeyboardBindings, GameAction } from '../types';
+import { defaultStatsConfig, defaultScoreboardConfig, defaultKeyboardBindings } from '../types';
 import { saveTeams, loadTeams, saveGames, loadGames, saveSettings, loadSettings, saveCurrentGame, loadCurrentGame } from '../utils/storage';
 import { getThemeById, presetThemes } from '../themes/presets';
 import { generateTestData } from '../data/testData';
+
+const MAX_UNDO_HISTORY = 50;
 
 interface AppContextType {
   // Teams
@@ -24,11 +26,18 @@ interface AppContextType {
   clearCurrentGame: () => void;
   deleteGame: (id: string) => void;
   
+  // Undo functionality
+  undoLastAction: () => void;
+  canUndo: boolean;
+  lastAction: GameAction | null;
+  
   // Settings
   settings: AppSettings;
   updateStatsConfig: (config: Partial<StatsConfig>) => void;
   updateScoreboardConfig: (config: Partial<ScoreboardConfig>) => void;
   updateDefaultTargetScore: (targetScore: number | null) => void;
+  updateKeyboardBindings: (bindings: Partial<KeyboardBindings>) => void;
+  setKeyboardShortcutsEnabled: (enabled: boolean) => void;
   setCurrentTheme: (themeId: string) => void;
   addCustomTheme: (theme: Omit<Theme, 'id'>) => Theme;
   updateCustomTheme: (id: string, updates: Partial<Theme>) => void;
@@ -52,7 +61,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     scoreboardConfig: defaultScoreboardConfig,
     customThemes: [],
     defaultTargetScore: 21,
+    keyboardBindings: defaultKeyboardBindings,
+    keyboardShortcutsEnabled: true,
   });
+  
+  // Undo history for game actions
+  const actionHistoryRef = useRef<GameAction[]>([]);
 
   // Load data on mount
   useEffect(() => {
@@ -97,6 +111,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       },
       customThemes: patchedCustomThemes,
       defaultTargetScore: loadedSettings.defaultTargetScore ?? 21,
+      keyboardBindings: {
+        ...defaultKeyboardBindings,
+        ...(loadedSettings.keyboardBindings || {}),
+      },
+      keyboardShortcutsEnabled: loadedSettings.keyboardShortcutsEnabled ?? true,
     });
   }, []);
 
@@ -114,7 +133,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       scoreboardConfig: defaultScoreboardConfig,
       customThemes: [],
       defaultTargetScore: 21,
+      keyboardBindings: defaultKeyboardBindings,
+      keyboardShortcutsEnabled: true,
     });
+    
+    // Clear undo history
+    actionHistoryRef.current = [];
 
     // Reset storage
     saveTeams(testTeams);
@@ -126,6 +150,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       scoreboardConfig: defaultScoreboardConfig,
       customThemes: [],
       defaultTargetScore: 21,
+      keyboardBindings: defaultKeyboardBindings,
+      keyboardShortcutsEnabled: true,
     });
   };
 
@@ -233,11 +259,65 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!currentGame) return;
     
     const teamKey = teamType === 'home' ? 'homeTeam' : 'awayTeam';
+    
+    // Find the player and check if the stat change will actually happen
+    const player = currentGame[teamKey].players.find(p => p.playerId === playerId);
+    if (!player) return;
+    
+    const currentValue = player[stat];
+    if (typeof currentValue !== 'number') return;
+    
+    // Calculate actual delta (can't go below 0)
+    const newValue = Math.max(0, currentValue + delta);
+    const actualDelta = newValue - currentValue;
+    
+    // Don't record if no actual change
+    if (actualDelta === 0) return;
+    
+    // Record action for undo
+    const action: GameAction = {
+      id: uuidv4(),
+      teamType,
+      playerId,
+      stat,
+      delta: actualDelta,
+      timestamp: Date.now(),
+    };
+    
+    actionHistoryRef.current = [
+      ...actionHistoryRef.current.slice(-(MAX_UNDO_HISTORY - 1)),
+      action,
+    ];
+    
+    const updatedPlayers = currentGame[teamKey].players.map(p => {
+      if (p.playerId === playerId) {
+        return { ...p, [stat]: newValue };
+      }
+      return p;
+    });
+
+    const updated = {
+      ...currentGame,
+      [teamKey]: { ...currentGame[teamKey], players: updatedPlayers },
+      updatedAt: Date.now(),
+    };
+    setCurrentGame(updated);
+    saveCurrentGame(updated);
+  };
+  
+  // Undo last action
+  const undoLastAction = () => {
+    if (!currentGame || actionHistoryRef.current.length === 0) return;
+    
+    const lastAction = actionHistoryRef.current[actionHistoryRef.current.length - 1];
+    actionHistoryRef.current = actionHistoryRef.current.slice(0, -1);
+    
+    const teamKey = lastAction.teamType === 'home' ? 'homeTeam' : 'awayTeam';
     const updatedPlayers = currentGame[teamKey].players.map(player => {
-      if (player.playerId === playerId) {
-        const currentValue = player[stat];
+      if (player.playerId === lastAction.playerId) {
+        const currentValue = player[lastAction.stat];
         if (typeof currentValue === 'number') {
-          return { ...player, [stat]: Math.max(0, currentValue + delta) };
+          return { ...player, [lastAction.stat]: Math.max(0, currentValue - lastAction.delta) };
         }
       }
       return player;
@@ -251,6 +331,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCurrentGame(updated);
     saveCurrentGame(updated);
   };
+  
+  const canUndo = actionHistoryRef.current.length > 0;
+  const lastAction = actionHistoryRef.current.length > 0 
+    ? actionHistoryRef.current[actionHistoryRef.current.length - 1] 
+    : null;
 
   const endGame = () => {
     if (!currentGame) return;
@@ -288,6 +373,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const updateDefaultTargetScore = (targetScore: number | null) => {
     const updated = { ...settings, defaultTargetScore: targetScore };
+    setSettings(updated);
+    saveSettings(updated);
+  };
+
+  const updateKeyboardBindings = (bindings: Partial<KeyboardBindings>) => {
+    const updated = { 
+      ...settings, 
+      keyboardBindings: { ...settings.keyboardBindings, ...bindings } 
+    };
+    setSettings(updated);
+    saveSettings(updated);
+  };
+
+  const setKeyboardShortcutsEnabled = (enabled: boolean) => {
+    const updated = { ...settings, keyboardShortcutsEnabled: enabled };
     setSettings(updated);
     saveSettings(updated);
   };
@@ -346,10 +446,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         endGame,
         clearCurrentGame,
         deleteGame,
+        undoLastAction,
+        canUndo,
+        lastAction,
         settings,
         updateStatsConfig,
         updateScoreboardConfig,
         updateDefaultTargetScore,
+        updateKeyboardBindings,
+        setKeyboardShortcutsEnabled,
         setCurrentTheme,
         addCustomTheme,
         updateCustomTheme,

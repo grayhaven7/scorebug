@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { TargetScoreBar } from '../components/TargetScoreBar';
+import { KeyboardShortcutsLegend } from '../components/KeyboardShortcutsLegend';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import type { PlayerGameStats, StatType } from '../types';
 import { statLabels } from '../types';
 import confetti from 'canvas-confetti';
@@ -111,6 +113,8 @@ export function GamePage() {
     currentTheme,
     settings,
     updateScoreboardConfig,
+    undoLastAction,
+    canUndo,
   } = useApp();
 
   const [showEndConfirm, setShowEndConfirm] = useState(false);
@@ -119,6 +123,7 @@ export function GamePage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [confettiShown, setConfettiShown] = useState<string | null>(null);
   const [expandedStats, setExpandedStats] = useState<{ home: boolean; away: boolean }>({ home: false, away: false });
+  const [showShortcutsLegend, setShowShortcutsLegend] = useState(false);
   const homeScoreBoxRef = useRef<HTMLDivElement>(null);
   const awayScoreBoxRef = useRef<HTMLDivElement>(null);
   const mobileScoreboardRef = useRef<HTMLDivElement>(null);
@@ -126,6 +131,20 @@ export function GamePage() {
   const homeTableRef = useRef<HTMLDivElement>(null);
   const awayTableRef = useRef<HTMLDivElement>(null);
 
+  // Keyboard shortcuts hook
+  const {
+    selectedTeam: kbSelectedTeam,
+    selectedPlayerIndex: kbSelectedPlayerIndex,
+    selectedPlayer: kbSelectedPlayer,
+    selectPlayer: kbSelectPlayer,
+  } = useKeyboardShortcuts({
+    enabled: settings.keyboardShortcutsEnabled && !!currentGame,
+    bindings: settings.keyboardBindings,
+    homePlayers: currentGame?.homeTeam.players.map(p => ({ playerId: p.playerId, playerName: p.playerName })) || [],
+    awayPlayers: currentGame?.awayTeam.players.map(p => ({ playerId: p.playerId, playerName: p.playerName })) || [],
+    onAddStat: updatePlayerStat,
+    onUndo: undoLastAction,
+  });
   
   // Get enabled stats for scaling calculation
   const enabledStatsForScaling = Object.entries(settings.statsConfig)
@@ -590,8 +609,27 @@ export function GamePage() {
                 </tr>
               </thead>
               <tbody>
-                {team.players.map((player, index) => (
-                  <tr key={player.playerId} style={{ borderTop: `1px solid ${currentTheme.backgroundColor}`, backgroundColor: index % 2 === 0 ? 'transparent' : currentTheme.backgroundColor + '40', height: `${rowVh}vh`, transition: 'height 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
+                {team.players.map((player, index) => {
+                  // Check if this player is selected via keyboard
+                  const isKeyboardSelected = settings.keyboardShortcutsEnabled && 
+                    kbSelectedTeam === teamType && 
+                    kbSelectedPlayerIndex === index;
+                  
+                  return (
+                  <tr 
+                    key={player.playerId} 
+                    onClick={() => settings.keyboardShortcutsEnabled && kbSelectPlayer(teamType, index)}
+                    style={{ 
+                      borderTop: `1px solid ${currentTheme.backgroundColor}`, 
+                      backgroundColor: isKeyboardSelected 
+                        ? team.primaryColor + '40'
+                        : index % 2 === 0 ? 'transparent' : currentTheme.backgroundColor + '40', 
+                      height: `${rowVh}vh`, 
+                      transition: 'height 350ms cubic-bezier(0.4, 0, 0.2, 1), background-color 150ms ease',
+                      cursor: settings.keyboardShortcutsEnabled ? 'pointer' : 'default',
+                      outline: isKeyboardSelected ? `2px solid ${team.primaryColor}` : 'none',
+                      outlineOffset: '-2px',
+                    }}>
                     <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                       <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${pointsVh}vh`, width: `${pointsVh * 1.3}vh`, height: `${pointsVh * 1.3}vh`, minWidth: 24, minHeight: 24, transition: 'all 250ms ease' }}>
                         {player.jerseyNumber}
@@ -657,7 +695,8 @@ export function GamePage() {
                       );
                     })}
                   </tr>
-                ))}
+                  );
+                })}
                 {/* TOTAL Row - scales with vh */}
                 <tr style={{ borderTop: `2px solid ${team.primaryColor}`, backgroundColor: team.primaryColor + '20', height: `${rowVh}vh`, transition: 'height 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
                   <td></td>
@@ -1114,10 +1153,41 @@ export function GamePage() {
             +
           </button>
         </div>
+        
+        {/* Undo Button */}
+        <button
+          onClick={undoLastAction}
+          disabled={!canUndo}
+          className="px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:opacity-80 whitespace-nowrap disabled:opacity-40"
+          style={{
+            backgroundColor: canUndo ? currentTheme.accentColor + '20' : currentTheme.backgroundColor,
+            border: `1px solid ${canUndo ? currentTheme.accentColor : currentTheme.textSecondary}40`,
+            color: canUndo ? currentTheme.accentColor : currentTheme.textSecondary,
+            borderRadius: currentTheme.borderRadius,
+          }}
+          title="Undo last action (Z)"
+        >
+          ↩ Undo
+        </button>
+        
+        {/* Keyboard Shortcuts Toggle */}
+        <button
+          onClick={() => setShowShortcutsLegend(!showShortcutsLegend)}
+          className="px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:opacity-80 whitespace-nowrap"
+          style={{
+            backgroundColor: settings.keyboardShortcutsEnabled ? currentTheme.accentColor + '20' : currentTheme.backgroundColor,
+            border: `1px solid ${settings.keyboardShortcutsEnabled ? currentTheme.accentColor : currentTheme.textSecondary}40`,
+            color: settings.keyboardShortcutsEnabled ? currentTheme.accentColor : currentTheme.textSecondary,
+            borderRadius: currentTheme.borderRadius,
+          }}
+          title="View keyboard shortcuts"
+        >
+          ⌨️ Keys
+        </button>
       </div>
       
       <p className="hidden sm:block text-[10px] md:text-[9px] lg:text-xs text-center order-last md:order-none opacity-60 px-2" style={{ color: currentTheme.textSecondary }}>
-        Click to add • Shift+Click to subtract
+        Click to add • Shift+Click to subtract{settings.keyboardShortcutsEnabled ? ' • Keyboard shortcuts ON' : ''}
       </p>
 
       <button
@@ -1183,6 +1253,37 @@ export function GamePage() {
 
           <div className="max-w-full mx-auto px-2 sm:px-3 md:px-3 lg:px-4 py-2 md:py-2 lg:py-3 w-full flex-1 flex flex-col" style={{ overflowX: 'hidden', minHeight: 0 }}>
             {renderActionBar()}
+            
+            {/* Keyboard Shortcuts Legend */}
+            {showShortcutsLegend && settings.keyboardShortcutsEnabled && (
+              <div className="mb-3">
+                <KeyboardShortcutsLegend
+                  theme={currentTheme}
+                  bindings={settings.keyboardBindings}
+                  selectedTeam={kbSelectedTeam}
+                  selectedPlayerIndex={kbSelectedPlayerIndex}
+                  selectedPlayerName={kbSelectedPlayer?.playerName}
+                  canUndo={canUndo}
+                  onClose={() => setShowShortcutsLegend(false)}
+                />
+              </div>
+            )}
+            
+            {/* Compact selection indicator when legend is hidden but player is selected */}
+            {!showShortcutsLegend && settings.keyboardShortcutsEnabled && kbSelectedPlayerIndex !== null && (
+              <div className="mb-2">
+                <KeyboardShortcutsLegend
+                  theme={currentTheme}
+                  bindings={settings.keyboardBindings}
+                  selectedTeam={kbSelectedTeam}
+                  selectedPlayerIndex={kbSelectedPlayerIndex}
+                  selectedPlayerName={kbSelectedPlayer?.playerName}
+                  canUndo={canUndo}
+                  isCompact
+                  onClose={() => setShowShortcutsLegend(true)}
+                />
+              </div>
+            )}
 
             {/* Desktop: Wrapper for Tables and Target Bar */}
             <div className="hidden md:flex flex-col flex-1" style={{ minHeight: 0 }}>

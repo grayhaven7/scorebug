@@ -1,11 +1,100 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import type { StatType } from '../types';
-import { statFullNames, statLabels } from '../types';
+import type { StatType, KeyboardBindings, Theme } from '../types';
+import { statFullNames, statLabels, defaultKeyboardBindings } from '../types';
+
+// Key binding button component
+interface KeyBindingButtonProps {
+  label: string;
+  bindingKey: keyof KeyboardBindings;
+  value: string;
+  isEditing: boolean;
+  onEdit: () => void;
+  onKeyCapture: (key: string) => void;
+  onCancel: () => void;
+  theme: Theme;
+}
+
+function KeyBindingButton({
+  label,
+  value,
+  isEditing,
+  onEdit,
+  onKeyCapture,
+  onCancel,
+  theme,
+}: KeyBindingButtonProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Allow escape to cancel
+      if (e.key === 'Escape') {
+        onCancel();
+        return;
+      }
+      
+      // Capture the key
+      let key = e.key.toLowerCase();
+      if (e.key === ' ') key = ' '; // Keep space as is
+      
+      onKeyCapture(key);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isEditing, onKeyCapture, onCancel]);
+
+  const formatKey = (key: string) => {
+    if (key === ' ') return 'Space';
+    return key.toUpperCase();
+  };
+
+  return (
+    <button
+      ref={buttonRef}
+      onClick={onEdit}
+      className="flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all"
+      style={{
+        backgroundColor: isEditing ? theme.accentColor + '20' : 'transparent',
+        borderColor: isEditing ? theme.accentColor : theme.textSecondary + '30',
+        borderRadius: theme.borderRadius,
+      }}
+    >
+      <span className="text-xs" style={{ color: theme.textSecondary }}>
+        {label}
+      </span>
+      <span
+        className="px-2 py-0.5 rounded text-xs font-mono font-bold min-w-[32px] text-center"
+        style={{
+          backgroundColor: isEditing ? theme.accentColor : theme.secondaryBackground,
+          color: isEditing ? '#fff' : theme.textColor,
+        }}
+      >
+        {isEditing ? '...' : formatKey(value)}
+      </span>
+    </button>
+  );
+}
 
 export function SettingsPage() {
-  const { settings, updateStatsConfig, updateScoreboardConfig, updateDefaultTargetScore, currentTheme, resetAllData } = useApp();
+  const { 
+    settings, 
+    updateStatsConfig, 
+    updateScoreboardConfig, 
+    updateDefaultTargetScore, 
+    updateKeyboardBindings,
+    setKeyboardShortcutsEnabled,
+    currentTheme, 
+    resetAllData 
+  } = useApp();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [editingKey, setEditingKey] = useState<keyof KeyboardBindings | null>(null);
 
   const handleReset = () => {
     resetAllData();
@@ -349,6 +438,215 @@ export function SettingsPage() {
             </p>
           </button>
         </div>
+      </div>
+
+      {/* Keyboard Shortcuts */}
+      <div
+        className="rounded-xl p-6 mt-6"
+        style={{ backgroundColor: currentTheme.secondaryBackground }}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2
+              className="text-xl font-bold"
+              style={{ fontFamily: currentTheme.headerFont }}
+            >
+              KEYBOARD SHORTCUTS
+            </h2>
+            <p className="text-sm" style={{ color: currentTheme.textSecondary }}>
+              Score games without clicking - use keyboard for faster input
+            </p>
+          </div>
+          <button
+            onClick={() => setKeyboardShortcutsEnabled(!settings.keyboardShortcutsEnabled)}
+            className="flex items-center gap-2"
+          >
+            <div
+              className="w-12 h-7 rounded-full relative transition-all"
+              style={{
+                backgroundColor: settings.keyboardShortcutsEnabled
+                  ? currentTheme.accentColor
+                  : currentTheme.textSecondary + '40',
+              }}
+            >
+              <div
+                className="absolute top-1 w-5 h-5 rounded-full bg-white transition-all shadow"
+                style={{
+                  left: settings.keyboardShortcutsEnabled ? 'calc(100% - 24px)' : '4px',
+                }}
+              />
+            </div>
+          </button>
+        </div>
+
+        {settings.keyboardShortcutsEnabled && (
+          <>
+            {/* Key Bindings Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              {/* Player Selection */}
+              <div
+                className="p-4 rounded-lg"
+                style={{ backgroundColor: currentTheme.backgroundColor }}
+              >
+                <h3 className="text-sm font-bold mb-3 uppercase" style={{ color: currentTheme.textSecondary }}>
+                  Select Player
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {(['selectPlayer1', 'selectPlayer2', 'selectPlayer3', 'selectPlayer4', 'selectPlayer5'] as const).map((key, idx) => (
+                    <KeyBindingButton
+                      key={key}
+                      label={`P${idx + 1}`}
+                      bindingKey={key}
+                      value={settings.keyboardBindings[key]}
+                      isEditing={editingKey === key}
+                      onEdit={() => setEditingKey(key)}
+                      onKeyCapture={(newKey) => {
+                        updateKeyboardBindings({ [key]: newKey });
+                        setEditingKey(null);
+                      }}
+                      onCancel={() => setEditingKey(null)}
+                      theme={currentTheme}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs mt-2" style={{ color: currentTheme.textSecondary }}>
+                  Use Toggle Team to switch between home/away
+                </p>
+              </div>
+
+              {/* Points */}
+              <div
+                className="p-4 rounded-lg"
+                style={{ backgroundColor: currentTheme.backgroundColor }}
+              >
+                <h3 className="text-sm font-bold mb-3 uppercase" style={{ color: currentTheme.textSecondary }}>
+                  Add Points
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  <KeyBindingButton
+                    label="+1"
+                    bindingKey="addPoints1"
+                    value={settings.keyboardBindings.addPoints1}
+                    isEditing={editingKey === 'addPoints1'}
+                    onEdit={() => setEditingKey('addPoints1')}
+                    onKeyCapture={(newKey) => {
+                      updateKeyboardBindings({ addPoints1: newKey });
+                      setEditingKey(null);
+                    }}
+                    onCancel={() => setEditingKey(null)}
+                    theme={currentTheme}
+                  />
+                  <KeyBindingButton
+                    label="+2"
+                    bindingKey="addPoints2"
+                    value={settings.keyboardBindings.addPoints2}
+                    isEditing={editingKey === 'addPoints2'}
+                    onEdit={() => setEditingKey('addPoints2')}
+                    onKeyCapture={(newKey) => {
+                      updateKeyboardBindings({ addPoints2: newKey });
+                      setEditingKey(null);
+                    }}
+                    onCancel={() => setEditingKey(null)}
+                    theme={currentTheme}
+                  />
+                  <KeyBindingButton
+                    label="+3"
+                    bindingKey="addPoints3"
+                    value={settings.keyboardBindings.addPoints3}
+                    isEditing={editingKey === 'addPoints3'}
+                    onEdit={() => setEditingKey('addPoints3')}
+                    onKeyCapture={(newKey) => {
+                      updateKeyboardBindings({ addPoints3: newKey });
+                      setEditingKey(null);
+                    }}
+                    onCancel={() => setEditingKey(null)}
+                    theme={currentTheme}
+                  />
+                </div>
+              </div>
+
+              {/* Other Actions */}
+              <div
+                className="p-4 rounded-lg"
+                style={{ backgroundColor: currentTheme.backgroundColor }}
+              >
+                <h3 className="text-sm font-bold mb-3 uppercase" style={{ color: currentTheme.textSecondary }}>
+                  Other Actions
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  <KeyBindingButton
+                    label="Foul"
+                    bindingKey="addFoul"
+                    value={settings.keyboardBindings.addFoul}
+                    isEditing={editingKey === 'addFoul'}
+                    onEdit={() => setEditingKey('addFoul')}
+                    onKeyCapture={(newKey) => {
+                      updateKeyboardBindings({ addFoul: newKey });
+                      setEditingKey(null);
+                    }}
+                    onCancel={() => setEditingKey(null)}
+                    theme={currentTheme}
+                  />
+                  <KeyBindingButton
+                    label="Toggle Team"
+                    bindingKey="toggleTeam"
+                    value={settings.keyboardBindings.toggleTeam}
+                    isEditing={editingKey === 'toggleTeam'}
+                    onEdit={() => setEditingKey('toggleTeam')}
+                    onKeyCapture={(newKey) => {
+                      updateKeyboardBindings({ toggleTeam: newKey });
+                      setEditingKey(null);
+                    }}
+                    onCancel={() => setEditingKey(null)}
+                    theme={currentTheme}
+                  />
+                </div>
+              </div>
+
+              {/* Undo */}
+              <div
+                className="p-4 rounded-lg"
+                style={{ backgroundColor: currentTheme.backgroundColor }}
+              >
+                <h3 className="text-sm font-bold mb-3 uppercase" style={{ color: currentTheme.textSecondary }}>
+                  Undo
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  <KeyBindingButton
+                    label="Undo"
+                    bindingKey="undo"
+                    value={settings.keyboardBindings.undo}
+                    isEditing={editingKey === 'undo'}
+                    onEdit={() => setEditingKey('undo')}
+                    onKeyCapture={(newKey) => {
+                      updateKeyboardBindings({ undo: newKey });
+                      setEditingKey(null);
+                    }}
+                    onCancel={() => setEditingKey(null)}
+                    theme={currentTheme}
+                  />
+                </div>
+                <p className="text-xs mt-2" style={{ color: currentTheme.textSecondary }}>
+                  Also works with Ctrl+Z
+                </p>
+              </div>
+            </div>
+
+            {/* Reset to Defaults */}
+            <button
+              onClick={() => updateKeyboardBindings(defaultKeyboardBindings)}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80"
+              style={{
+                backgroundColor: currentTheme.backgroundColor,
+                border: `1px solid ${currentTheme.textSecondary}40`,
+                color: currentTheme.textSecondary,
+                borderRadius: currentTheme.borderRadius,
+              }}
+            >
+              Reset to Defaults
+            </button>
+          </>
+        )}
       </div>
 
       {/* Danger Zone */}
