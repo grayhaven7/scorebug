@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { TargetScoreBar } from '../components/TargetScoreBar';
 import { KeyboardShortcutsLegend } from '../components/KeyboardShortcutsLegend';
+import { ExportScoreboardModal } from '../components/ExportScoreboardModal';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import type { PlayerGameStats, StatType } from '../types';
 import { statLabels } from '../types';
@@ -120,6 +121,7 @@ export function GamePage() {
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showTargetModal, setShowTargetModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [confettiShown, setConfettiShown] = useState<string | null>(null);
   const [expandedStats, setExpandedStats] = useState<{ home: boolean; away: boolean }>({ home: false, away: false });
@@ -1114,6 +1116,19 @@ export function GamePage() {
         >
           {isFullscreen ? 'Exit Full' : 'Full'}
         </button>
+        <button
+          onClick={() => setShowExportModal(true)}
+          className="px-3 sm:px-4 md:px-3 lg:px-4 py-2 md:py-1.5 lg:py-2 rounded-lg text-sm md:text-xs lg:text-sm font-medium transition-all hover:opacity-80 whitespace-nowrap"
+          style={{
+            backgroundColor: currentTheme.backgroundColor,
+            border: `1px solid ${currentTheme.textSecondary}40`,
+            color: currentTheme.textSecondary,
+            borderRadius: currentTheme.borderRadius,
+          }}
+          title="Export scoreboard as image"
+        >
+          📷 Export
+        </button>
         
         {/* Text Size Control */}
         <div
@@ -1741,6 +1756,16 @@ export function GamePage() {
           </div>
         </div>
       )}
+
+      {/* Export Scoreboard Modal */}
+      <ExportScoreboardModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        theme={currentTheme}
+        game={currentGame}
+        homeScore={homeScore}
+        awayScore={awayScore}
+      />
       </>
     </div>
   );
