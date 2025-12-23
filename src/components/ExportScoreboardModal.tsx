@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import html2canvas from 'html2canvas';
-import type { Theme, Game } from '../types';
+import type { Theme, Game, ScoreboardTextField, ScoreboardTextSizes } from '../types';
 import { TargetScoreBar } from './TargetScoreBar';
 
 interface ExportScoreboardModalProps {
@@ -10,6 +10,8 @@ interface ExportScoreboardModalProps {
   game: Game;
   homeScore: number;
   awayScore: number;
+  textScale?: number;
+  textSizes?: ScoreboardTextSizes;
 }
 
 type LayoutStyle = 'classic' | 'broadcast' | 'minimal' | 'vertical' | 'versus';
@@ -54,6 +56,8 @@ export function ExportScoreboardModal({
   game,
   homeScore,
   awayScore,
+  textScale,
+  textSizes,
 }: ExportScoreboardModalProps) {
   const previewRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -101,6 +105,10 @@ export function ExportScoreboardModal({
   };
   const homeTopScorer = getTopScorer(homeTeam.players);
   const awayTopScorer = getTopScorer(awayTeam.players);
+  
+  const globalTextScale = textScale ?? 1;
+  const textMult = (field: ScoreboardTextField) => textSizes?.[field] ?? 1;
+  const px = (field: ScoreboardTextField, basePx: number) => `${basePx * globalTextScale * textMult(field)}px`;
 
   const getBackgroundStyle = (): React.CSSProperties => {
     const baseColor = options.customBackgroundColor;
@@ -207,10 +215,10 @@ export function ExportScoreboardModal({
     <div className="flex items-center justify-center gap-6">
       {/* Home Team */}
       <div className="flex flex-col items-center gap-2">
-        <span className="font-bold text-center" style={{ fontFamily: theme.headerFont, fontSize: '28px', color: theme.textColor }}>
+        <span className="font-bold text-center" style={{ fontFamily: theme.headerFont, fontSize: px('teamName', 28), color: theme.textColor }}>
           {homeTeam.displayName || homeTeam.teamName}
         </span>
-        {homeTeam.record && <span style={{ fontSize: '16px', color: theme.textSecondary }}>{homeTeam.record}</span>}
+        {homeTeam.record && <span style={{ fontSize: px('record', 16), color: theme.textSecondary }}>{homeTeam.record}</span>}
         <div
           className="flex items-center justify-center rounded-lg shadow-lg transition-all"
           style={{
@@ -220,7 +228,7 @@ export function ExportScoreboardModal({
             boxShadow: homeWon && options.showWinnerGlow ? `0 0 25px ${homeTeam.primaryColor}` : undefined,
           }}
         >
-          <span style={{ fontFamily: theme.numberFont, fontSize: '52px', fontWeight: 900, color: homeTeam.secondaryColor }}>
+          <span style={{ fontFamily: theme.numberFont, fontSize: px('score', 52), fontWeight: 900, color: homeTeam.secondaryColor }}>
             {homeScore}
           </span>
         </div>
@@ -228,20 +236,20 @@ export function ExportScoreboardModal({
 
       {/* Center */}
       <div className="flex flex-col items-center gap-1">
-        <span className="font-black" style={{ fontFamily: theme.numberFont, fontSize: '32px', color: theme.textColor }}>
+        <span className="font-black" style={{ fontFamily: theme.numberFont, fontSize: px('quarter', 32), color: theme.textColor }}>
           Q{game.quarter}
         </span>
-        <span className="font-mono font-bold" style={{ fontSize: '22px', color: theme.textColor, borderBottom: `2px solid ${theme.accentColor}` }}>
+        <span className="font-mono font-bold" style={{ fontSize: px('timer', 22), color: theme.textColor, borderBottom: `2px solid ${theme.accentColor}` }}>
           {game.timeRemaining}
         </span>
       </div>
 
       {/* Away Team */}
       <div className="flex flex-col items-center gap-2">
-        <span className="font-bold text-center" style={{ fontFamily: theme.headerFont, fontSize: '28px', color: theme.textColor }}>
+        <span className="font-bold text-center" style={{ fontFamily: theme.headerFont, fontSize: px('teamName', 28), color: theme.textColor }}>
           {awayTeam.displayName || awayTeam.teamName}
         </span>
-        {awayTeam.record && <span style={{ fontSize: '16px', color: theme.textSecondary }}>{awayTeam.record}</span>}
+        {awayTeam.record && <span style={{ fontSize: px('record', 16), color: theme.textSecondary }}>{awayTeam.record}</span>}
         <div
           className="flex items-center justify-center rounded-lg shadow-lg"
           style={{
@@ -251,7 +259,7 @@ export function ExportScoreboardModal({
             boxShadow: awayWon && options.showWinnerGlow ? `0 0 25px ${awayTeam.primaryColor}` : undefined,
           }}
         >
-          <span style={{ fontFamily: theme.numberFont, fontSize: '52px', fontWeight: 900, color: awayTeam.secondaryColor }}>
+          <span style={{ fontFamily: theme.numberFont, fontSize: px('score', 52), fontWeight: 900, color: awayTeam.secondaryColor }}>
             {awayScore}
           </span>
         </div>
@@ -263,26 +271,26 @@ export function ExportScoreboardModal({
     <div className="flex items-stretch gap-0 rounded-lg overflow-hidden shadow-2xl" style={{ border: `3px solid ${theme.accentColor}` }}>
       {/* Home Section */}
       <div className="flex items-center gap-3 px-4 py-3" style={{ backgroundColor: homeTeam.primaryColor }}>
-        <span className="font-bold text-lg uppercase tracking-wider" style={{ fontFamily: theme.headerFont, color: homeTeam.secondaryColor }}>
+        <span className="font-bold uppercase tracking-wider" style={{ fontFamily: theme.headerFont, color: homeTeam.secondaryColor, fontSize: px('teamName', 18) }}>
           {(homeTeam.displayName || homeTeam.teamName).slice(0, 3).toUpperCase()}
         </span>
-        <span className="font-black text-3xl" style={{ fontFamily: theme.numberFont, color: homeTeam.secondaryColor }}>
+        <span className="font-black" style={{ fontFamily: theme.numberFont, color: homeTeam.secondaryColor, fontSize: px('score', 30) }}>
           {homeScore}
         </span>
       </div>
       
       {/* Center Divider */}
       <div className="flex flex-col items-center justify-center px-4 py-2" style={{ backgroundColor: theme.backgroundColor }}>
-        <span className="text-xs font-bold" style={{ color: theme.textSecondary }}>Q{game.quarter}</span>
-        <span className="text-sm font-mono font-bold" style={{ color: theme.textColor }}>{game.timeRemaining}</span>
+        <span className="font-bold" style={{ color: theme.textSecondary, fontSize: px('quarter', 12) }}>Q{game.quarter}</span>
+        <span className="font-mono font-bold" style={{ color: theme.textColor, fontSize: px('timer', 14) }}>{game.timeRemaining}</span>
       </div>
       
       {/* Away Section */}
       <div className="flex items-center gap-3 px-4 py-3" style={{ backgroundColor: awayTeam.primaryColor }}>
-        <span className="font-black text-3xl" style={{ fontFamily: theme.numberFont, color: awayTeam.secondaryColor }}>
+        <span className="font-black" style={{ fontFamily: theme.numberFont, color: awayTeam.secondaryColor, fontSize: px('score', 30) }}>
           {awayScore}
         </span>
-        <span className="font-bold text-lg uppercase tracking-wider" style={{ fontFamily: theme.headerFont, color: awayTeam.secondaryColor }}>
+        <span className="font-bold uppercase tracking-wider" style={{ fontFamily: theme.headerFont, color: awayTeam.secondaryColor, fontSize: px('teamName', 18) }}>
           {(awayTeam.displayName || awayTeam.teamName).slice(0, 3).toUpperCase()}
         </span>
       </div>
@@ -292,22 +300,22 @@ export function ExportScoreboardModal({
   const renderMinimalLayout = () => (
     <div className="flex items-center gap-8">
       <div className="text-center">
-        <div className="text-sm uppercase tracking-widest mb-1" style={{ color: theme.textSecondary, fontFamily: theme.headerFont }}>
+        <div className="uppercase tracking-widest mb-1" style={{ color: theme.textSecondary, fontFamily: theme.headerFont, fontSize: px('teamName', 14) }}>
           {homeTeam.displayName || homeTeam.teamName}
         </div>
-        <div className="font-black" style={{ fontFamily: theme.numberFont, fontSize: '64px', color: homeTeam.primaryColor, lineHeight: 1 }}>
+        <div className="font-black" style={{ fontFamily: theme.numberFont, fontSize: px('score', 64), color: homeTeam.primaryColor, lineHeight: 1 }}>
           {homeScore}
         </div>
       </div>
       <div className="flex flex-col items-center">
-        <div className="text-3xl font-light" style={{ color: theme.textSecondary }}>–</div>
-        <div className="text-xs mt-1" style={{ color: theme.textSecondary }}>Q{game.quarter} · {game.timeRemaining}</div>
+        <div className="font-light" style={{ color: theme.textSecondary, fontSize: px('quarter', 28) }}>–</div>
+        <div className="mt-1" style={{ color: theme.textSecondary, fontSize: px('timer', 12) }}>Q{game.quarter} · {game.timeRemaining}</div>
       </div>
       <div className="text-center">
-        <div className="text-sm uppercase tracking-widest mb-1" style={{ color: theme.textSecondary, fontFamily: theme.headerFont }}>
+        <div className="uppercase tracking-widest mb-1" style={{ color: theme.textSecondary, fontFamily: theme.headerFont, fontSize: px('teamName', 14) }}>
           {awayTeam.displayName || awayTeam.teamName}
         </div>
-        <div className="font-black" style={{ fontFamily: theme.numberFont, fontSize: '64px', color: awayTeam.primaryColor, lineHeight: 1 }}>
+        <div className="font-black" style={{ fontFamily: theme.numberFont, fontSize: px('score', 64), color: awayTeam.primaryColor, lineHeight: 1 }}>
           {awayScore}
         </div>
       </div>
@@ -319,36 +327,36 @@ export function ExportScoreboardModal({
       {/* Home */}
       <div className="flex items-center gap-4 w-full px-4">
         <div className="w-16 h-16 rounded-lg flex items-center justify-center" style={{ backgroundColor: homeTeam.primaryColor }}>
-          <span className="font-black text-2xl" style={{ color: homeTeam.secondaryColor, fontFamily: theme.numberFont }}>{homeScore}</span>
+          <span className="font-black" style={{ color: homeTeam.secondaryColor, fontFamily: theme.numberFont, fontSize: px('score', 24) }}>{homeScore}</span>
         </div>
         <div className="flex-1">
-          <div className="font-bold text-lg" style={{ fontFamily: theme.headerFont, color: theme.textColor }}>
+          <div className="font-bold" style={{ fontFamily: theme.headerFont, color: theme.textColor, fontSize: px('teamName', 18) }}>
             {homeTeam.displayName || homeTeam.teamName}
           </div>
-          {homeTeam.record && <div className="text-sm" style={{ color: theme.textSecondary }}>{homeTeam.record}</div>}
+          {homeTeam.record && <div style={{ color: theme.textSecondary, fontSize: px('record', 14) }}>{homeTeam.record}</div>}
         </div>
-        {homeWon && <span className="text-2xl">👑</span>}
+        {homeWon && <span style={{ fontSize: px('score', 24) }}>👑</span>}
       </div>
 
       {/* Divider */}
       <div className="flex items-center gap-3 w-full px-4">
         <div className="flex-1 h-px" style={{ backgroundColor: theme.textSecondary + '30' }} />
-        <span className="text-sm font-bold" style={{ color: theme.textSecondary }}>Q{game.quarter} · {game.timeRemaining}</span>
+        <span className="font-bold" style={{ color: theme.textSecondary, fontSize: px('timer', 14) }}>Q{game.quarter} · {game.timeRemaining}</span>
         <div className="flex-1 h-px" style={{ backgroundColor: theme.textSecondary + '30' }} />
       </div>
 
       {/* Away */}
       <div className="flex items-center gap-4 w-full px-4">
         <div className="w-16 h-16 rounded-lg flex items-center justify-center" style={{ backgroundColor: awayTeam.primaryColor }}>
-          <span className="font-black text-2xl" style={{ color: awayTeam.secondaryColor, fontFamily: theme.numberFont }}>{awayScore}</span>
+          <span className="font-black" style={{ color: awayTeam.secondaryColor, fontFamily: theme.numberFont, fontSize: px('score', 24) }}>{awayScore}</span>
         </div>
         <div className="flex-1">
-          <div className="font-bold text-lg" style={{ fontFamily: theme.headerFont, color: theme.textColor }}>
+          <div className="font-bold" style={{ fontFamily: theme.headerFont, color: theme.textColor, fontSize: px('teamName', 18) }}>
             {awayTeam.displayName || awayTeam.teamName}
           </div>
-          {awayTeam.record && <div className="text-sm" style={{ color: theme.textSecondary }}>{awayTeam.record}</div>}
+          {awayTeam.record && <div style={{ color: theme.textSecondary, fontSize: px('record', 14) }}>{awayTeam.record}</div>}
         </div>
-        {awayWon && <span className="text-2xl">👑</span>}
+        {awayWon && <span style={{ fontSize: px('score', 24) }}>👑</span>}
       </div>
     </div>
   );
@@ -364,11 +372,11 @@ export function ExportScoreboardModal({
             boxShadow: homeWon && options.showWinnerGlow ? `0 0 30px ${homeTeam.primaryColor}` : undefined,
           }}
         >
-          <span className="font-black" style={{ fontFamily: theme.numberFont, fontSize: '42px', color: homeTeam.secondaryColor }}>
+          <span className="font-black" style={{ fontFamily: theme.numberFont, fontSize: px('score', 42), color: homeTeam.secondaryColor }}>
             {homeScore}
           </span>
         </div>
-        <span className="font-bold text-center" style={{ fontFamily: theme.headerFont, fontSize: '18px', color: theme.textColor }}>
+        <span className="font-bold text-center" style={{ fontFamily: theme.headerFont, fontSize: px('teamName', 18), color: theme.textColor }}>
           {homeTeam.displayName || homeTeam.teamName}
         </span>
       </div>
@@ -379,14 +387,14 @@ export function ExportScoreboardModal({
           className="font-black italic"
           style={{
             fontFamily: theme.headerFont,
-            fontSize: '48px',
+            fontSize: px('quarter', 48),
             color: theme.accentColor,
             textShadow: `0 0 20px ${theme.accentColor}50`,
           }}
         >
           VS
         </span>
-        <div className="text-xs mt-2" style={{ color: theme.textSecondary }}>Q{game.quarter} · {game.timeRemaining}</div>
+        <div className="mt-2" style={{ color: theme.textSecondary, fontSize: px('timer', 12) }}>Q{game.quarter} · {game.timeRemaining}</div>
       </div>
 
       {/* Away */}
@@ -398,11 +406,11 @@ export function ExportScoreboardModal({
             boxShadow: awayWon && options.showWinnerGlow ? `0 0 30px ${awayTeam.primaryColor}` : undefined,
           }}
         >
-          <span className="font-black" style={{ fontFamily: theme.numberFont, fontSize: '42px', color: awayTeam.secondaryColor }}>
+          <span className="font-black" style={{ fontFamily: theme.numberFont, fontSize: px('score', 42), color: awayTeam.secondaryColor }}>
             {awayScore}
           </span>
         </div>
-        <span className="font-bold text-center" style={{ fontFamily: theme.headerFont, fontSize: '18px', color: theme.textColor }}>
+        <span className="font-bold text-center" style={{ fontFamily: theme.headerFont, fontSize: px('teamName', 18), color: theme.textColor }}>
           {awayTeam.displayName || awayTeam.teamName}
         </span>
       </div>
@@ -438,7 +446,7 @@ export function ExportScoreboardModal({
           className="text-center font-bold tracking-wide uppercase mb-4"
           style={{
             fontFamily: theme.headerFont,
-            fontSize: '24px',
+            fontSize: px('title', 24),
             color: '#ffffff',
             letterSpacing: '0.08em',
             textShadow: '0 2px 4px rgba(0,0,0,0.3)',
@@ -469,18 +477,18 @@ export function ExportScoreboardModal({
       {options.includeTopScorers && (
         <div className="flex items-center justify-center gap-8 mt-4 pt-4" style={{ borderTop: `1px solid ${theme.textSecondary}30` }}>
           <div className="text-center">
-            <div className="text-xs uppercase tracking-wide mb-1" style={{ color: theme.textSecondary }}>Top Scorer</div>
-            <div className="font-bold" style={{ color: homeTeam.primaryColor }}>
+            <div className="uppercase tracking-wide mb-1" style={{ color: theme.textSecondary, fontSize: px('statHeader', 12) }}>Top Scorer</div>
+            <div className="font-bold" style={{ color: homeTeam.primaryColor, fontSize: px('playerName', 16) }}>
               #{homeTopScorer?.jerseyNumber} {homeTopScorer?.playerName}
             </div>
-            <div className="text-sm font-black" style={{ color: theme.textColor }}>{homeTopScorer?.points} PTS</div>
+            <div className="font-black" style={{ color: theme.textColor, fontSize: px('statValue', 14) }}>{homeTopScorer?.points} PTS</div>
           </div>
           <div className="text-center">
-            <div className="text-xs uppercase tracking-wide mb-1" style={{ color: theme.textSecondary }}>Top Scorer</div>
-            <div className="font-bold" style={{ color: awayTeam.primaryColor }}>
+            <div className="uppercase tracking-wide mb-1" style={{ color: theme.textSecondary, fontSize: px('statHeader', 12) }}>Top Scorer</div>
+            <div className="font-bold" style={{ color: awayTeam.primaryColor, fontSize: px('playerName', 16) }}>
               #{awayTopScorer?.jerseyNumber} {awayTopScorer?.playerName}
             </div>
-            <div className="text-sm font-black" style={{ color: theme.textColor }}>{awayTopScorer?.points} PTS</div>
+            <div className="font-black" style={{ color: theme.textColor, fontSize: px('statValue', 14) }}>{awayTopScorer?.points} PTS</div>
           </div>
         </div>
       )}

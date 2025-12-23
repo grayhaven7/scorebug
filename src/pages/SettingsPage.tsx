@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import type { StatType, KeyboardBindings, Theme } from '../types';
+import type { StatType, KeyboardBindings, Theme, ScoreboardTextField } from '../types';
 import { statFullNames, statLabels, defaultKeyboardBindings } from '../types';
 
 // Key binding button component
@@ -119,6 +119,149 @@ export function SettingsPage() {
 
   const enabledCount = Object.values(settings.statsConfig).filter(Boolean).length;
 
+  const allTextFields: ScoreboardTextField[] = [
+    'title',
+    'teamName',
+    'record',
+    'standing',
+    'quarter',
+    'timer',
+    'score',
+    'foul',
+    'playerName',
+    'jerseyNumber',
+    'statHeader',
+    'statValue',
+  ];
+
+  const textFieldMeta: Record<ScoreboardTextField, { label: string; desc: string }> = {
+    title: { label: 'Game Title', desc: 'Title text above the scoreboard' },
+    teamName: { label: 'Team Names', desc: 'Home/Away team name fields' },
+    record: { label: 'Record', desc: 'Team record field' },
+    standing: { label: 'Standing', desc: 'Team standing field' },
+    quarter: { label: 'Quarter', desc: 'Quarter/period label' },
+    timer: { label: 'Timer', desc: 'Game clock field' },
+    score: { label: 'Scores', desc: 'Big score numbers' },
+    foul: { label: 'Fouls (PF)', desc: 'Foul dots + PF totals' },
+    playerName: { label: 'Player Names', desc: 'Player name column in stat tables' },
+    jerseyNumber: { label: 'Jersey Numbers', desc: 'Jersey number chips' },
+    statHeader: { label: 'Stat Headers', desc: 'Table column headers (PTS/REB/...)' },
+    statValue: { label: 'Stat Values', desc: 'Clickable stat numbers' },
+  };
+
+  const globalTextScale = settings.scoreboardConfig.textScale ?? 1;
+  const textMult = (field: ScoreboardTextField) => settings.scoreboardConfig.textSizes?.[field] ?? 1;
+  const px = (field: ScoreboardTextField, basePx: number) => `${basePx * globalTextScale * textMult(field)}px`;
+
+  const setTextSize = (field: ScoreboardTextField, next: number) => {
+    updateScoreboardConfig({
+      textSizes: {
+        ...settings.scoreboardConfig.textSizes,
+        [field]: next,
+      },
+    });
+  };
+
+  const resetAllTextSizes = () => {
+    updateScoreboardConfig({
+      textSizes: {
+        ...settings.scoreboardConfig.textSizes,
+        ...Object.fromEntries(allTextFields.map(f => [f, 1])),
+      } as typeof settings.scoreboardConfig.textSizes,
+    });
+  };
+
+  const resetSectionTextSizes = (fields: ScoreboardTextField[]) => {
+    updateScoreboardConfig({
+      textSizes: {
+        ...settings.scoreboardConfig.textSizes,
+        ...Object.fromEntries(fields.map(f => [f, 1])),
+      } as typeof settings.scoreboardConfig.textSizes,
+    });
+  };
+
+  const TextSizeSlider = ({ field }: { field: ScoreboardTextField }) => {
+    const meta = textFieldMeta[field];
+    const value = settings.scoreboardConfig.textSizes?.[field] ?? 1;
+    const percent = Math.round(value * 100);
+    return (
+      <div
+        className="p-4 rounded-lg border"
+        style={{
+          backgroundColor: currentTheme.backgroundColor,
+          borderColor: currentTheme.textSecondary + '25',
+          borderRadius: currentTheme.borderRadius,
+        }}
+      >
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <div>
+            <div className="font-bold" style={{ color: currentTheme.textColor }}>{meta.label}</div>
+            <div className="text-xs" style={{ color: currentTheme.textSecondary }}>{meta.desc}</div>
+          </div>
+          <div className="text-sm font-mono font-bold" style={{ color: currentTheme.textSecondary }}>
+            {percent}%
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <input
+            type="range"
+            min={0.6}
+            max={1.8}
+            step={0.05}
+            value={value}
+            onChange={(e) => setTextSize(field, parseFloat(e.target.value))}
+            className="w-full"
+            style={{ accentColor: currentTheme.accentColor }}
+          />
+          <button
+            onClick={() => setTextSize(field, 1)}
+            className="px-3 py-2 rounded-lg text-xs font-medium transition-all hover:opacity-80"
+            style={{
+              backgroundColor: currentTheme.accentColor + '15',
+              color: currentTheme.accentColor,
+              borderRadius: currentTheme.borderRadius,
+            }}
+            title="Reset this field to 100%"
+          >
+            100%
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const PreviewCard = ({
+    title,
+    subtitle,
+    children,
+  }: {
+    title: string;
+    subtitle?: string;
+    children: React.ReactNode;
+  }) => (
+    <div
+      className="p-4 rounded-xl border"
+      style={{
+        backgroundColor: currentTheme.backgroundColor,
+        borderColor: currentTheme.textSecondary + '25',
+        borderRadius: currentTheme.borderRadius,
+      }}
+    >
+      <div className="mb-3">
+        <div className="text-xs font-bold uppercase tracking-wide" style={{ color: currentTheme.textSecondary }}>
+          {title}
+        </div>
+        {subtitle && (
+          <div className="text-xs mt-0.5" style={{ color: currentTheme.textSecondary }}>
+            {subtitle}
+          </div>
+        )}
+      </div>
+      {children}
+    </div>
+  );
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       {/* Header */}
@@ -196,6 +339,350 @@ export function SettingsPage() {
                 />
               </div>
             </button>
+          ))}
+        </div>
+
+        {/* Per-Field Text Sizes */}
+        <div className="pt-6 border-t" style={{ borderColor: currentTheme.textSecondary + '20' }}>
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <div>
+              <h3
+                className="text-lg font-bold mb-1"
+                style={{ fontFamily: currentTheme.headerFont }}
+              >
+                TEXT SIZES
+              </h3>
+              <p className="text-sm" style={{ color: currentTheme.textSecondary }}>
+                Adjust sizes by component and see live previews update as you tweak.
+              </p>
+            </div>
+            <button
+              onClick={resetAllTextSizes}
+              className="px-3 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80 shrink-0"
+              style={{
+                backgroundColor: currentTheme.backgroundColor,
+                border: `1px solid ${currentTheme.textSecondary}40`,
+                color: currentTheme.textSecondary,
+                borderRadius: currentTheme.borderRadius,
+              }}
+            >
+              Reset all
+            </button>
+          </div>
+
+          {/* Full component preview */}
+          <div className="mb-4">
+            <PreviewCard title="Full scoreboard preview" subtitle="This is a mock scoreboard — all text sizes below update it live.">
+              <div
+                className="rounded-xl p-4"
+                style={{
+                  backgroundColor: currentTheme.secondaryBackground,
+                  borderRadius: currentTheme.borderRadius,
+                }}
+              >
+                <div
+                  className="text-center font-bold tracking-wide uppercase mb-3 truncate"
+                  style={{
+                    fontFamily: currentTheme.headerFont,
+                    color: '#ffffff',
+                    fontSize: px('title', 22),
+                    letterSpacing: '0.08em',
+                  }}
+                >
+                  Classic Matchup
+                </div>
+
+                <div className="flex items-center justify-between gap-3">
+                  {/* Home */}
+                  <div className="flex-1 min-w-0">
+                    <div
+                      className="font-bold truncate text-center"
+                      style={{
+                        fontFamily: currentTheme.headerFont,
+                        color: currentTheme.textColor,
+                        fontSize: px('teamName', 20),
+                      }}
+                    >
+                      Lakers
+                    </div>
+                    <div className="flex flex-col items-center mt-1">
+                      <div style={{ color: currentTheme.textSecondary, fontFamily: currentTheme.headerFont, fontSize: px('record', 13) }}>
+                        12-3
+                      </div>
+                      <div style={{ color: currentTheme.textSecondary, fontFamily: currentTheme.headerFont, fontSize: px('standing', 13) }}>
+                        1st West
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Center clock */}
+                  <div className="shrink-0 text-center px-2">
+                    <div
+                      className="font-black"
+                      style={{ fontFamily: currentTheme.numberFont, color: currentTheme.textColor, fontSize: px('quarter', 18) }}
+                    >
+                      Q2
+                    </div>
+                    <div
+                      className="font-mono font-bold"
+                      style={{
+                        color: currentTheme.textColor,
+                        fontSize: px('timer', 16),
+                        borderBottom: `2px solid ${currentTheme.accentColor}`,
+                        display: 'inline-block',
+                        paddingBottom: 2,
+                      }}
+                    >
+                      05:42
+                    </div>
+                  </div>
+
+                  {/* Away */}
+                  <div className="flex-1 min-w-0">
+                    <div
+                      className="font-bold truncate text-center"
+                      style={{
+                        fontFamily: currentTheme.headerFont,
+                        color: currentTheme.textColor,
+                        fontSize: px('teamName', 20),
+                      }}
+                    >
+                      Warriors
+                    </div>
+                    <div className="flex flex-col items-center mt-1">
+                      <div style={{ color: currentTheme.textSecondary, fontFamily: currentTheme.headerFont, fontSize: px('record', 13) }}>
+                        10-6
+                      </div>
+                      <div style={{ color: currentTheme.textSecondary, fontFamily: currentTheme.headerFont, fontSize: px('standing', 13) }}>
+                        4th West
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scores + fouls */}
+                <div className="flex items-end justify-between gap-3 mt-4">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="rounded-lg px-3 py-2 font-black"
+                      style={{
+                        backgroundColor: '#552583',
+                        color: '#FDB927',
+                        fontFamily: currentTheme.numberFont,
+                        fontSize: px('score', 28),
+                      }}
+                    >
+                      58
+                    </div>
+                    <div className="flex flex-col items-start">
+                      <div style={{ color: currentTheme.textSecondary, fontSize: px('foul', 11), fontWeight: 700 }}>PF</div>
+                      <div style={{ color: currentTheme.textColor, fontFamily: currentTheme.numberFont, fontSize: px('foul', 14), fontWeight: 900 }}>3</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="flex flex-col items-end">
+                      <div style={{ color: currentTheme.textSecondary, fontSize: px('foul', 11), fontWeight: 700 }}>PF</div>
+                      <div style={{ color: currentTheme.textColor, fontFamily: currentTheme.numberFont, fontSize: px('foul', 14), fontWeight: 900 }}>4</div>
+                    </div>
+                    <div
+                      className="rounded-lg px-3 py-2 font-black"
+                      style={{
+                        backgroundColor: '#1D428A',
+                        color: '#FFC72C',
+                        fontFamily: currentTheme.numberFont,
+                        fontSize: px('score', 28),
+                      }}
+                    >
+                      61
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </PreviewCard>
+          </div>
+
+          {/* Component-based controls + previews */}
+          {[
+            {
+              id: 'scoreboardHeader',
+              title: 'Scoreboard: Title & teams',
+              fields: ['title', 'teamName', 'record', 'standing'] as ScoreboardTextField[],
+              preview: (
+                <PreviewCard title="Preview: title + team block">
+                  <div
+                    className="rounded-xl p-4"
+                    style={{ backgroundColor: currentTheme.secondaryBackground, borderRadius: currentTheme.borderRadius }}
+                  >
+                    <div
+                      className="text-center font-bold uppercase tracking-wide truncate"
+                      style={{ fontFamily: currentTheme.headerFont, color: '#fff', fontSize: px('title', 20), letterSpacing: '0.08em' }}
+                    >
+                      Game Title
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 mt-4">
+                      {[
+                        { name: 'Home Team', record: '12-3', standing: '1st West' },
+                        { name: 'Away Team', record: '10-6', standing: '4th West' },
+                      ].map((t) => (
+                        <div key={t.name} className="min-w-0">
+                          <div className="font-bold truncate text-center" style={{ fontFamily: currentTheme.headerFont, color: currentTheme.textColor, fontSize: px('teamName', 18) }}>
+                            {t.name}
+                          </div>
+                          <div className="text-center mt-1" style={{ color: currentTheme.textSecondary, fontFamily: currentTheme.headerFont, fontSize: px('record', 12) }}>
+                            {t.record}
+                          </div>
+                          <div className="text-center" style={{ color: currentTheme.textSecondary, fontFamily: currentTheme.headerFont, fontSize: px('standing', 12) }}>
+                            {t.standing}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </PreviewCard>
+              ),
+            },
+            {
+              id: 'scoreboardClock',
+              title: 'Scoreboard: Clock',
+              fields: ['quarter', 'timer'] as ScoreboardTextField[],
+              preview: (
+                <PreviewCard title="Preview: clock">
+                  <div className="rounded-xl p-4 text-center" style={{ backgroundColor: currentTheme.secondaryBackground, borderRadius: currentTheme.borderRadius }}>
+                    <div className="font-black" style={{ fontFamily: currentTheme.numberFont, color: currentTheme.textColor, fontSize: px('quarter', 22) }}>
+                      Q4
+                    </div>
+                    <div
+                      className="font-mono font-bold inline-block mt-1"
+                      style={{ color: currentTheme.textColor, fontSize: px('timer', 18), borderBottom: `2px solid ${currentTheme.accentColor}`, paddingBottom: 2 }}
+                    >
+                      01:12
+                    </div>
+                  </div>
+                </PreviewCard>
+              ),
+            },
+            {
+              id: 'scoreboardScores',
+              title: 'Scoreboard: Scores',
+              fields: ['score'] as ScoreboardTextField[],
+              preview: (
+                <PreviewCard title="Preview: score boxes">
+                  <div className="rounded-xl p-4 flex items-center justify-center gap-4" style={{ backgroundColor: currentTheme.secondaryBackground, borderRadius: currentTheme.borderRadius }}>
+                    <div className="rounded-lg px-4 py-3 font-black" style={{ backgroundColor: '#552583', color: '#FDB927', fontFamily: currentTheme.numberFont, fontSize: px('score', 34) }}>
+                      102
+                    </div>
+                    <div className="text-sm" style={{ color: currentTheme.textSecondary }}>–</div>
+                    <div className="rounded-lg px-4 py-3 font-black" style={{ backgroundColor: '#1D428A', color: '#FFC72C', fontFamily: currentTheme.numberFont, fontSize: px('score', 34) }}>
+                      99
+                    </div>
+                  </div>
+                </PreviewCard>
+              ),
+            },
+            {
+              id: 'fouls',
+              title: 'Scoreboard/Stats: Fouls (PF)',
+              fields: ['foul'] as ScoreboardTextField[],
+              preview: (
+                <PreviewCard title="Preview: PF label + dots">
+                  <div className="rounded-xl p-4" style={{ backgroundColor: currentTheme.secondaryBackground, borderRadius: currentTheme.borderRadius }}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-bold uppercase" style={{ color: currentTheme.textSecondary, fontSize: px('foul', 12) }}>PF</div>
+                        <div className="font-black" style={{ color: currentTheme.textColor, fontFamily: currentTheme.numberFont, fontSize: px('foul', 18) }}>4</div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[0, 1, 2, 3, 4].map((i) => (
+                          <span
+                            key={i}
+                            style={{
+                              fontSize: px('foul', 14),
+                              color: i < 4 ? currentTheme.accentColor : currentTheme.textSecondary + '40',
+                              fontWeight: 900,
+                              lineHeight: 1,
+                            }}
+                          >
+                            ●
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </PreviewCard>
+              ),
+            },
+            {
+              id: 'statsTable',
+              title: 'Stats table',
+              fields: ['jerseyNumber', 'playerName', 'statHeader', 'statValue'] as ScoreboardTextField[],
+              preview: (
+                <PreviewCard title="Preview: stats header + row">
+                  <div className="rounded-xl overflow-hidden" style={{ backgroundColor: currentTheme.secondaryBackground, borderRadius: currentTheme.borderRadius }}>
+                    <div className="grid grid-cols-[72px_1fr_72px_72px_72px] gap-2 px-3 py-2" style={{ backgroundColor: currentTheme.backgroundColor }}>
+                      <div className="text-center font-bold" style={{ color: currentTheme.textSecondary, fontSize: px('statHeader', 12) }}>#</div>
+                      <div className="font-bold" style={{ color: currentTheme.textSecondary, fontSize: px('statHeader', 12) }}>PLAYER</div>
+                      <div className="text-center font-bold" style={{ color: currentTheme.textSecondary, fontSize: px('statHeader', 12) }}>PTS</div>
+                      <div className="text-center font-bold" style={{ color: currentTheme.textSecondary, fontSize: px('statHeader', 12) }}>REB</div>
+                      <div className="text-center font-bold" style={{ color: currentTheme.textSecondary, fontSize: px('statHeader', 12) }}>AST</div>
+                    </div>
+                    <div className="grid grid-cols-[72px_1fr_72px_72px_72px] gap-2 px-3 py-3 items-center">
+                      <div className="flex justify-center">
+                        <span
+                          className="inline-flex items-center justify-center rounded font-bold"
+                          style={{
+                            backgroundColor: currentTheme.accentColor,
+                            color: '#fff',
+                            fontSize: px('jerseyNumber', 14),
+                            width: 42,
+                            height: 28,
+                          }}
+                        >
+                          23
+                        </span>
+                      </div>
+                      <div className="truncate font-semibold" style={{ color: currentTheme.textColor, fontSize: px('playerName', 14) }}>
+                        LeBron James
+                      </div>
+                      {['28', '7', '9'].map((v) => (
+                        <div key={v} className="text-center font-black" style={{ color: currentTheme.accentColor, fontSize: px('statValue', 16) }}>
+                          {v}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </PreviewCard>
+              ),
+            },
+          ].map((section) => (
+            <div key={section.id} className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="font-bold" style={{ color: currentTheme.textColor }}>
+                  {section.title}
+                </div>
+                <button
+                  onClick={() => resetSectionTextSizes(section.fields)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
+                  style={{
+                    backgroundColor: currentTheme.backgroundColor,
+                    border: `1px solid ${currentTheme.textSecondary}40`,
+                    color: currentTheme.textSecondary,
+                    borderRadius: currentTheme.borderRadius,
+                  }}
+                >
+                  Reset section
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <div className="space-y-3">
+                  {section.fields.map((field) => (
+                    <TextSizeSlider key={field} field={field} />
+                  ))}
+                </div>
+                <div>{section.preview}</div>
+              </div>
+            </div>
           ))}
         </div>
 

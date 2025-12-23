@@ -95,6 +95,22 @@ export interface Theme {
 }
 
 // Scoreboard display configuration
+export type ScoreboardTextField =
+  | 'title'
+  | 'teamName'
+  | 'record'
+  | 'standing'
+  | 'timer'
+  | 'quarter'
+  | 'score'
+  | 'foul'
+  | 'playerName'
+  | 'jerseyNumber'
+  | 'statHeader'
+  | 'statValue';
+
+export type ScoreboardTextSizes = Record<ScoreboardTextField, number>;
+
 export interface ScoreboardConfig {
   showTimer: boolean;
   showQuarter: boolean;
@@ -104,6 +120,7 @@ export interface ScoreboardConfig {
   showStanding: boolean;
   showTitle: boolean;
   textScale: number; // Global text scale multiplier (0.5 to 2.0, default 1.0)
+  textSizes: ScoreboardTextSizes; // Per-field text size multipliers (default 1.0)
 }
 
 // Keyboard shortcut bindings
@@ -179,6 +196,20 @@ export const defaultScoreboardConfig: ScoreboardConfig = {
   showStanding: true,
   showTitle: true,
   textScale: 1.0,
+  textSizes: {
+    title: 1,
+    teamName: 1,
+    record: 1,
+    standing: 1,
+    timer: 1,
+    quarter: 1,
+    score: 1,
+    foul: 1,
+    playerName: 1,
+    jerseyNumber: 1,
+    statHeader: 1,
+    statValue: 1,
+  },
 };
 
 // Stat display names

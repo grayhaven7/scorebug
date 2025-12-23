@@ -108,6 +108,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         showTitle: loadedSettings.scoreboardConfig?.showTitle ?? defaultScoreboardConfig.showTitle,
         showQuickPoints: loadedSettings.scoreboardConfig?.showQuickPoints ?? defaultScoreboardConfig.showQuickPoints,
         textScale: loadedSettings.scoreboardConfig?.textScale ?? defaultScoreboardConfig.textScale,
+        textSizes: {
+          ...defaultScoreboardConfig.textSizes,
+          ...(loadedSettings.scoreboardConfig?.textSizes || {}),
+        },
       },
       customThemes: patchedCustomThemes,
       defaultTargetScore: loadedSettings.defaultTargetScore ?? 21,
