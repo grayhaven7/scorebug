@@ -584,7 +584,7 @@ export function GamePage() {
       }}>
         {(() => {
           // Calculate sizes based on number of rows AND available width
-          const rowCount = team.players.length + 2; // players + header + total
+          const rowCount = team.players.length + (settings.scoreboardConfig.showTableHeader ? 2 : 1); // players + (header?) + total
           const availableVh = showTargetBar ? 55 : 62; // viewport height available
           const rowVh = availableVh / rowCount;
           
@@ -602,25 +602,27 @@ export function GamePage() {
           
           return (
             <table className="game-table" style={{ width: '100%', minWidth: isExpanded || settings.scoreboardConfig.showQuickPoints ? 'max-content' : '100%', height: '100%', borderCollapse: 'collapse', tableLayout: settings.scoreboardConfig.showQuickPoints ? 'auto' : 'fixed', transition: 'min-width 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
-              <thead>
-                <tr style={{ backgroundColor: currentTheme.backgroundColor, height: `${rowVh}vh`, transition: 'height 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
-                  <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: '10%', minWidth: 40, padding: '0 2px', transition: 'all 250ms ease' }}>#</th>
-                  <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'left', paddingLeft: '4px', minWidth: 80, transition: 'all 250ms ease' }}>PLAYER</th>
-                  {showFouls && <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? '15%' : '22%', minWidth: 70, padding: '0 4px', transition: 'all 250ms ease' }}>PF</th>}
-                  {visibleStats.map(stat => (
-                    <React.Fragment key={stat}>
-                      <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? '12%' : '18%', minWidth: 45, padding: isExpanded ? '0 4px' : '0 8px', transition: 'all 250ms ease' }}>
-                        {statLabels[stat].slice(0, 3)}
-                      </th>
-                      {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
-                        <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh * 0.8}vh`, fontWeight: 600, textAlign: 'center', width: isExpanded ? '15%' : '18%', minWidth: 60, padding: '0 2px', transition: 'all 250ms ease' }}>
-                          +PTS
+              {settings.scoreboardConfig.showTableHeader && (
+                <thead>
+                  <tr style={{ backgroundColor: currentTheme.backgroundColor, height: `${rowVh}vh`, transition: 'height 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
+                    <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: '10%', minWidth: 40, padding: '0 2px', transition: 'all 250ms ease' }}>#</th>
+                    <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'left', paddingLeft: '4px', minWidth: 80, transition: 'all 250ms ease' }}>PLAYER</th>
+                    {showFouls && <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? '15%' : '22%', minWidth: 70, padding: '0 4px', transition: 'all 250ms ease' }}>PF</th>}
+                    {visibleStats.map(stat => (
+                      <React.Fragment key={stat}>
+                        <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh}vh`, fontWeight: 700, textAlign: 'center', width: isExpanded ? '12%' : '18%', minWidth: 45, padding: isExpanded ? '0 4px' : '0 8px', transition: 'all 250ms ease' }}>
+                          {statLabels[stat].slice(0, 3)}
                         </th>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </tr>
-              </thead>
+                        {stat === 'points' && settings.scoreboardConfig.showQuickPoints && (
+                          <th style={{ color: currentTheme.textSecondary, fontSize: `${headerVh * 0.8}vh`, fontWeight: 600, textAlign: 'center', width: isExpanded ? '15%' : '18%', minWidth: 60, padding: '0 2px', transition: 'all 250ms ease' }}>
+                            +PTS
+                          </th>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </tr>
+                </thead>
+              )}
               <tbody>
                 {team.players.map((player, index) => {
                   // Check if this player is selected via keyboard

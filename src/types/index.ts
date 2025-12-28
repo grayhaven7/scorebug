@@ -119,6 +119,7 @@ export interface ScoreboardConfig {
   showRecord: boolean;
   showStanding: boolean;
   showTitle: boolean;
+  showTableHeader: boolean;
   textScale: number; // Global text scale multiplier (0.5 to 2.0, default 1.0)
   textSizes: ScoreboardTextSizes; // Per-field text size multipliers (default 1.0)
 }
@@ -195,6 +196,7 @@ export const defaultScoreboardConfig: ScoreboardConfig = {
   showRecord: true,
   showStanding: true,
   showTitle: true,
+  showTableHeader: true,
   textScale: 1.0,
   textSizes: {
     title: 1,
