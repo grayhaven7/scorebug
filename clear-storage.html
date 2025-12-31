@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Local Storage</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        button {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background: #dc2626;
+        }
+        .success {
+            color: #10b981;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Clear Local Storage</h1>
+        <p>This will clear all scorebug data from localStorage.</p>
+        <button onclick="clearStorage()">Clear All Storage</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function clearStorage() {
+            const keys = [
+                'scorebug_teams',
+                'scorebug_games',
+                'scorebug_settings',
+                'scorebug_current_game'
+            ];
+            
+            let cleared = 0;
+            keys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    cleared++;
+                }
+            });
+            
+            // Also clear all localStorage as a fallback
+            localStorage.clear();
+            
+            const result = document.getElementById('result');
+            result.innerHTML = `<p class="success">✓ Cleared ${cleared} items. All localStorage cleared. You can close this window and refresh your app.</p>`;
+        }
+        
+        // Auto-clear on load (optional - uncomment if you want it to auto-clear)
+        // clearStorage();
+    </script>
+</body>
+</html>
+
