@@ -303,6 +303,7 @@ export function SettingsPage() {
             { id: 'showTargetBar', label: 'Target Score Bar', desc: 'Show vertical progress bar' },
             { id: 'showQuickPoints', label: 'Quick Points', desc: 'Show +1, +2, +3 buttons' },
             { id: 'showTableHeader', label: 'Table Headers', desc: 'Show column headers in stats tables' },
+            { id: 'showTableTotal', label: 'Table Totals', desc: 'Show total row at bottom of stats tables' },
           ].map(item => (
             <button
               key={item.id}

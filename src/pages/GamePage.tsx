@@ -584,7 +584,9 @@ export function GamePage() {
       }}>
         {(() => {
           // Calculate sizes based on number of rows AND available width
-          const rowCount = team.players.length + (settings.scoreboardConfig.showTableHeader ? 2 : 1); // players + (header?) + total
+          const headerRows = settings.scoreboardConfig.showTableHeader ? 1 : 0;
+          const totalRows = settings.scoreboardConfig.showTableTotal ? 1 : 0;
+          const rowCount = team.players.length + headerRows + totalRows;
           const availableVh = showTargetBar ? 55 : 62; // viewport height available
           const rowVh = availableVh / rowCount;
           
@@ -713,30 +715,32 @@ export function GamePage() {
                   );
                 })}
                 {/* TOTAL Row - scales with vh */}
-                <tr style={{ borderTop: `2px solid ${team.primaryColor}`, backgroundColor: team.primaryColor + '20', height: `${rowVh}vh`, transition: 'height 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
-                  <td></td>
-                  <td style={{ fontSize: `${playerNameVh * 1.1}vh`, fontWeight: 800, verticalAlign: 'middle', paddingLeft: '4px', fontFamily: currentTheme.headerFont, whiteSpace: 'nowrap' }}>TOTAL</td>
-                  {showFouls && (
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                      <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${foulVh}vh`, height: `${jerseyVh * 0.8}vh`, minHeight: 22, padding: '0 0.8vh' }}>
-                        {calculateTotal(team.players, 'fouls')}
-                      </span>
-                    </td>
-                  )}
-                  {visibleStats.map(stat => {
-                    const total = calculateTotal(team.players, stat as keyof PlayerGameStats);
-                    return (
-                      <React.Fragment key={stat}>
-                        <td style={{ textAlign: 'center', verticalAlign: 'middle', padding: isExpanded ? '0 4px' : '0 12px', transition: 'padding 250ms ease' }}>
-                          <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${statValueVh * 1.1}vh`, height: `${jerseyVh * 0.85}vh`, minHeight: 24, padding: '0 0.8vh', margin: '0 auto', transition: 'font-size 250ms ease, height 250ms ease' }}>
-                            {total}
-                          </span>
-                        </td>
-                        {stat === 'points' && settings.scoreboardConfig.showQuickPoints && <td></td>}
-                      </React.Fragment>
-                    );
-                  })}
-                </tr>
+                {settings.scoreboardConfig.showTableTotal && (
+                  <tr style={{ borderTop: `2px solid ${team.primaryColor}`, backgroundColor: team.primaryColor + '20', height: `${rowVh}vh`, transition: 'height 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
+                    <td></td>
+                    <td style={{ fontSize: `${playerNameVh * 1.1}vh`, fontWeight: 800, verticalAlign: 'middle', paddingLeft: '4px', fontFamily: currentTheme.headerFont, whiteSpace: 'nowrap' }}>TOTAL</td>
+                    {showFouls && (
+                      <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                        <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${foulVh}vh`, height: `${jerseyVh * 0.8}vh`, minHeight: 22, padding: '0 0.8vh' }}>
+                          {calculateTotal(team.players, 'fouls')}
+                        </span>
+                      </td>
+                    )}
+                    {visibleStats.map(stat => {
+                      const total = calculateTotal(team.players, stat as keyof PlayerGameStats);
+                      return (
+                        <React.Fragment key={stat}>
+                          <td style={{ textAlign: 'center', verticalAlign: 'middle', padding: isExpanded ? '0 4px' : '0 12px', transition: 'padding 250ms ease' }}>
+                            <span className="inline-flex items-center justify-center rounded font-bold" style={{ backgroundColor: team.primaryColor, color: team.secondaryColor, fontSize: `${statValueVh * 1.1}vh`, height: `${jerseyVh * 0.85}vh`, minHeight: 24, padding: '0 0.8vh', margin: '0 auto', transition: 'font-size 250ms ease, height 250ms ease' }}>
+                              {total}
+                            </span>
+                          </td>
+                          {stat === 'points' && settings.scoreboardConfig.showQuickPoints && <td></td>}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tr>
+                )}
               </tbody>
             </table>
           );
