@@ -603,7 +603,7 @@ export function GamePage() {
           const headerVh = Math.min(rowVh * 0.42, 3.5) * globalTextScale * textMult('statHeader');
           
           return (
-            <table className="game-table" style={{ width: '100%', minWidth: isExpanded || settings.scoreboardConfig.showQuickPoints ? 'max-content' : '100%', height: '100%', borderCollapse: 'collapse', tableLayout: settings.scoreboardConfig.showQuickPoints ? 'auto' : 'fixed', transition: 'min-width 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
+            <table className="game-table" style={{ width: '100%', minWidth: 'max-content', height: '100%', borderCollapse: 'collapse', tableLayout: 'auto', transition: 'min-width 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
               {settings.scoreboardConfig.showTableHeader && (
                 <thead>
                   <tr style={{ backgroundColor: currentTheme.backgroundColor, height: `${rowVh}vh`, transition: 'height 350ms cubic-bezier(0.4, 0, 0.2, 1)' }}>
@@ -652,7 +652,7 @@ export function GamePage() {
                         {player.jerseyNumber}
                       </span>
                     </td>
-                    <td style={{ fontSize: `${playerNameVh}vh`, fontWeight: 600, verticalAlign: 'middle', paddingLeft: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', transition: 'font-size 250ms ease' }}>
+                    <td style={{ fontSize: `${playerNameVh}vh`, fontWeight: 600, verticalAlign: 'middle', paddingLeft: '4px', whiteSpace: 'nowrap', transition: 'font-size 250ms ease' }}>
                       {player.playerName}
                     </td>
                     {showFouls && (
